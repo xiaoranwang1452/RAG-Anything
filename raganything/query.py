@@ -17,6 +17,7 @@ from raganything.utils import (
     encode_image_to_base64,
     validate_image_file,
 )
+from raganything.reflection import ReflectionEngine, ReflectionConfig
 
 
 class QueryMixin:
@@ -152,6 +153,75 @@ class QueryMixin:
 
         self.logger.info("Text query completed")
         return result
+
+    async def aquery_reflect(
+        self,
+        query: str,
+        mode: str = "mix",
+        reflection_config: dict | None = None,
+        verify_after_rewrite: bool = False,
+        **kwargs,
+    ) -> str:
+        """
+        Query with a reflection layer.
+
+        Flow:
+        1) Build base prompt/context from LightRAG (no answer), then draft an answer.
+        2) Review draft (support/consistency/coverage) -> JSON verdict.
+        3) If pass -> return draft; else targeted retrieval (3–5 chunks).
+        4) Merge context under token budget and rewrite grounded answer.
+        5) Optional final verification.
+        """
+        await self._ensure_lightrag_initialized()
+
+        # 1) Get base prompt and context
+        prompt_only = await self.lightrag.aquery(
+            query, param=QueryParam(mode=mode, only_need_prompt=True, **kwargs)
+        )
+        base_context = await self.lightrag.aquery(
+            query, param=QueryParam(mode=mode, only_need_context=True, **kwargs)
+        )
+
+        # Draft using the same prompt shape LightRAG would use
+        draft = await self.llm_model_func(query, system_prompt=prompt_only)
+
+        # 2) Review
+        rconf = ReflectionConfig(**(reflection_config or {}))
+        engine = ReflectionEngine(
+            lightrag=self.lightrag,
+            llm_model_func=self.llm_model_func,
+            tokenizer=self.lightrag.tokenizer,
+            config=rconf,
+        )
+
+        review = await engine.review(query, draft, base_context)
+        if review.passed:
+            return draft
+
+        # 3) Targeted retrieval
+        extra = await engine.targeted_retrieval(query, review)
+
+        # 4) Merge context + rewrite
+        extended_context, citations = engine.merge_context(base_context, extra)
+        better = await engine.rewrite(
+            query=query,
+            draft=draft,
+            extended_context=extended_context,
+            review=review,
+            citations=citations,
+        )
+
+        # 5) Optional final verification
+        if verify_after_rewrite:
+            try:
+                ok = await engine.verify_after_rewrite(query, better)
+                if not ok:
+                    # Keep the rewritten answer, but add a mild caveat
+                    better += "\n\n[Note] Automatic verifier flagged potential issues; please double-check key claims."
+            except Exception:
+                pass
+
+        return better
 
     async def aquery_with_multimodal(
         self,
@@ -718,6 +788,26 @@ class QueryMixin:
         """
         loop = always_get_an_event_loop()
         return loop.run_until_complete(self.aquery(query, mode=mode, **kwargs))
+
+    def query_reflect(
+        self,
+        query: str,
+        mode: str = "mix",
+        reflection_config: dict | None = None,
+        verify_after_rewrite: bool = False,
+        **kwargs,
+    ) -> str:
+        """Synchronous wrapper for aquery_reflect."""
+        loop = always_get_an_event_loop()
+        return loop.run_until_complete(
+            self.aquery_reflect(
+                query,
+                mode=mode,
+                reflection_config=reflection_config,
+                verify_after_rewrite=verify_after_rewrite,
+                **kwargs,
+            )
+        )
 
     def query_with_multimodal(
         self,
