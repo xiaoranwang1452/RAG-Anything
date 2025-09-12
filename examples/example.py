@@ -19,7 +19,8 @@ Prerequisites:
     ollama pull llava:7b  # or another VLM that supports images
 
 Run:
-  # optional: export VISION_MODEL=qwen2.5vl:3b
+  # optional: export VISION_MODEL=llava:7b:q4_0   # lighter VLM
+  # optional: export VLM_ENHANCED=false           # disable VLM during query (default)
   python examples/example.py --query "用中文总结文档内容"
 """
 
@@ -59,6 +60,36 @@ def _http_post_json(url: str, payload: dict, timeout: int = 240) -> dict:
         raise RuntimeError(f"Failed to reach {url}: {e}")
 
 
+def _maybe_downscale_base64_image(image_b64: str, max_side: int = 768, quality: int = 80) -> str:
+    """Downscale a base64 image if Pillow is available to reduce VLM memory usage.
+
+    Returns the (possibly) downscaled base64 string. On failure or if Pillow is
+    not available, returns the original string.
+    """
+    try:
+        from io import BytesIO
+        import base64
+        from PIL import Image
+
+        raw = base64.b64decode(image_b64)
+        im = Image.open(BytesIO(raw))
+        im = im.convert("RGB")
+        w, h = im.size
+        scale = 1.0
+        if max(w, h) > max_side:
+            scale = max_side / float(max(w, h))
+        if scale < 1.0:
+            new_w = max(1, int(w * scale))
+            new_h = max(1, int(h * scale))
+            im = im.resize((new_w, new_h))
+        buf = BytesIO()
+        im.save(buf, format="JPEG", quality=quality, optimize=True)
+        out_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
+        return out_b64
+    except Exception:
+        return image_b64
+
+
 def build_ollama_llm_func():
     """Create a chat completion function for Ollama /api/chat.
 
@@ -68,6 +99,13 @@ def build_ollama_llm_func():
     host = os.getenv("LLM_BINDING_HOST", "http://localhost:11434").rstrip("/")
     model = os.getenv("LLM_MODEL", "qwen2.5:3b-instruct").strip()
     url = f"{host}/api/chat"
+
+    def _chat_options():
+        return {
+            "num_ctx": int(os.getenv("MAX_TOKENS", "2048")),
+            "num_predict": int(os.getenv("NUM_PREDICT", "512")),
+            "temperature": float(os.getenv("TEMPERATURE", "0")),
+        }
 
     async def llm_model_func(prompt: str,
                              system_prompt: Optional[str] = None,
@@ -101,6 +139,7 @@ def build_ollama_llm_func():
             "model": model,
             "messages": norm_msgs,
             "stream": False,
+            "options": _chat_options(),
             # Map common params if provided
             **({"temperature": kwargs.get("temperature")} if kwargs.get("temperature") is not None else {}),
         }
@@ -126,6 +165,15 @@ def build_ollama_vision_func():
     vlm_model = os.getenv("VISION_MODEL", "qwen2.5vl:3b").strip()
     gen_url = f"{host}/api/generate"
     chat_url = f"{host}/api/chat"
+
+    vlm_semaphore = asyncio.Semaphore(int(os.getenv("VLM_MAX_CONCURRENCY", "1")))
+
+    def _gen_options():
+        return {
+            "num_ctx": int(os.getenv("MAX_TOKENS", "2048")),
+            "num_predict": int(os.getenv("NUM_PREDICT", "512")),
+            "temperature": float(os.getenv("TEMPERATURE", "0")),
+        }
 
     async def vision_model_func(prompt: str,
                                 system_prompt: Optional[str] = None,
@@ -165,19 +213,58 @@ def build_ollama_vision_func():
             if image_data:
                 images.append(image_data)
 
-        final_prompt = "\n".join([p for p in final_prompt_parts if p]) or "Describe the image."
+        # Cap number of images to avoid OOM (configurable)
+        max_images = int(os.getenv("VLM_MAX_IMAGES", "4"))
+        omitted = 0
+        if len(images) > max_images:
+            omitted = len(images) - max_images
+            images = images[:max_images]
+
+        note = f"\n[Note: {omitted} images omitted for resource limits]" if omitted else ""
+        final_prompt = ("\n".join([p for p in final_prompt_parts if p]) or "Describe the image.") + note
 
         if images:
+            # Downscale images to reduce memory if possible
+            max_side = int(os.getenv("MAX_IMAGE_SIDE", "640"))
+            jpeg_q = int(os.getenv("IMAGE_JPEG_QUALITY", "80"))
+            images = [_maybe_downscale_base64_image(b64, max_side=max_side, quality=jpeg_q) for b64 in images]
+
             payload = {
                 "model": vlm_model,
                 "prompt": final_prompt,
                 "images": images,
                 "stream": False,
+                "options": _gen_options(),
             }
-            resp = await asyncio.to_thread(
-                _http_post_json, gen_url, payload, int(os.getenv("TIMEOUT", "240"))
-            )
-            return resp.get("response", "")
+
+            async def _call_vlm_with_retry(tries=2, delay=0.8):
+                last_err = None
+                for i in range(tries):
+                    try:
+                        async with vlm_semaphore:
+                            resp = await asyncio.to_thread(
+                                _http_post_json,
+                                gen_url,
+                                payload,
+                                int(os.getenv("VLM_TIMEOUT", os.getenv("TIMEOUT", "240"))),
+                            )
+                        return resp
+                    except Exception as e:
+                        last_err = e
+                        if i == tries - 1:
+                            break
+                        await asyncio.sleep(delay)
+                        delay *= 1.5
+                raise last_err
+
+            try:
+                resp = await _call_vlm_with_retry(tries=int(os.getenv("VLM_RETRIES", "2")))
+                return resp.get("response", "")
+            except Exception:
+                # Optionally disable vision on failure and return fallback text
+                if os.getenv("VLM_DISABLE_ON_FAILURE", "true").lower() == "true":
+                    os.environ["DISABLE_VISION"] = "true"
+                return os.getenv("VLM_FALLBACK_TEXT", "[Image omitted due to resource limits]")
         else:
             # Fallback to text-only chat if no image present
             norm_msgs = []
@@ -188,10 +275,19 @@ def build_ollama_vision_func():
                     if "role" in h and "content" in h:
                         norm_msgs.append({"role": h["role"], "content": h["content"]})
             norm_msgs.append({"role": "user", "content": final_prompt})
-            payload = {"model": os.getenv("LLM_MODEL", "qwen2.5:3b-instruct").strip(), "messages": norm_msgs, "stream": False}
-            resp = await asyncio.to_thread(
-                _http_post_json, chat_url, payload, int(os.getenv("TIMEOUT", "240"))
-            )
+            payload = {
+                "model": os.getenv("LLM_MODEL", "qwen2.5:3b-instruct").strip(),
+                "messages": norm_msgs,
+                "stream": False,
+                "options": _gen_options(),
+            }
+            async with vlm_semaphore:
+                resp = await asyncio.to_thread(
+                    _http_post_json,
+                    chat_url,
+                    payload,
+                    int(os.getenv("VLM_TIMEOUT", os.getenv("TIMEOUT", "240"))),
+                )
             return (resp.get("message") or {}).get("content", "")
 
     return vision_model_func
@@ -203,12 +299,15 @@ def build_ollama_embedding_func() -> EmbeddingFunc:
     model = os.getenv("EMBEDDING_MODEL", "bge-m3:latest").strip()
     url = f"{host}/api/embeddings"
 
+    embed_semaphore = asyncio.Semaphore(int(os.getenv("EMBEDDING_MAX_CONCURRENCY", "4")))
+
     async def embed_batch(texts: List[str]) -> List[List[float]]:
         async def one(t: str) -> List[float]:
             payload = {"model": model, "prompt": t}
-            resp = await asyncio.to_thread(
-                _http_post_json, url, payload, int(os.getenv("TIMEOUT", "240"))
-            )
+            async with embed_semaphore:
+                resp = await asyncio.to_thread(
+                    _http_post_json, url, payload, int(os.getenv("TIMEOUT", "240"))
+                )
             emb = resp.get("embedding")
             if not emb:
                 raise RuntimeError("No embedding returned from Ollama")
@@ -228,19 +327,19 @@ def build_ollama_embedding_func() -> EmbeddingFunc:
     )
 
 
-async def run(query: str, docs_dir: str = "example_doc", output_dir: str = "./output"):
+async def run(query: str, docs_dir: str = "example_doc", output_dir: str = "./output", vlm_enhanced: Optional[bool] = None):
     base_dir = Path(__file__).resolve().parent.parent
 
     # Resolve working_dir to repo root by default for consistency
     default_working_dir = str(base_dir / "rag_storage")
     working_dir = os.getenv("WORKING_DIR", default_working_dir)
 
-    # Use a light config: text-first to avoid image/VLM requirements
+    # Use a light config; allow toggling image via env
     config = RAGAnythingConfig(
         working_dir=working_dir,
         parser=os.getenv("PARSER", "mineru"),
         parse_method=os.getenv("PARSE_METHOD", "auto"),
-        enable_image_processing=True,
+        enable_image_processing=os.getenv("ENABLE_IMAGE_PROCESSING", "true").lower() == "true",
         enable_table_processing=False,
         enable_equation_processing=False,
     )
@@ -287,18 +386,21 @@ async def run(query: str, docs_dir: str = "example_doc", output_dir: str = "./ou
 
     # Ask
     logger.info(f"Query: {query}")
-    answer = await rag.aquery(query, mode="hybrid")
+    if vlm_enhanced is None:
+        vlm_enhanced = os.getenv("VLM_ENHANCED", "false").lower() == "true"
+    answer = await rag.aquery(query, mode="hybrid", vlm_enhanced=vlm_enhanced)
     print("\n===== ANSWER =====\n" + str(answer) + "\n===================\n")
 
 
 def main():
     parser = argparse.ArgumentParser(description="RAG-Anything + Ollama example")
-    parser.add_argument("--query", "-q", default="用中文总结文档的主要内容", help="Query to ask")
+    parser.add_argument("--query", "-q", default="Who write Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks", help="Query to ask")
     parser.add_argument("--docs", default="example_doc", help="Folder of documents to ingest")
     parser.add_argument("--output", default="./output", help="Output directory for artifacts")
+    parser.add_argument("--vlm", action="store_true", help="Enable VLM enhanced querying (may be heavy)")
     args = parser.parse_args()
 
-    asyncio.run(run(args.query, args.docs, args.output))
+    asyncio.run(run(args.query, args.docs, args.output, vlm_enhanced=args.vlm))
 
 
 if __name__ == "__main__":
