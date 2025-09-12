@@ -374,7 +374,7 @@ async def process_with_rag(
                 f"No ingestible files found under {input_path}."
             )
 
-    files = [p for p in docs_path.iterdir() if p.is_file() and not p.name.startswith('.')]
+    files = [p for p in docs_path.iterdir() if p.is_file()]
     if not files:
         raise FileNotFoundError(f"No files found in {docs_dir}")
 
@@ -388,8 +388,6 @@ async def process_with_rag(
 
     # Process each document
     for f in files:
-        if not f.is_file() or f.name.startswith('.'):
-            continue
         logger.info(f"Processing document: {f}")
         await rag.process_document_complete(
             file_path=str(f),
