@@ -363,7 +363,7 @@ async def run(query: str, docs_dir: str = "example_doc", output_dir: str = "./ou
                 f"Documents folder not found: {docs_dir}. Tried: '{Path.cwd()/docs_path}', '{base_dir/docs_dir}'"
             )
 
-    files = [p for p in docs_path.iterdir() if p.is_file() and not p.name.startswith('.')]
+    files = [p for p in docs_path.iterdir() if p.is_file()]
     if not files:
         raise FileNotFoundError(f"No files found in {docs_dir}")
 
@@ -377,8 +377,6 @@ async def run(query: str, docs_dir: str = "example_doc", output_dir: str = "./ou
 
     # Process each document
     for f in files:
-        if not f.is_file() or f.name.startswith('.'):
-            continue
         logger.info(f"Processing document: {f}")
         await rag.process_document_complete(
             file_path=str(f),
