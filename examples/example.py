@@ -374,78 +374,35 @@ async def process_with_rag(
                 f"No ingestible files found under {input_path}."
             )
 
-        max_files = _env_int("MAX_CONCURRENT_FILES", 0)
-        if max_files > 0:
-            files = files[:max_files]
+    files = [p for p in docs_path.iterdir() if p.is_file() and not p.name.startswith('.')]
+    if not files:
+        raise FileNotFoundError(f"No files found in {docs_dir}")
 
-        output_path = Path(output_dir).expanduser()
-        output_path.mkdir(parents=True, exist_ok=True)
-        output_dir = str(output_path)
+    out_path = Path(output_dir)
+    if not out_path.is_absolute():
+        out_path = base_dir / output_dir
+    os.makedirs(out_path, exist_ok=True)
+    logger.info(f"Using documents dir: {docs_path}")
+    logger.info(f"Using output dir: {out_path}")
+    logger.info(f"Using working dir: {working_dir}")
 
-        for file in files:
-            logger.info(f"Processing document: {file}")
-            await rag.process_document_complete(
-                file_path=str(file),
-                output_dir=output_dir,
-                parse_method=config.parse_method,
-                device="cpu",
-            )
+    # Process each document
+    for f in files:
+        if not f.is_file() or f.name.startswith('.'):
+            continue
+        logger.info(f"Processing document: {f}")
+        await rag.process_document_complete(
+            file_path=str(f),
+            output_dir=str(out_path),
+            parse_method=config.parse_method,
+        )
 
-        # Example queries - demonstrating different query approaches
-        logger.info("\nQuerying processed document:")
-
-        # 1. Pure text queries using aquery()
-        text_queries = [
-            "What is the main content of the document?",
-            "What are the key topics discussed?",
-        ]
-
-        for query in text_queries:
-            logger.info(f"\n[Text Query]: {query}")
-            result = await rag.aquery(query, mode="hybrid")
-            logger.info(f"Answer: {result}")
-            await asyncio.sleep(2)
-
-        # # 2. Multimodal query with specific multimodal content using aquery_with_multimodal()
-        # logger.info(
-        #     "\n[Multimodal Query]: Analyzing performance data in context of document"
-        # )
-        # multimodal_result = await rag.aquery_with_multimodal(
-        #     "Compare this performance data with any similar results mentioned in the document",
-        #     multimodal_content=[
-        #         {
-        #             "type": "table",
-        #             "table_data": """Method,Accuracy,Processing_Time
-        #                         RAGAnything,95.2%,120ms
-        #                         Traditional_RAG,87.3%,180ms
-        #                         Baseline,82.1%,200ms""",
-        #             "table_caption": "Performance comparison results",
-        #         }
-        #     ],
-        #     mode="hybrid",
-        # )
-        # logger.info(f"Answer: {multimodal_result}")
-
-        # # 3. Another multimodal query with equation content
-        # logger.info("\n[Multimodal Query]: Mathematical formula analysis")
-        # equation_result = await rag.aquery_with_multimodal(
-        #     "Explain this formula and relate it to any mathematical concepts in the document",
-        #     multimodal_content=[
-        #         {
-        #             "type": "equation",
-        #             "latex": "F1 = 2 \\cdot \\frac{precision \\cdot recall}{precision + recall}",
-        #             "equation_caption": "F1-score calculation formula",
-        #         }
-        #     ],
-        #     mode="hybrid",
-        # )
-        # logger.info(f"Answer: {equation_result}")
-
-    except Exception as e:
-        logger.error(f"Error processing with RAG: {str(e)}")
-        import traceback
-
-        logger.error(traceback.format_exc())
+    # Ask
+    logger.info(f"Query: {query}")
+    if vlm_enhanced is None:
+        vlm_enhanced = os.getenv("VLM_ENHANCED", "false").lower() == "true"
+    answer = await rag.aquery(query, mode="hybrid", vlm_enhanced=vlm_enhanced)
+    print("\n===== ANSWER =====\n" + str(answer) + "\n===================\n")
 
 
 def main():
