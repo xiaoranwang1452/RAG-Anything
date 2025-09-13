@@ -393,6 +393,7 @@ async def process_with_rag(
             file_path=str(f),
             output_dir=str(out_path),
             parse_method=config.parse_method,
+            device="cpu",
         )
 
     # Ask
