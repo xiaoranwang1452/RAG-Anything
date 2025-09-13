@@ -22,7 +22,7 @@ class QueryPlan:
 
     retrieval_mode: str = "mix"
     top_k: int = 5
-    rerank_top_k: int = 5
+    chunk_top_k: int = 5
     use_vlm: bool = False
     feature_flags: Dict[str, bool] = field(
         default_factory=lambda: {"image": True, "table": True, "equation": True}
@@ -100,4 +100,3 @@ class MicroPlanner:
         if budgets:
             plan = self.apply_policies(plan, budgets)
         return normalized, plan
-        
