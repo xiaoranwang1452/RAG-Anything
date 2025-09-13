@@ -120,10 +120,10 @@ class RAGAnythingConfig:
     )
     """Approximate memory budget in gigabytes for planning policies."""
 
-    default_rerank_top_k: int = field(
-        default=get_env_value("DEFAULT_RERANK_TOP_K", 5, int)
+    default_chunk_top_k: int = field(
+        default=get_env_value("DEFAULT_CHUNK_TOP_K", 5, int)
     )
-    """Default rerank top_k used when planner does not specify one."""
+    """Default chunk_top_k used when planner does not specify one."""
 
     enable_reflection: bool = field(
         default=get_env_value("ENABLE_REFLECTION", False, bool)
