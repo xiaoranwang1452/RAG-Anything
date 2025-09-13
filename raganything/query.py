@@ -18,11 +18,7 @@ from raganything.utils import (
     validate_image_file,
 )
 from raganything.reflection import ReflectionEngine, ReflectionConfig
-from raganything.micro_planner import MicroPlanner, IntentResult, QueryPlan
-import asyncio, inspect
-from typing import List, Dict, Any
-from raganything.faithful import FaithfulDecodingEngine, FaithfulDecodingConfig
-
+from raganything.micro_planner import MicroPlanner
 
 class QueryMixin:
     """QueryMixin class containing query functionality for RAGAnything"""
@@ -265,153 +261,56 @@ class QueryMixin:
                 "No LightRAG instance available. Please process documents first or provide a pre-initialized LightRAG instance."
             )
 
-        # Check if VLM enhanced query should be used
-        vlm_enhanced = kwargs.pop("vlm_enhanced", None)
+        planner_plan = None
+        if (
+            getattr(self.config, "enable_micro_planner", False)
+            and getattr(self, "micro_planner", None)
+        ):
+            budgets = {
+                "time_ms": self.config.query_time_budget_ms,
+                "memory_gb": self.config.memory_budget_gb,
+            }
+            query, planner_plan = self.micro_planner.plan(query, budgets=budgets)
+            mode = planner_plan.retrieval_mode or mode
+            kwargs.setdefault("top_k", planner_plan.top_k)
+            kwargs.setdefault(
+                "rerank_top_k",
+                planner_plan.rerank_top_k or self.config.default_rerank_top_k,
+            )
+            vlm_enhanced = planner_plan.use_vlm
+        else:
+            vlm_enhanced = kwargs.pop("vlm_enhanced", None)
 
-        # Auto-determine VLM enhanced based on availability
         if vlm_enhanced is None:
             vlm_enhanced = (
                 hasattr(self, "vision_model_func")
                 and self.vision_model_func is not None
             )
 
-        # Use VLM enhanced query if enabled and available
         if (
             vlm_enhanced
             and hasattr(self, "vision_model_func")
             and self.vision_model_func
         ):
-            return await self.aquery_vlm_enhanced(query, mode=mode, **kwargs)
-        elif vlm_enhanced and (
-            not hasattr(self, "vision_model_func") or not self.vision_model_func
-        ):
-            self.logger.warning(
-                "VLM enhanced query requested but vision_model_func is not available, falling back to normal query"
-            )
-
-        # Intent-aware defaults (query-layer only). Users can override via kwargs.
-        enable_intent_presets = kwargs.pop("enable_intent_presets", True)
-        # Metrics logging flags (Milestone 1)
-        enable_metrics_logging = kwargs.pop("enable_metrics_logging", False)
-        metrics_namespace = kwargs.pop("metrics_namespace", None)
-        # M2: intent calibration controls
-        enable_intent_calibration = kwargs.pop("enable_intent_calibration", True)
-        intent_conf_threshold = kwargs.pop("intent_conf_threshold", 0.6)
-        fallback_intents = kwargs.pop("fallback_intents", ["definition", "process"])  # ordered
-
-        detected_intent = kwargs.get("intent")
-        if not detected_intent and enable_intent_presets:
-            try:
-                detected_intent = self._classify_intent_simple(query)
-            except Exception:
-                detected_intent = None
-
-        # M2: estimate confidence and optionally reclassify
-        intent_confidence = None
-        reclassified = False
-        final_intent = detected_intent
-        if enable_intent_calibration and detected_intent:
-            try:
-                intent_confidence = self._estimate_intent_confidence(query, detected_intent)
-                if intent_confidence < intent_conf_threshold:
-                    for fb in fallback_intents:
-                        if fb != detected_intent:
-                            final_intent = fb
-                            reclassified = True
-                            break
-            except Exception:
-                pass
+            result = await self.aquery_vlm_enhanced(query, mode=mode, **kwargs)
         else:
-            final_intent = detected_intent
+            if vlm_enhanced and (
+                not hasattr(self, "vision_model_func") or not self.vision_model_func
+            ):
+                self.logger.warning(
+                    "VLM enhanced query requested but vision_model_func is not available, falling back to normal query"
+                )
+            query_param = QueryParam(mode=mode, **kwargs)
+            self.logger.info(f"Executing text query: {query[:100]}...")
+            self.logger.info(f"Query mode: {mode}")
+            result = await self.lightrag.aquery(query, param=query_param)
+            self.logger.info("Text query completed")
 
-        # Merge presets without overriding explicit kwargs
-        effective_kwargs = dict(kwargs)
-        if enable_intent_presets and final_intent:
-            preset = self._get_presets_for_intent(final_intent)
-            for k, v in preset.items():
-                if k not in effective_kwargs:
-                    effective_kwargs[k] = v
-
-        # Lightweight text query cache (leveraging lightrag.llm_response_cache when present)
-        enable_query_cache = effective_kwargs.pop("enable_query_cache", True)
-        cache_key = None
-        if enable_query_cache and (
-            hasattr(self, "lightrag")
-            and self.lightrag
-            and hasattr(self.lightrag, "llm_response_cache")
-            and self.lightrag.llm_response_cache
-        ):
-            if self.lightrag.llm_response_cache.global_config.get("enable_llm_cache", True):
-                try:
-                    cache_key = self._generate_text_cache_key(query, mode, **effective_kwargs)
-                    cached = await self.lightrag.llm_response_cache.get_by_id(cache_key)
-                    if cached and isinstance(cached, dict):
-                        result_content = cached.get("return")
-                        if result_content:
-                            self.logger.info(f"Text query cache hit: {cache_key[:16]}...")
-                            return result_content
-                except Exception as e:
-                    self.logger.debug(f"Error accessing text query cache: {e}")
-
-        # Create query parameters
-        query_param = QueryParam(mode=mode, **effective_kwargs)
-
-        self.logger.info(f"Executing text query: {query[:100]}...")
-        self.logger.info(f"Query mode: {mode}")
-
-        # Call LightRAG's query method
-        result = await self.lightrag.aquery(query, param=query_param)
-
-        # Store in cache if enabled and available
-        if enable_query_cache and cache_key and (
-            hasattr(self, "lightrag")
-            and self.lightrag
-            and hasattr(self.lightrag, "llm_response_cache")
-            and self.lightrag.llm_response_cache
-        ):
+        if planner_plan:
             try:
-                cache_entry = {
-                    "return": result,
-                    "cache_type": "text_query",
-                    "original_query": query,
-                    "mode": mode,
-                    "intent": final_intent,
-                }
-                # Attach structured metrics when enabled (Milestone 1)
-                if enable_metrics_logging:
-                    cache_entry.update(
-                        {
-                            "metrics_namespace": metrics_namespace,
-                            "final_intent": final_intent,
-                            "intent_conf": intent_confidence,
-                            "reclassified": reclassified,
-                            "strategy_used": {
-                                "mode": mode,
-                                "intent_presets": bool(final_intent),
-                            },
-                            "top_k": effective_kwargs.get("top_k"),
-                            "chunk_top_k": effective_kwargs.get("chunk_top_k"),
-                            "kg_hops": effective_kwargs.get("kg_hops"),
-                            "mmr_lambda": effective_kwargs.get("mmr_lambda"),
-                            "min_rerank_score": effective_kwargs.get("min_rerank_score"),
-                            "answer_length": len(str(result)) if result is not None else 0,
-                            "ensemble_votes": None,
-                            "agreement_ratio": None,
-                            "correction_applied": False,
-                            "citation_guard_triggered": False,
-                        }
-                    )
-                await self.lightrag.llm_response_cache.upsert({cache_key: cache_entry})
-                self.logger.info(f"Saved text query result to cache: {cache_key[:16]}...")
-                # Ensure persistence
-                try:
-                    await self.lightrag.llm_response_cache.index_done_callback()
-                except Exception as e:
-                    self.logger.debug(f"Error persisting text query cache: {e}")
-            except Exception as e:
-                self.logger.debug(f"Error saving text query to cache: {e}")
-
-        self.logger.info("Text query completed")
+                self.micro_planner.evaluate(query, result, {})
+            except Exception:
+                self.logger.debug("Planner evaluation failed", exc_info=True)
         return result
 
     async def aquery_reflect(

@@ -48,7 +48,11 @@
 ---
 
 ## 🎉 News
+<<<<<<< HEAD
 - [X] [2025.09.13]🎯📢 Introduced a lightweight micro planner that analyzes query intent and adapts retrieval strategy.
+=======
+- [X] [2025.08.22]🎯📢 Introduced a lightweight micro planner that analyzes query intent and adapts retrieval strategy.
+>>>>>>> 5b332ef (version 1)
 - [X] [2025.08.12]🎯📢 🔍 RAG-Anything now features **VLM-Enhanced Query** mode! When documents include images, the system seamlessly integrates them into VLM for advanced multimodal analysis, combining visual and textual context for deeper insights.
 - [X] [2025.07.05]🎯📢 RAG-Anything now features a [context configuration module](docs/context_aware_processing.md), enabling intelligent integration of relevant contextual information to enhance multimodal content processing.
 - [X] [2025.07.04]🎯📢 🚀 RAG-Anything now supports multimodal query capabilities, enabling enhanced RAG with seamless processing of text, images, tables, and equations.
