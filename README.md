@@ -48,6 +48,7 @@
 ---
 
 ## 🎉 News
+- [X] [2025.08.22]🎯📢 Introduced a lightweight micro planner that analyzes query intent and adapts retrieval strategy.
 - [X] [2025.08.12]🎯📢 🔍 RAG-Anything now features **VLM-Enhanced Query** mode! When documents include images, the system seamlessly integrates them into VLM for advanced multimodal analysis, combining visual and textual context for deeper insights.
 - [X] [2025.07.05]🎯📢 RAG-Anything now features a [context configuration module](docs/context_aware_processing.md), enabling intelligent integration of relevant contextual information to enhance multimodal content processing.
 - [X] [2025.07.04]🎯📢 🚀 RAG-Anything now supports multimodal query capabilities, enabling enhanced RAG with seamless processing of text, images, tables, and equations.
@@ -82,6 +83,7 @@ Users can query documents containing **interleaved text**, **visual diagrams**, 
 - **⚡ Adaptive Processing Modes** - Flexible MinerU-based parsing or direct multimodal content injection workflows
 - **📋 Direct Content List Insertion** - Bypass document parsing by directly inserting pre-parsed content lists from external sources
 - **🎯 Hybrid Intelligent Retrieval** - Advanced search capabilities spanning textual and multimodal content with contextual understanding
+- **🗺️ Intent-Aware Micro Planner** - Normalizes queries and adapts retrieval strategy based on inferred intent and resource budgets
 
 </div>
 
@@ -107,178 +109,7 @@ Users can query documents containing **interleaved text**, **visual diagrams**, 
       <div style="font-size: 20px; color: #00d9ff;">→</div>
       <div style="text-align: center;">
         <div style="font-size: 24px; margin-bottom: 10px;">🧠</div>
-        <div style="font-size: 14px; color: #00d9ff;">Content Analysis</div>
-      </div>
-      <div style="font-size: 20px; color: #00d9ff;">→</div>
-      <div style="text-align: center;">
-        <div style="font-size: 24px; margin-bottom: 10px;">🔍</div>
-        <div style="font-size: 14px; color: #00d9ff;">Knowledge Graph</div>
-      </div>
-      <div style="font-size: 20px; color: #00d9ff;">→</div>
-      <div style="text-align: center;">
-        <div style="font-size: 24px; margin-bottom: 10px;">🎯</div>
-        <div style="font-size: 14px; color: #00d9ff;">Intelligent Retrieval</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-### 1. Document Parsing Stage
-
-<div style="background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%); border-radius: 10px; padding: 20px; margin: 15px 0; border-left: 4px solid #4ecdc4;">
-
-The system provides high-fidelity document extraction through adaptive content decomposition. It intelligently segments heterogeneous elements while preserving contextual relationships. Universal format compatibility is achieved via specialized optimized parsers.
-
-**Key Components:**
-
-- **⚙️ MinerU Integration**: Leverages [MinerU](https://github.com/opendatalab/MinerU) for high-fidelity document structure extraction and semantic preservation across complex layouts.
-
-- **🧩 Adaptive Content Decomposition**: Automatically segments documents into coherent text blocks, visual elements, structured tables, mathematical equations, and specialized content types while preserving contextual relationships.
-
-- **📁 Universal Format Support**: Provides comprehensive handling of PDFs, Office documents (DOC/DOCX/PPT/PPTX/XLS/XLSX), images, and emerging formats through specialized parsers with format-specific optimization.
-
-</div>
-
-### 2. Multi-Modal Content Understanding & Processing
-
-<div style="background: linear-gradient(90deg, #16213e 0%, #0f3460 100%); border-radius: 10px; padding: 20px; margin: 15px 0; border-left: 4px solid #ff6b6b;">
-
-The system automatically categorizes and routes content through optimized channels. It uses concurrent pipelines for parallel text and multimodal processing. Document hierarchy and relationships are preserved during transformation.
-
-**Key Components:**
-
-- **🎯 Autonomous Content Categorization and Routing**: Automatically identify, categorize, and route different content types through optimized execution channels.
-
-- **⚡ Concurrent Multi-Pipeline Architecture**: Implements concurrent execution of textual and multimodal content through dedicated processing pipelines. This approach maximizes throughput efficiency while preserving content integrity.
-
-- **🏗️ Document Hierarchy Extraction**: Extracts and preserves original document hierarchy and inter-element relationships during content transformation.
-
-</div>
-
-### 3. Multimodal Analysis Engine
-
-<div style="background: linear-gradient(90deg, #0f3460 0%, #1a1a2e 100%); border-radius: 10px; padding: 20px; margin: 15px 0; border-left: 4px solid #00d9ff;">
-
-The system deploys modality-aware processing units for heterogeneous data modalities:
-
-**Specialized Analyzers:**
-
-- **🔍 Visual Content Analyzer**:
-  - Integrate vision model for image analysis.
-  - Generates context-aware descriptive captions based on visual semantics.
-  - Extracts spatial relationships and hierarchical structures between visual elements.
-
-- **📊 Structured Data Interpreter**:
-  - Performs systematic interpretation of tabular and structured data formats.
-  - Implements statistical pattern recognition algorithms for data trend analysis.
-  - Identifies semantic relationships and dependencies across multiple tabular datasets.
-
-- **📐 Mathematical Expression Parser**:
-  - Parses complex mathematical expressions and formulas with high accuracy.
-  - Provides native LaTeX format support for seamless integration with academic workflows.
-  - Establishes conceptual mappings between mathematical equations and domain-specific knowledge bases.
-
-- **🔧 Extensible Modality Handler**:
-  - Provides configurable processing framework for custom and emerging content types.
-  - Enables dynamic integration of new modality processors through plugin architecture.
-  - Supports runtime configuration of processing pipelines for specialized use cases.
-
-</div>
-
-### 4. Multimodal Knowledge Graph Index
-
-<div style="background: linear-gradient(90deg, #1a1a2e 0%, #16213e 100%); border-radius: 10px; padding: 20px; margin: 15px 0; border-left: 4px solid #4ecdc4;">
-
-The multi-modal knowledge graph construction module transforms document content into structured semantic representations. It extracts multimodal entities, establishes cross-modal relationships, and preserves hierarchical organization. The system applies weighted relevance scoring for optimized knowledge retrieval.
-
-**Core Functions:**
-
-- **🔍 Multi-Modal Entity Extraction**: Transforms significant multimodal elements into structured knowledge graph entities. The process includes semantic annotations and metadata preservation.
-
-- **🔗 Cross-Modal Relationship Mapping**: Establishes semantic connections and dependencies between textual entities and multimodal components. This is achieved through automated relationship inference algorithms.
-
-- **🏗️ Hierarchical Structure Preservation**: Maintains original document organization through "belongs_to" relationship chains. These chains preserve logical content hierarchy and sectional dependencies.
-
-- **⚖️ Weighted Relationship Scoring**: Assigns quantitative relevance scores to relationship types. Scoring is based on semantic proximity and contextual significance within the document structure.
-
-</div>
-
-### 5. Modality-Aware Retrieval
-
-<div style="background: linear-gradient(90deg, #16213e 0%, #0f3460 100%); border-radius: 10px; padding: 20px; margin: 15px 0; border-left: 4px solid #ff6b6b;">
-
-The hybrid retrieval system combines vector similarity search with graph traversal algorithms for comprehensive content retrieval. It implements modality-aware ranking mechanisms and maintains relational coherence between retrieved elements to ensure contextually integrated information delivery.
-
-**Retrieval Mechanisms:**
-
-- **🔀 Vector-Graph Fusion**: Integrates vector similarity search with graph traversal algorithms. This approach leverages both semantic embeddings and structural relationships for comprehensive content retrieval.
-
-- **📊 Modality-Aware Ranking**: Implements adaptive scoring mechanisms that weight retrieval results based on content type relevance. The system adjusts rankings according to query-specific modality preferences.
-
-- **🔗 Relational Coherence Maintenance**: Maintains semantic and structural relationships between retrieved elements. This ensures coherent information delivery and contextual integrity.
-
-</div>
-
----
-
-## 🚀 Quick Start
-
-*Initialize Your AI Journey*
-
-<div align="center">
-  <img src="https://user-images.githubusercontent.com/74038190/212284158-e840e285-664b-44d7-b79b-e264b5e54825.gif" width="400">
-</div>
-
-### Installation
-
-#### Option 1: Install from PyPI (Recommended)
-
-```bash
-# Basic installation
-pip install raganything
-
-# With optional dependencies for extended format support:
-pip install 'raganything[all]'              # All optional features
-pip install 'raganything[image]'            # Image format conversion (BMP, TIFF, GIF, WebP)
-pip install 'raganything[text]'             # Text file processing (TXT, MD)
-pip install 'raganything[image,text]'       # Multiple features
-```
-
-#### Option 2: Install from Source
-
-```bash
-git clone https://github.com/HKUDS/RAG-Anything.git
-cd RAG-Anything
-pip install -e .
-
-# With optional dependencies
-pip install -e '.[all]'
-```
-
-#### Optional Dependencies
-
-- **`[image]`** - Enables processing of BMP, TIFF, GIF, WebP image formats (requires Pillow)
-- **`[text]`** - Enables processing of TXT and MD files (requires ReportLab)
-- **`[all]`** - Includes all Python optional dependencies
-
-> **⚠️ Office Document Processing Requirements:**
-> - Office documents (.doc, .docx, .ppt, .pptx, .xls, .xlsx) require **LibreOffice** installation
-> - Download from [LibreOffice official website](https://www.libreoffice.org/download/download/)
-> - **Windows**: Download installer from official website
-> - **macOS**: `brew install --cask libreoffice`
-> - **Ubuntu/Debian**: `sudo apt-get install libreoffice`
-> - **CentOS/RHEL**: `sudo yum install libreoffice`
-
-**Check MinerU installation:**
-
-```bash
-# Verify installation
-mineru --version
-
-# Check if properly configured
-python -c "from raganything import RAGAnything; rag = RAGAnything(); print('✅ MinerU installed properly' if rag.check_mineru_installation() else '❌ MinerU installation issue')"
-```
-
+@@ -282,50 +284,51 @@ python -c "from raganything import RAGAnything; rag = RAGAnything(); print('✅
 Models are downloaded automatically on first use. For manual download, refer to [MinerU Model Source Configuration](https://github.com/opendatalab/MinerU/blob/master/README.md#22-model-source-configuration).
 
 ### Usage Examples
@@ -304,6 +135,7 @@ async def main():
         enable_image_processing=True,
         enable_table_processing=True,
         enable_equation_processing=True,
+        enable_micro_planner=True,
     )
 
     # Define LLM model function
