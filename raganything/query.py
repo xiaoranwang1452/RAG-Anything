@@ -131,8 +131,8 @@ class QueryMixin:
             mode = planner_plan.retrieval_mode or mode
             kwargs.setdefault("top_k", planner_plan.top_k)
             kwargs.setdefault(
-                "rerank_top_k",
-                planner_plan.rerank_top_k or self.config.default_rerank_top_k,
+                "chunk_top_k",
+                planner_plan.chunk_top_k or self.config.default_chunk_top_k,
             )
             vlm_enhanced = planner_plan.use_vlm
         else:

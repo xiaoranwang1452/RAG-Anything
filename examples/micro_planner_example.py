@@ -11,19 +11,18 @@ from lightrag.utils import EmbeddingFunc
 from raganything import RAGAnything, RAGAnythingConfig
 
 
-def dummy_llm(prompt, **kwargs):
+async def dummy_llm(prompt, **kwargs):
     return "dummy response"
 
-
-def dummy_embed(texts):
-    return [[0.0, 0.0, 0.0] for _ in texts]
+async def dummy_embed(texts):
+    return [[0.0] * 1024 for _ in texts]
 
 
 async def main() -> None:
     config = RAGAnythingConfig(enable_micro_planner=True)
     rag = RAGAnything(
         llm_model_func=dummy_llm,
-        embedding_func=EmbeddingFunc(dummy_embed, 3),
+        embedding_func = EmbeddingFunc(1024, dummy_embed),
         config=config,
     )
     await rag._ensure_lightrag_initialized()
