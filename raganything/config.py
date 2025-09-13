@@ -103,6 +103,33 @@ class RAGAnythingConfig:
     content_format: str = field(default=get_env_value("CONTENT_FORMAT", "minerU", str))
     """Default content format for context extraction when processing documents."""
 
+    # Micro Planner Configuration
+    # ---
+    enable_micro_planner: bool = field(
+        default=get_env_value("ENABLE_MICRO_PLANNER", False, bool)
+    )
+    """Enable the query micro planner."""
+
+    query_time_budget_ms: int = field(
+        default=get_env_value("QUERY_TIME_BUDGET_MS", 1000, int)
+    )
+    """Approximate time budget per query in milliseconds."""
+
+    memory_budget_gb: float = field(
+        default=get_env_value("MEMORY_BUDGET_GB", 2.0, float)
+    )
+    """Approximate memory budget in gigabytes for planning policies."""
+
+    default_rerank_top_k: int = field(
+        default=get_env_value("DEFAULT_RERANK_TOP_K", 5, int)
+    )
+    """Default rerank top_k used when planner does not specify one."""
+
+    enable_reflection: bool = field(
+        default=get_env_value("ENABLE_REFLECTION", False, bool)
+    )
+    """Enable answer reflection step after generation."""
+
     def __post_init__(self):
         """Post-initialization setup for backward compatibility"""
         # Support legacy environment variable names for backward compatibility
