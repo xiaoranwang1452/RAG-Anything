@@ -341,12 +341,13 @@ async def process_with_rag(
 
         # Initialize RAGAnything with new dataclass structure
         rag = RAGAnything(
-            llm_model_func=llm_model_func,
-            vision_model_func=vision_model_func,
-            embedding_func=embedding_func, 
+            llm_model_func=openai_complete_if_cache,
+            vision_model_func=openai_vision_model,  
+            embedding_func=EmbeddingFunc(openai_embed, 1536),
+            rerank_model_func=openai_rerank,  
             config=config,
-            lightrag_kwargs={"rerank_model_func": rerank_model_func},
         )
+
 
         # Process document
         await rag.process_document_complete(
