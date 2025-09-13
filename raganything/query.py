@@ -18,6 +18,7 @@ from raganything.utils import (
     validate_image_file,
 )
 from raganything.reflection import ReflectionEngine, ReflectionConfig
+from raganything.micro_planner import MicroPlanner
 
 
 class QueryMixin:
@@ -118,40 +119,56 @@ class QueryMixin:
                 "No LightRAG instance available. Please process documents first or provide a pre-initialized LightRAG instance."
             )
 
-        # Check if VLM enhanced query should be used
-        vlm_enhanced = kwargs.pop("vlm_enhanced", None)
+        planner_plan = None
+        if (
+            getattr(self.config, "enable_micro_planner", False)
+            and getattr(self, "micro_planner", None)
+        ):
+            budgets = {
+                "time_ms": self.config.query_time_budget_ms,
+                "memory_gb": self.config.memory_budget_gb,
+            }
+            query, planner_plan = self.micro_planner.plan(query, budgets=budgets)
+            mode = planner_plan.retrieval_mode or mode
+            kwargs.setdefault("top_k", planner_plan.top_k)
+            kwargs.setdefault(
+                "rerank_top_k",
+                planner_plan.rerank_top_k or self.config.default_rerank_top_k,
+            )
+            vlm_enhanced = planner_plan.use_vlm
+        else:
+            vlm_enhanced = kwargs.pop("vlm_enhanced", None)
 
-        # Auto-determine VLM enhanced based on availability
         if vlm_enhanced is None:
             vlm_enhanced = (
                 hasattr(self, "vision_model_func")
                 and self.vision_model_func is not None
             )
 
-        # Use VLM enhanced query if enabled and available
         if (
             vlm_enhanced
             and hasattr(self, "vision_model_func")
             and self.vision_model_func
         ):
-            return await self.aquery_vlm_enhanced(query, mode=mode, **kwargs)
-        elif vlm_enhanced and (
-            not hasattr(self, "vision_model_func") or not self.vision_model_func
-        ):
-            self.logger.warning(
-                "VLM enhanced query requested but vision_model_func is not available, falling back to normal query"
-            )
+            result = await self.aquery_vlm_enhanced(query, mode=mode, **kwargs)
+        else:
+            if vlm_enhanced and (
+                not hasattr(self, "vision_model_func") or not self.vision_model_func
+            ):
+                self.logger.warning(
+                    "VLM enhanced query requested but vision_model_func is not available, falling back to normal query"
+                )
+            query_param = QueryParam(mode=mode, **kwargs)
+            self.logger.info(f"Executing text query: {query[:100]}...")
+            self.logger.info(f"Query mode: {mode}")
+            result = await self.lightrag.aquery(query, param=query_param)
+            self.logger.info("Text query completed")
 
-        # Create query parameters
-        query_param = QueryParam(mode=mode, **kwargs)
-
-        self.logger.info(f"Executing text query: {query[:100]}...")
-        self.logger.info(f"Query mode: {mode}")
-
-        # Call LightRAG's query method
-        result = await self.lightrag.aquery(query, param=query_param)
-
-        self.logger.info("Text query completed")
+        if planner_plan:
+            try:
+                self.micro_planner.evaluate(query, result, {})
+            except Exception:
+                self.logger.debug("Planner evaluation failed", exc_info=True)
         return result
 
     async def aquery_reflect(

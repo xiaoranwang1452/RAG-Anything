@@ -42,6 +42,7 @@ from raganything.modalprocessors import (
     ContextExtractor,
     ContextConfig,
 )
+from raganything.micro_planner import MicroPlanner
 
 
 @dataclass
@@ -94,6 +95,9 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
     _parser_installation_checked: bool = field(default=False, init=False)
     """Flag to track if parser installation has been checked."""
 
+    micro_planner: Optional[MicroPlanner] = field(default=None, init=False)
+    """Optional micro planner for query planning."""
+
     def __post_init__(self):
         """Post-initialization setup following LightRAG pattern"""
         # Initialize configuration if not provided
@@ -127,6 +131,11 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
             f"Equation: {self.config.enable_equation_processing}"
         )
         self.logger.info(f"  Max concurrent files: {self.config.max_concurrent_files}")
+
+        # Initialize micro planner if enabled
+        if self.config.enable_micro_planner:
+            self.micro_planner = MicroPlanner()
+            self.logger.info("  Micro planner enabled")
 
     def __del__(self):
         """Cleanup resources when object is destroyed"""
@@ -179,21 +188,30 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
         # Create different multimodal processors based on configuration
         self.modal_processors = {}
 
-        if self.config.enable_image_processing:
+        image_allowed = self.config.enable_image_processing
+        if self.micro_planner and not self.micro_planner.feature_flags.get("image", True):
+            image_allowed = False
+        if image_allowed:
             self.modal_processors["image"] = ImageModalProcessor(
                 lightrag=self.lightrag,
                 modal_caption_func=self.vision_model_func or self.llm_model_func,
                 context_extractor=self.context_extractor,
             )
 
-        if self.config.enable_table_processing:
+        table_allowed = self.config.enable_table_processing
+        if self.micro_planner and not self.micro_planner.feature_flags.get("table", True):
+            table_allowed = False
+        if table_allowed:
             self.modal_processors["table"] = TableModalProcessor(
                 lightrag=self.lightrag,
                 modal_caption_func=self.llm_model_func,
                 context_extractor=self.context_extractor,
             )
 
-        if self.config.enable_equation_processing:
+        equation_allowed = self.config.enable_equation_processing
+        if self.micro_planner and not self.micro_planner.feature_flags.get("equation", True):
+            equation_allowed = False
+        if equation_allowed:
             self.modal_processors["equation"] = EquationModalProcessor(
                 lightrag=self.lightrag,
                 modal_caption_func=self.llm_model_func,
@@ -210,6 +228,12 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
         self.logger.info("Multimodal processors initialized with context support")
         self.logger.info(f"Available processors: {list(self.modal_processors.keys())}")
         self.logger.info(f"Context configuration: {self._create_context_config()}")
+
+    def update_processor_availability(self):
+        """Refresh processors based on current planner feature flags."""
+        if self.lightrag is None:
+            return
+        self._initialize_processors()
 
     def update_config(self, **kwargs):
         """Update configuration with new values"""
