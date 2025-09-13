@@ -348,48 +348,13 @@ async def process_with_rag(
             lightrag_kwargs={"rerank_model_func": rerank_model_func},
         )
 
-        # Micro planner uses lexical fallback to avoid awaiting async evaluator
-        if rag.micro_planner:
-            rag.micro_planner.evaluator_func = None
-
-        input_root = Path(input_path)
-        if not input_root.exists():
-            raise FileNotFoundError(f"Input path does not exist: {input_path}")
-
-        recursive = _env_flag("RECURSIVE_FOLDER_PROCESSING", "false")
-        supported_exts = set(_env_list("SUPPORTED_FILE_EXTENSIONS"))
-
-        if input_root.is_file():
-            files = [input_root]
-        elif recursive:
-            files = [p for p in input_root.rglob("*") if p.is_file()]
-        else:
-            files = [p for p in input_root.iterdir() if p.is_file()]
-
-        if supported_exts:
-            files = [f for f in files if f.suffix.lower() in supported_exts]
-
-        if not files:
-            raise FileNotFoundError(
-                f"No ingestible files found under {input_path}."
-            )
-
-        max_files = _env_int("MAX_CONCURRENT_FILES", 0)
-        if max_files > 0:
-            files = files[:max_files]
-
-        output_path = Path(output_dir).expanduser()
-        output_path.mkdir(parents=True, exist_ok=True)
-        output_dir = str(output_path)
-
-        for file in files:
-            logger.info(f"Processing document: {file}")
-            await rag.process_document_complete(
-                file_path=str(file),
-                output_dir=output_dir,
-                parse_method=config.parse_method,
-                device="cpu",
-            )
+        # Process document
+        await rag.process_document_complete(
+            file_path=file_path,
+            output_dir=output_dir,
+            parse_method="auto",
+            device="cpu",
+        )
 
         # Example queries - demonstrating different query approaches
         logger.info("\nQuerying processed document:")
