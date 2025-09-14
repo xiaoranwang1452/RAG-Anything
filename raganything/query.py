@@ -18,7 +18,7 @@ from raganything.utils import (
     validate_image_file,
 )
 from raganything.reflection import ReflectionEngine, ReflectionConfig
-from raganything.micro_planner import MicroPlanner
+from raganything.micro_planner import MicroPlanner, IntentResult, QueryPlan
 
 class QueryMixin:
     """QueryMixin class containing query functionality for RAGAnything"""
@@ -261,24 +261,57 @@ class QueryMixin:
                 "No LightRAG instance available. Please process documents first or provide a pre-initialized LightRAG instance."
             )
 
-        planner_plan = None
-        if (
-            getattr(self.config, "enable_micro_planner", False)
-            and getattr(self, "micro_planner", None)
+        planner_plan: QueryPlan | None = None
+        intent_result: IntentResult | None = None
+        if getattr(self.config, "enable_micro_planner", False) and getattr(
+            self, "micro_planner", None
         ):
             budgets = {
                 "time_ms": self.config.query_time_budget_ms,
                 "memory_gb": self.config.memory_budget_gb,
             }
-            query, planner_plan = self.micro_planner.plan(query, budgets=budgets)
+            original_query = query
+            query, intent_result, planner_plan = self.micro_planner.plan(
+                query, budgets=budgets
+            )
+            self.logger.info(f"Normalized query: {query}")
+            self.logger.info(
+                "Planner intent: %s, tags: %s, confidence: %.2f",
+                intent_result.intent,
+                intent_result.tags,
+                intent_result.confidence,
+            )
+            self.logger.debug(f"Planner metadata: {intent_result.metadata}")
+            self.logger.info(
+                "Planner plan: mode=%s, top_k=%s, rerank_top_k=%s, use_vlm=%s, model=%s, feature_flags=%s",
+                planner_plan.retrieval_mode,
+                planner_plan.top_k,
+                planner_plan.rerank_top_k,
+                planner_plan.use_vlm,
+                planner_plan.model_size,
+                planner_plan.feature_flags,
+            )
             mode = planner_plan.retrieval_mode or mode
             kwargs.setdefault("top_k", planner_plan.top_k)
-            kwargs.setdefault(
-                "chunk_top_k",
-                planner_plan.chunk_top_k or self.config.default_chunk_top_k,
-            )
+            ann = getattr(QueryParam, "__annotations__", {})
+            if planner_plan.rerank_top_k:
+                if "rerank_top_k" in ann:
+                    kwargs.setdefault(
+                        "rerank_top_k",
+                        planner_plan.rerank_top_k
+                        or self.config.default_rerank_top_k,
+                    )
+                elif "chunk_top_k" in ann:
+                    kwargs.setdefault(
+                        "chunk_top_k",
+                        planner_plan.rerank_top_k
+                        or self.config.default_rerank_top_k,
+                    )
             vlm_enhanced = planner_plan.use_vlm
+            if hasattr(self, "update_processor_availability"):
+                self.update_processor_availability()
         else:
+            original_query = query
             vlm_enhanced = kwargs.pop("vlm_enhanced", None)
 
         if vlm_enhanced is None:
@@ -300,15 +333,26 @@ class QueryMixin:
                 self.logger.warning(
                     "VLM enhanced query requested but vision_model_func is not available, falling back to normal query"
                 )
+            if getattr(self.lightrag, "rerank_model_func", None) is None:
+                kwargs.setdefault("enable_rerank", False)
+                if not kwargs.get("enable_rerank"):
+                    kwargs.setdefault("rerank_top_k", 0)
             query_param = QueryParam(mode=mode, **kwargs)
             self.logger.info(f"Executing text query: {query[:100]}...")
             self.logger.info(f"Query mode: {mode}")
             result = await self.lightrag.aquery(query, param=query_param)
             self.logger.info("Text query completed")
 
-        if planner_plan:
+        if planner_plan and intent_result:
             try:
-                self.micro_planner.evaluate(query, result, {})
+                eval_res = self.micro_planner.evaluate(original_query, result, {})
+                if eval_res.get("degrade_reason"):
+                    planner_plan.degrade_reasons.append(eval_res["degrade_reason"])
+                self.logger.info(
+                    "Planner evaluation score: %.2f reason: %s",
+                    eval_res.get("score", 0.0),
+                    eval_res.get("degrade_reason"),
+                )
             except Exception:
                 self.logger.debug("Planner evaluation failed", exc_info=True)
         return result
