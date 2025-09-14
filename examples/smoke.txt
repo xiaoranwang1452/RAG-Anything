@@ -1,0 +1,44 @@
+看到你的 .env 配置没问题（主机/模型/维度都对）。刚才出现 [no-context] 的根因是：解析出了内容，但“文本向量库里 0 个 chunk”，所以检索不到任何上下文。按下面做一轮快速自检→修复就能跑通。
+
+快速修复路径（按顺序来）
+
+验证 Embedding 接口是否正常（关键）
+
+Invoke-RestMethod -Uri http://127.0.0.1:11434/api/embeddings `
+  -Method Post -ContentType 'application/json' `
+  -Body '{"model":"bge-m3:latest","prompt":"hello world"}'
+
+
+👉 应该返回一个 embedding 数组（长度 ~1024）。
+如果这步失败，请先修到成功为止（模型名/端口/服务）。
+
+清缓存后重建索引
+
+# 在仓库根
+Remove-Item -Recurse -Force .\rag_storage -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force .\output -ErrorAction SilentlyContinue
+
+
+用极简 txt 先烟测（确认“建索引→检索”通路没问题）
+在 examples\example_doc\ 新建 smoke.txt，写几行可读文本（英文即可）。然后：
+
+python examples/example.py --query "Summarize this document in English" --docs examples/example_doc --output ./output
+
+
+✅ 期望：这次能检索到 chunk 并输出摘要。如果 txt 正常、PDF 还是 0 chunk，说明问题在 PDF 解析层。
+
+PDF 仍无上下文时的两种解决法（二选一）
+
+A. 换解析器为 MinerU（更强，能从很多“看起来是图片的文字”里抠出文本）
+在 .env 里改：
+
+PARSER=mineru
+ENABLE_IMAGE_PROCESSING=false
+
+
+第一次用 MinerU 可能需要更多依赖（OCR/torch）。如果你还没装它们，建议先试下面 B。
+
+B. 继续用 plain，但换一个更“纯文本”的小 PDF
+很多 PDF 的正文其实是“图片里的字”→ plain 抓不到文字，就会出现 0 chunk。
+
+再跑一遍当前命令
