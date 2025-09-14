@@ -3,6 +3,7 @@ first, you need to run below command lines:
 
 Remove-Item -Recurse -Force .\rag_storage -ErrorAction SilentlyContinue
 Remove-Item -Recurse -Force .\output -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force .\output_reflection -ErrorAction SilentlyContinue
 
 for clear cache (to prevent reuse of old indexes)
 
@@ -17,3 +18,4 @@ python .\examples\example.py --query "用中文总结文档并描述图片信息
 
 python .\examples\example.py --query "What is RAG-Sequence Model? " --docs .\examples\example_doc --vlm
 
+python examples/raganything_reflection_example.py ./data/sample.pdf
