@@ -225,9 +225,9 @@ async def process_with_rag(
         rag = RAGAnything(
             llm_model_func=llm_model_func,
             vision_model_func=vision_model_func,
-            embedding_func=embedding_func,
-            rerank_model_func=rerank_model_func, 
+            embedding_func=embedding_func, 
             config=config,
+            lightrag_kwargs={"rerank_model_func": rerank_model_func},
         )
 
 
