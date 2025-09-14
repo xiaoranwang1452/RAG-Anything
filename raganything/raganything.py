@@ -134,7 +134,7 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
 
         # Initialize micro planner if enabled
         if self.config.enable_micro_planner:
-            self.micro_planner = MicroPlanner()
+            self.micro_planner = MicroPlanner(evaluator_func=self.llm_model_func)
             self.logger.info("  Micro planner enabled")
 
     def __del__(self):
