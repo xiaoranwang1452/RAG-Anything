@@ -226,13 +226,11 @@ async def process_with_rag(
         )
 
         # Define LLM model function
-        async def llm_model_func(prompt, system_prompt=None, history_messages=[], **kwargs):
-            kwargs = dict(kwargs)
-            kwargs.setdefault("max_tokens", DEFAULT_COMPLETION_MAX_TOKENS)
-            kwargs.setdefault("temperature", _env_float("TEMPERATURE", 0.2))
-            azure_kwargs = _azure_api_kwargs()
-            return await azure_openai_complete_if_cache(
-                DEFAULT_LLM_MODEL,
+        async def llm_model_func(
+            prompt, system_prompt=None, history_messages=[], **kwargs
+        ):
+            return await openai_complete_if_cache(
+                "gpt-4o-mini",
                 prompt,
                 system_prompt=system_prompt,
                 history_messages=history_messages,
@@ -244,6 +242,7 @@ async def process_with_rag(
 
         # Define vision model function for image processing
         async def vision_model_func(
+        async def vision_model_func(
             prompt,
             system_prompt=None,
             history_messages=[],
@@ -253,9 +252,9 @@ async def process_with_rag(
         ):
             # If messages format is provided (for multimodal VLM enhanced query), use it directly
             if messages:
-                return await azure_openai_complete_if_cache(
-                    DEFAULT_VISION_MODEL,
-                    None,
+                return await openai_complete_if_cache(
+                    "gpt-4o",
+                    "",
                     system_prompt=None,
                     history_messages=messages,
                     api_key=api_key,
@@ -265,7 +264,7 @@ async def process_with_rag(
                 )
             # Traditional single image format
             elif image_data:
-                return openai_complete_if_cache(
+                return await openai_complete_if_cache(
                     "gpt-4o",
                     "",
                     system_prompt=None,
@@ -303,40 +302,22 @@ async def process_with_rag(
                 return await llm_model_func(
                     prompt, system_prompt, history_messages, **kwargs
                 )
+                return await llm_model_func(
+                    prompt, system_prompt, history_messages, **kwargs
+                )
 
         # Define embedding function
-        embedding_binding = os.getenv("EMBEDDING_BINDING", "").strip().lower()
-        if embedding_binding == "ollama":
-            embedding_func = _build_ollama_embedding_func()
-        else:
-            embedding_func = EmbeddingFunc(
-                embedding_dim=DEFAULT_EMBEDDING_DIM,
-                max_token_size=_env_int("MAX_EMBED_TOKENS", 8192),
-                func=lambda texts: azure_openai_embed(
-                    texts,
-                    model=DEFAULT_EMBEDDING_MODEL,
-                    api_key=api_key,
-                    base_url=base_url,
-                    **_azure_api_kwargs(),
-                ),
-            )
+        embedding_func = EmbeddingFunc(
+            embedding_dim=3072,
+            max_token_size=8192,
+            func=lambda texts: openai_embed(
+                texts,
+                model="text-embedding-3-large",
+                api_key=api_key,
+                base_url=base_url,
+            ),
+        )
 
-
-        # Define rerank model function using embedding similarity
-        async def rerank_model_func(
-            query: str, documents: list[str], top_n: int | None = None, **kwargs
-        ) -> list[dict[str, float]]:
-            texts = [query] + documents
-            embeddings = await embedding_func(texts)
-            query_vec = np.array(embeddings[0])
-            doc_vecs = [np.array(e) for e in embeddings[1:]]
-            scores = [float(np.dot(doc_vec, query_vec)) for doc_vec in doc_vecs]
-            ranked = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
-            if top_n is not None:
-                ranked = ranked[:top_n]
-            return [
-                {"index": i, "relevance_score": scores[i]} for i in ranked
-            ]
 
         # Define rerank model function using embedding similarity
         async def rerank_model_func(
@@ -368,6 +349,9 @@ async def process_with_rag(
             lightrag_kwargs={"rerank_model_func": rerank_model_func},
         )
 
+        # Micro planner uses lexical fallback to avoid awaiting async evaluator
+        if rag.micro_planner:
+            rag.micro_planner.evaluator_func = None
 
         # Process document
         await rag.process_document_complete(

@@ -5,8 +5,7 @@ import argparse
 import asyncio
 import os
 from pathlib import Path
-import math
-from collections import Counter
+import numpy as np
 
 import sys
 
@@ -36,15 +35,12 @@ async def run(file_path: str, working_dir: str, output_dir: str, api_key: str, b
         enable_image_processing=True,
         enable_table_processing=True,
         enable_equation_processing=True,
-        enable_micro_planner=(os.getenv("ENABLE_MICRO_PLANNER","true").lower() in ("1","true","yes")),
+        enable_micro_planner=True,
     )
 
     # Async LLM and VLM wrappers
     async def llm_model_func(prompt, system_prompt=None, history_messages=None, **kwargs):
         history_messages = history_messages or []
-        _safe_llm_keys = {"temperature", "max_tokens", "presence_penalty", "frequency_penalty", "stop", "top_p", "logprobs"}  # all chat-safe
-        _llm_kwargs = {k: v for k, v in kwargs.items() if k in _safe_llm_keys}
-
         return await openai_complete_if_cache(
             "gpt-4o-mini",
             prompt,
@@ -52,15 +48,12 @@ async def run(file_path: str, working_dir: str, output_dir: str, api_key: str, b
             history_messages=history_messages,
             api_key=api_key,
             base_url=base_url,
-            **_llm_kwargs
+            **kwargs,
         )
 
     async def vision_model_func(prompt, system_prompt=None, history_messages=None, image_data=None, messages=None, **kwargs):
         history_messages = history_messages or []
         if messages:
-            _safe_llm_keys = {"temperature", "max_tokens", "presence_penalty", "frequency_penalty", "stop", "top_p", "logprobs"}
-            _llm_kwargs = {k: v for k, v in kwargs.items() if k in _safe_llm_keys}
-
             return await openai_complete_if_cache(
                 "gpt-4o",
                 "",
@@ -69,12 +62,9 @@ async def run(file_path: str, working_dir: str, output_dir: str, api_key: str, b
                 messages=messages,
                 api_key=api_key,
                 base_url=base_url,
-                **_llm_kwargs,
+                **kwargs,
             )
         if image_data:
-            _safe_llm_keys = {"temperature", "max_tokens", "presence_penalty", "frequency_penalty", "stop", "top_p", "logprobs"}
-            _llm_kwargs = {k: v for k, v in kwargs.items() if k in _safe_llm_keys}
-
             return await openai_complete_if_cache(
                 "gpt-4o",
                 "",
@@ -91,7 +81,7 @@ async def run(file_path: str, working_dir: str, output_dir: str, api_key: str, b
                 ],
                 api_key=api_key,
                 base_url=base_url,
-                **_llm_kwargs,
+                **kwargs,
             )
         return await llm_model_func(prompt, system_prompt, history_messages, **kwargs)
 
@@ -106,31 +96,21 @@ async def run(file_path: str, working_dir: str, output_dir: str, api_key: str, b
         ),
     )
 
-    def rerank_model_func(
-        query: str, documents: list[str], top_n: int | None = None, **kwargs
-    ) -> list[dict[str, float]]:
-        """Simple lexical cosine similarity reranker."""
-
-        def tf_counter(text: str) -> Counter:
-            return Counter(text.lower().split())
-
-        query_tf = tf_counter(query)
-        results = []
-        for idx, doc in enumerate(documents):
-            doc_tf = tf_counter(doc)
-            vocab = set(query_tf) | set(doc_tf)
-            q_vec = [query_tf.get(t, 0) for t in vocab]
-            d_vec = [doc_tf.get(t, 0) for t in vocab]
-            dot = sum(q * d for q, d in zip(q_vec, d_vec))
-            q_norm = math.sqrt(sum(q * q for q in q_vec))
-            d_norm = math.sqrt(sum(d * d for d in d_vec))
-            score = dot / (q_norm * d_norm + 1e-8)
-            results.append({"index": idx, "relevance_score": score})
-
-        results.sort(key=lambda x: x["relevance_score"], reverse=True)
+    def rerank_model_func(query: str, documents: list[str], top_n: int | None = None, **kwargs):
+        texts = [query] + documents
+        embeddings = openai_embed(
+            texts,
+            model="text-embedding-3-large",
+            api_key=api_key,
+            base_url=base_url,
+        )
+        query_vec = np.array(embeddings[0])
+        doc_vecs = [np.array(e) for e in embeddings[1:]]
+        scores = [float(np.dot(doc_vec, query_vec)) for doc_vec in doc_vecs]
+        ranked = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
         if top_n is not None:
-            results = results[:top_n]
-        return results
+            ranked = ranked[:top_n]
+        return [{"index": i, "relevance_score": scores[i]} for i in ranked]
 
     rag = RAGAnything(
         llm_model_func=llm_model_func,
@@ -153,32 +133,21 @@ async def run(file_path: str, working_dir: str, output_dir: str, api_key: str, b
     # Example queries touching different capabilities
     queries = [
         "Explain what are Figure 2 and 3 doing.",
-        "Tell me what are the insights from Figure 1.",
-        "Summarise Table 1 findings",
+        "Summarise ‘RAG-Sequence’ vs ‘RAG-Token’ in 3 bullet points each. Quote the defining lines for both, with citations.",
         "Find the figure that explains training/inference differences (if any). If none exists, say so and fall back to the most relevant paragraph. Always cite.",
         "Find the table reporting FEVER results. Return the 2-way and 3-way accuracies, and briefly explain the difference between the two tasks, with citations.",
         "Extract the caption of Figure 2 verbatim. If OCR/parse fails, fall back to the nearest textual caption or paragraph that describes it, and explicitly state the fallback.",
     ]
 
     for q in queries:
+        normalized, intent, plan = rag.micro_planner.plan(q)
         logger.info("\nQuery: %s", q)
-        if rag.micro_planner:
-            normalized, intent, plan = rag.micro_planner.plan(q)
-            logger.info("Planner intent: %s, tags: %s, confidence: %.2f", intent.intent, intent.tags, intent.confidence)
-            logger.info(
-                "Planner plan: mode=%s, top_k=%d, rerank_top_k=%d, use_vlm=%s",
-                plan.retrieval_mode,
-                plan.top_k,
-                plan.rerank_top_k,
-                plan.use_vlm,
-            )
-            result = await rag.aquery(q, mode=plan.retrieval_mode)
-            eval_res = rag.micro_planner.evaluate(q, result, {})
-            logger.info("Answer: %s", result)
-            logger.info("Eval score: %.2f reason: %s", eval_res.get("score", 0.0), eval_res.get("degrade_reason"))
-        else:
-            result = await rag.aquery(q, vlm_enhanced=False)
-            logger.info("Answer: %s", result)
+        logger.info("Planner intent: %s, tags: %s, confidence: %.2f", intent.intent, intent.tags, intent.confidence)
+        logger.info("Planner plan: mode=%s, top_k=%d, rerank_top_k=%d, use_vlm=%s", plan.retrieval_mode, plan.top_k, plan.rerank_top_k, plan.use_vlm)
+        result = await rag.aquery(q, mode=plan.retrieval_mode)
+        eval_res = rag.micro_planner.evaluate(q, result, {})
+        logger.info("Answer: %s", result)
+        logger.info("Eval score: %.2f reason: %s", eval_res.get("score", 0.0), eval_res.get("degrade_reason"))
 
 
 def main():
