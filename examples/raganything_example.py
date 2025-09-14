@@ -113,6 +113,7 @@ async def process_with_rag(
             enable_image_processing=True,
             enable_table_processing=True,
             enable_equation_processing=True,
+            enable_micro_planner=True,
         )
 
         # Define LLM model function
@@ -156,23 +157,27 @@ async def process_with_rag(
                     system_prompt=None,
                     history_messages=[],
                     messages=[
-                        {"role": "system", "content": system_prompt}
-                        if system_prompt
-                        else None,
-                        {
-                            "role": "user",
-                            "content": [
-                                {"type": "text", "text": prompt},
-                                {
-                                    "type": "image_url",
-                                    "image_url": {
-                                        "url": f"data:image/jpeg;base64,{image_data}"
+                        (
+                            {"role": "system", "content": system_prompt}
+                            if system_prompt
+                            else None
+                        ),
+                        (
+                            {
+                                "role": "user",
+                                "content": [
+                                    {"type": "text", "text": prompt},
+                                    {
+                                        "type": "image_url",
+                                        "image_url": {
+                                            "url": f"data:image/jpeg;base64,{image_data}"
+                                        },
                                     },
-                                },
-                            ],
-                        }
-                        if image_data
-                        else {"role": "user", "content": prompt},
+                                ],
+                            }
+                            if image_data
+                            else {"role": "user", "content": prompt}
+                        ),
                     ],
                     api_key=api_key,
                     base_url=base_url,
