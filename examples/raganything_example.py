@@ -338,12 +338,33 @@ async def process_with_rag(
                 {"index": i, "relevance_score": scores[i]} for i in ranked
             ]
 
+        # Define rerank model function using embedding similarity
+        async def rerank_model_func(
+            query: str, documents: list[str], top_n: int | None = None, **kwargs
+        ) -> list[dict[str, float]]:
+            texts = [query] + documents
+            embeddings = openai_embed(
+                texts,
+                model="text-embedding-3-large",
+                api_key=api_key,
+                base_url=base_url,
+            )
+            query_vec = np.array(embeddings[0])
+            doc_vecs = [np.array(e) for e in embeddings[1:]]
+            scores = [float(np.dot(doc_vec, query_vec)) for doc_vec in doc_vecs]
+            ranked = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
+            if top_n is not None:
+                ranked = ranked[:top_n]
+            return [
+                {"index": i, "relevance_score": scores[i]} for i in ranked
+            ]
+
         # Initialize RAGAnything with new dataclass structure
         rag = RAGAnything(
-            llm_model_func=openai_complete_if_cache,
-            vision_model_func=openai_vision_model,  
-            embedding_func=EmbeddingFunc(openai_embed, 1536),
-            rerank_model_func=openai_rerank,  
+            llm_model_func=llm_model_func,
+            vision_model_func=vision_model_func,
+            embedding_func=embedding_func,
+            rerank_model_func=rerank_model_func, 
             config=config,
         )
 
