@@ -118,8 +118,10 @@ async def process_with_rag(
         )
 
         # Define LLM model function
-        def llm_model_func(prompt, system_prompt=None, history_messages=[], **kwargs):
-            return openai_complete_if_cache(
+        async def llm_model_func(
+            prompt, system_prompt=None, history_messages=[], **kwargs
+        ):
+            return await openai_complete_if_cache(
                 "gpt-4o-mini",
                 prompt,
                 system_prompt=system_prompt,
@@ -130,7 +132,7 @@ async def process_with_rag(
             )
 
         # Define vision model function for image processing
-        def vision_model_func(
+        async def vision_model_func(
             prompt,
             system_prompt=None,
             history_messages=[],
@@ -140,7 +142,7 @@ async def process_with_rag(
         ):
             # If messages format is provided (for multimodal VLM enhanced query), use it directly
             if messages:
-                return openai_complete_if_cache(
+                return await openai_complete_if_cache(
                     "gpt-4o",
                     "",
                     system_prompt=None,
@@ -152,7 +154,7 @@ async def process_with_rag(
                 )
             # Traditional single image format
             elif image_data:
-                return openai_complete_if_cache(
+                return await openai_complete_if_cache(
                     "gpt-4o",
                     "",
                     system_prompt=None,
@@ -186,7 +188,9 @@ async def process_with_rag(
                 )
             # Pure text format
             else:
-                return llm_model_func(prompt, system_prompt, history_messages, **kwargs)
+                return await llm_model_func(
+                    prompt, system_prompt, history_messages, **kwargs
+                )
 
         # Define embedding function
         embedding_func = EmbeddingFunc(
@@ -199,6 +203,7 @@ async def process_with_rag(
                 base_url=base_url,
             ),
         )
+
 
         # Define rerank model function using embedding similarity
         async def rerank_model_func(
@@ -230,6 +235,9 @@ async def process_with_rag(
             lightrag_kwargs={"rerank_model_func": rerank_model_func},
         )
 
+        # Micro planner uses lexical fallback to avoid awaiting async evaluator
+        if rag.micro_planner:
+            rag.micro_planner.evaluator_func = None
 
         # Process document
         await rag.process_document_complete(
