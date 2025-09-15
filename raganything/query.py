@@ -337,6 +337,12 @@ class QueryMixin:
                 kwargs.setdefault("enable_rerank", False)
                 if not kwargs.get("enable_rerank"):
                     kwargs.setdefault("rerank_top_k", 0)
+
+            # Map to chunk_top_k when that’s the param name in this LightRAG build
+            ann = getattr(QueryParam, "__annotations__", {})
+            if "chunk_top_k" in ann and "chunk_top_k" not in kwargs:
+                kwargs["chunk_top_k"] = kwargs.get("rerank_top_k", 0)
+
             query_param = QueryParam(mode=mode, **kwargs)
             self.logger.info(f"Executing text query: {query[:100]}...")
             self.logger.info(f"Query mode: {mode}")

@@ -15,6 +15,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import logging
 import inspect
+import logging
+import inspect
 
 # Add project root directory to Python path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -285,6 +287,7 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
                     if hasattr(self.lightrag, "rerank_model_func") and callable(self.lightrag.rerank_model_func):
                         fn = self.lightrag.rerank_model_func
                         if not inspect.iscoroutinefunction(fn):
+                            self.logger.info("Wrapping synchronous LightRAG.rerank_model_func in async adapter")
                             async def _async_rerank(*args, **kwargs):
                                 return fn(*args, **kwargs)
                             self.lightrag.rerank_model_func = _async_rerank
@@ -339,6 +342,15 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
 
             # Merge user-provided lightrag_kwargs, which can override defaults
             lightrag_params.update(self.lightrag_kwargs)
+
+            # Ensure reranker is awaitable
+            if "rerank_model_func" in lightrag_params and callable(lightrag_params["rerank_model_func"]):
+                fn = lightrag_params["rerank_model_func"]
+                if not inspect.iscoroutinefunction(fn):
+                    self.logger.info("Wrapping synchronous rerank_model_func in async adapter")
+                    async def _async_rerank(*args, **kwargs):
+                        return fn(*args, **kwargs)
+                    lightrag_params["rerank_model_func"] = _async_rerank
 
             # Ensure reranker is awaitable
             if "rerank_model_func" in lightrag_params and callable(lightrag_params["rerank_model_func"]):
