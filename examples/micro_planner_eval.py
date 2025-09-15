@@ -5,7 +5,8 @@ import argparse
 import asyncio
 import os
 from pathlib import Path
-import numpy as np
+import math
+from collections import Counter
 
 import sys
 
@@ -96,21 +97,31 @@ async def run(file_path: str, working_dir: str, output_dir: str, api_key: str, b
         ),
     )
 
-    def rerank_model_func(query: str, documents: list[str], top_n: int | None = None, **kwargs):
-        texts = [query] + documents
-        embeddings = openai_embed(
-            texts,
-            model="text-embedding-3-large",
-            api_key=api_key,
-            base_url=base_url,
-        )
-        query_vec = np.array(embeddings[0])
-        doc_vecs = [np.array(e) for e in embeddings[1:]]
-        scores = [float(np.dot(doc_vec, query_vec)) for doc_vec in doc_vecs]
-        ranked = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
+    def rerank_model_func(
+        query: str, documents: list[str], top_n: int | None = None, **kwargs
+    ) -> list[dict[str, float]]:
+        """Simple lexical cosine similarity reranker."""
+
+        def tf_counter(text: str) -> Counter:
+            return Counter(text.lower().split())
+
+        query_tf = tf_counter(query)
+        results = []
+        for idx, doc in enumerate(documents):
+            doc_tf = tf_counter(doc)
+            vocab = set(query_tf) | set(doc_tf)
+            q_vec = [query_tf.get(t, 0) for t in vocab]
+            d_vec = [doc_tf.get(t, 0) for t in vocab]
+            dot = sum(q * d for q, d in zip(q_vec, d_vec))
+            q_norm = math.sqrt(sum(q * q for q in q_vec))
+            d_norm = math.sqrt(sum(d * d for d in d_vec))
+            score = dot / (q_norm * d_norm + 1e-8)
+            results.append({"index": idx, "relevance_score": score})
+
+        results.sort(key=lambda x: x["relevance_score"], reverse=True)
         if top_n is not None:
-            ranked = ranked[:top_n]
-        return [{"index": i, "relevance_score": scores[i]} for i in ranked]
+            results = results[:top_n]
+        return results
 
     rag = RAGAnything(
         llm_model_func=llm_model_func,
