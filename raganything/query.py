@@ -19,6 +19,8 @@ from raganything.utils import (
 )
 from raganything.reflection import ReflectionEngine, ReflectionConfig
 from raganything.micro_planner import MicroPlanner, IntentResult, QueryPlan
+import asyncio, inspect
+from typing import List, Dict, Any
 
 class QueryMixin:
     """QueryMixin class containing query functionality for RAGAnything"""
@@ -241,6 +243,44 @@ class QueryMixin:
 
         return f"multimodal_query:{cache_hash}"
 
+    _CHANNEL_BIASES = {
+        "text":   "",
+        "figure": " figure fig. chart graph diagram plot image caption",
+        "table":  " table tabular rows columns metrics caption",
+    }
+
+    async def _get_prompt_only(self, q: str, mode: str, **kwargs) -> str:
+        param = QueryParam(mode=mode, only_need_prompt=True, **kwargs)
+        return await self.lightrag.aquery(q, param=param)
+
+    async def _get_context_only(self, q: str, mode: str, **kwargs) -> str:
+        # ask LightRAG for context only (works with mix/local/global modes)
+        param = QueryParam(mode=mode, only_need_context=True, **kwargs)
+        ctx = await self.lightrag.aquery(q, param=param)
+        return ctx if isinstance(ctx, str) else str(ctx)
+
+    async def _collect_channel_prompts(self, base_query: str, channels: List[str], mode: str, **kwargs) -> Dict[str, str]:
+        out: Dict[str, str] = {}
+        for ch in channels:
+            biased = base_query + self._CHANNEL_BIASES.get(ch, "")
+            out[ch] = await self._get_prompt_only(biased, mode, **kwargs)
+        return out
+
+    async def _collect_channel_contexts(self, base_query: str, channels: List[str], mode: str, **kwargs) -> Dict[str, str]:
+        out: Dict[str, str] = {}
+        for ch in channels:
+            biased = base_query + self._CHANNEL_BIASES.get(ch, "")
+            out[ch] = await self._get_context_only(biased, mode, **kwargs)
+        return out
+
+    def _merge_contexts_in_order(self, channels: List[str], ch2ctx: Dict[str, str]) -> str:
+        parts = []
+        for ch in channels:
+            ctx = (ch2ctx.get(ch) or "").strip()
+            if ctx:
+                parts.append(f"### {ch.upper()} CONTEXT\n{ctx}")
+        return "\n\n".join(parts)
+
     async def aquery(self, query: str, mode: str = "mix", **kwargs) -> str:
         """
         Pure text query - directly calls LightRAG's query functionality
@@ -281,6 +321,9 @@ class QueryMixin:
                 intent_result.tags,
                 intent_result.confidence,
             )
+
+
+
             self.logger.debug(f"Planner metadata: {intent_result.metadata}")
             self.logger.info(
                 "Planner plan: mode=%s, top_k=%s, rerank_top_k=%s, use_vlm=%s, model=%s, feature_flags=%s",
@@ -291,7 +334,7 @@ class QueryMixin:
                 planner_plan.model_size,
                 planner_plan.feature_flags,
             )
-            mode = planner_plan.retrieval_mode or mode
+            mode = planner_plan.mode or mode
             kwargs.setdefault("top_k", planner_plan.top_k)
             ann = getattr(QueryParam, "__annotations__", {})
             if planner_plan.rerank_top_k:
@@ -314,54 +357,125 @@ class QueryMixin:
             original_query = query
             vlm_enhanced = kwargs.pop("vlm_enhanced", None)
 
-        if vlm_enhanced is None:
-            vlm_enhanced = (
-                hasattr(self, "vision_model_func")
-                and self.vision_model_func is not None
-            )
+        # === BEGIN PATCH: dual-channel scheduler ===
+        channels = ["text"]
+        if planner_plan:
+            # allow the plan to set channels (we'll add this field below)
+            if getattr(planner_plan, "retrieval_channels", None):
+                channels = list(dict.fromkeys(["text", *planner_plan.retrieval_channels]))
+            else:
+                # heuristic default from intent/tags
+                tags = (intent_result.tags if intent_result else []) or []
+                if (intent_result and intent_result.intent in ("visual","multimodal")) or any(t in tags for t in ["visual","figure","chart","graph","image"]):
+                    channels.append("figure")
+                if (intent_result and intent_result.intent in ("table","multimodal")) or any(t in tags for t in ["table","tabular","grid"]):
+                    channels.append("table")
+                channels = list(dict.fromkeys(channels))
 
-        if (
-            vlm_enhanced
-            and hasattr(self, "vision_model_func")
-            and self.vision_model_func
-        ):
-            result = await self.aquery_vlm_enhanced(query, mode=mode, **kwargs)
-        else:
-            if vlm_enhanced and (
-                not hasattr(self, "vision_model_func") or not self.vision_model_func
-            ):
-                self.logger.warning(
-                    "VLM enhanced query requested but vision_model_func is not available, falling back to normal query"
+        # If we have more than just text (or we're using VLM), run per-channel steps explicitly
+        if planner_plan and (len(channels) > 1 or (planner_plan.use_vlm and self.config.enable_image_processing)):
+            mode_to_use = planner_plan.mode or (mode or "mix")
+
+            if planner_plan.use_vlm and hasattr(self, "vision_model_func") and self.vision_model_func:
+                # 1) collect prompts rather than full answers, so we can pass images to VLM
+                prompt_texts = await self._collect_channel_prompts(query, channels, mode_to_use, **kwargs)
+                # combine prompts (LightRAG prompts contain image placeholders; we keep them)
+                combined_prompt = "\n\n".join([f"### {ch.upper()} PROMPT\n{prompt_texts[ch]}" for ch in channels if prompt_texts.get(ch)])
+                # reuse existing VLM helpers to find & embed images from the combined prompt
+                enhanced_prompt, images_found = await self._process_image_paths_for_vlm(combined_prompt)
+                if not images_found:
+                    self.logger.info("Dual-channel VLM: no images found in prompts; falling back to text generation.")
+                    # fall through to text LLM on merged context
+                    ch2ctx = await self._collect_channel_contexts(query, channels, mode_to_use, **kwargs)
+                    merged_context = self._merge_contexts_in_order(channels, ch2ctx)
+                    _safe_llm_keys = {"temperature", "max_tokens", "presence_penalty", "frequency_penalty", "stop"}
+                    _llm_kwargs = {k: v for k, v in kwargs.items() if k in _safe_llm_keys}
+
+                    result = await self.llm_model_func(
+                        prompt=query,
+                        system_prompt=merged_context,
+                        history_messages=[],
+                        **_llm_kwargs
+                    )
+                else:
+                    messages = self._build_vlm_messages_with_images(enhanced_prompt, query)
+                    result = await self._call_vlm_with_multimodal_content(messages)
+            else:
+                # Plain text LLM path: collect contexts per channel and merge
+                ch2ctx = await self._collect_channel_contexts(query, channels, mode_to_use, **kwargs)
+                merged_context = self._merge_contexts_in_order(channels, ch2ctx)
+                _safe_llm_keys = {"temperature", "max_tokens", "presence_penalty", "frequency_penalty", "stop"}
+                _llm_kwargs = {k: v for k, v in kwargs.items() if k in _safe_llm_keys}
+
+                result = await self.llm_model_func(
+                    prompt=query,
+                    system_prompt=merged_context,
+                    history_messages=[],
+                    **_llm_kwargs
                 )
-            if getattr(self.lightrag, "rerank_model_func", None) is None:
-                kwargs.setdefault("enable_rerank", False)
-                if not kwargs.get("enable_rerank"):
-                    kwargs.setdefault("rerank_top_k", 0)
 
-            # Map to chunk_top_k when that’s the param name in this LightRAG build
-            ann = getattr(QueryParam, "__annotations__", {})
-            if "chunk_top_k" in ann and "chunk_top_k" not in kwargs:
-                kwargs["chunk_top_k"] = kwargs.get("rerank_top_k", 0)
+            # (we’ll persist plan.json later in this function)
+            # short-circuit return handled after persistence
+            dual_channel_result = result
+        else:
+            dual_channel_result = None
+        # === END PATCH ===
 
-            query_param = QueryParam(mode=mode, **kwargs)
-            self.logger.info(f"Executing text query: {query[:100]}...")
-            self.logger.info(f"Query mode: {mode}")
-            result = await self.lightrag.aquery(query, param=query_param)
-            self.logger.info("Text query completed")
 
+        if dual_channel_result is not None:
+            result = dual_channel_result
+        else:
+            if vlm_enhanced is None:
+                vlm_enhanced = (hasattr(self, "vision_model_func") and self.vision_model_func is not None)
+
+            if vlm_enhanced and getattr(self, "vision_model_func", None):
+                result = await self.aquery_vlm_enhanced(query, mode=mode, **kwargs)
+            else:
+                if vlm_enhanced and not getattr(self, "vision_model_func", None):
+                    self.logger.warning("VLM enhanced query requested but vision_model_func is not available, falling back to normal query")
+                if getattr(self.lightrag, "rerank_model_func", None) is None:
+                    kwargs.setdefault("enable_rerank", False)
+                    if not kwargs.get("enable_rerank"):
+                        kwargs.setdefault("rerank_top_k", 0)
+
+                ann = getattr(QueryParam, "__annotations__", {})
+                if "chunk_top_k" in ann and "chunk_top_k" not in kwargs:
+                    kwargs["chunk_top_k"] = kwargs.get("rerank_top_k", 0)
+
+                query_param = QueryParam(mode=mode, **kwargs)
+                self.logger.info(f"Executing text query: {query[:100]}...")
+                self.logger.info(f"Query mode: {mode}")
+                result = await self.lightrag.aquery(query, param=query_param)
+                self.logger.info("Text query completed")
+
+        # Evaluate + persist for BOTH branches
         if planner_plan and intent_result:
             try:
                 eval_res = self.micro_planner.evaluate(original_query, result, {})
-                if eval_res.get("degrade_reason"):
-                    planner_plan.degrade_reasons.append(eval_res["degrade_reason"])
-                self.logger.info(
-                    "Planner evaluation score: %.2f reason: %s",
-                    eval_res.get("score", 0.0),
-                    eval_res.get("degrade_reason"),
+                score = eval_res.get("score")
+                reason = eval_res.get("degrade_reason")
+                if score is not None:
+                    planner_plan.eval_score = score
+                if reason:
+                    planner_plan.eval_reason = reason
+                    if reason not in planner_plan.degrade_reasons:
+                        planner_plan.degrade_reasons.append(reason)
+
+                output_dir = getattr(self.config, "working_dir", ".")
+                self.micro_planner.save_plan(
+                    planner_plan,
+                    query=original_query,
+                    normalized_query=query,
+                    intent=(intent_result.intent if intent_result else "unknown"),
+                    tags=(intent_result.tags if intent_result else []),
+                    output_dir=Path(output_dir) / "plans",
                 )
-            except Exception:
-                self.logger.debug("Planner evaluation failed", exc_info=True)
+            except Exception as e:
+                self.logger.warning(f"Failed to persist plan.json: {e}")
+
         return result
+
+        
 
     async def aquery_reflect(
         self,

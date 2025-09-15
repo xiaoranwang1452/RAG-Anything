@@ -5,7 +5,9 @@ from dataclasses import dataclass, field
 from typing import List, Dict, Tuple, Any, Callable
 import unicodedata
 import re
-
+from typing import Dict, List, Any
+from pathlib import Path
+import json, time
 
 @dataclass
 class IntentResult:
@@ -19,18 +21,53 @@ class IntentResult:
 
 @dataclass
 class QueryPlan:
-    """Compiled plan for executing a query."""
-
-    retrieval_mode: str = "mix"
+    # Retrieval / generation knobs
+    mode: str = "local"
     top_k: int = 5
     rerank_top_k: int = 5
     use_vlm: bool = False
     model_size: str = "base"
-    degrade_reasons: List[str] = field(default_factory=list)
-    feature_flags: Dict[str, bool] = field(
-        default_factory=lambda: {"image": True, "table": True, "equation": True}
-    )
+    feature_flags: Dict[str, bool] = field(default_factory=lambda: {"image": True, "table": True, "equation": True})
 
+    # NEW: explicit channels
+    retrieval_channels: List[str] = field(default_factory=lambda: ["text"])
+
+    # Evaluation & degradation
+    degrade_reasons: List[str] = field(default_factory=list)
+    eval_score: float | None = None
+    eval_reason: str | None = None
+
+    # --- Output contract helpers
+    def to_dict(self, query: str, normalized_query: str, intent: str, tags: List[str]) -> Dict[str, Any]:
+        return {
+            "query": query,
+            "normalized_query": normalized_query,
+            "intent": intent,
+            "tags": tags,
+            "plan": {
+                "mode": self.mode,
+                "top_k": self.top_k,
+                "rerank_top_k": self.rerank_top_k,
+                "use_vlm": self.use_vlm,
+                "model_size": self.model_size,
+                "feature_flags": self.feature_flags,
+                "retrieval_channels": self.retrieval_channels,
+            },
+            "evaluation": {
+                "score": self.eval_score,
+                "degrade_reason": self.eval_reason,
+            },
+            "degrade_reasons": self.degrade_reasons,
+            "timestamp": int(time.time()),
+        }
+
+    def save_json(self, out_dir: str | Path, query: str, normalized_query: str, intent: str, tags: List[str]) -> Path:
+        out_dir = Path(out_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        path = out_dir / "plan.json"
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(self.to_dict(query, normalized_query, intent, tags), f, ensure_ascii=False, indent=2)
+        return path
 
 class MicroPlanner:
     """Simple planner that prepares queries before passing to LightRAG."""
@@ -96,19 +133,26 @@ class MicroPlanner:
         return IntentResult(intent=intent, tags=tags, confidence=confidence, metadata=metadata)
 
     def compile_strategy(self, intent: str, tags: List[str]) -> QueryPlan:
-        """Build a query plan from detected intent."""
-
         plan = QueryPlan()
         if intent == "visual":
             plan.use_vlm = True
-            plan.retrieval_mode = "local"
+            plan.mode = "local"
         elif intent == "table":
-            plan.retrieval_mode = "local"
+            plan.mode = "local"
         elif intent == "multimodal":
             plan.use_vlm = True
-            plan.retrieval_mode = "hybrid"
+            plan.mode = "hybrid"   # or "mix" if you prefer the KG+vector fusion
         else:
-            plan.retrieval_mode = "mix"
+            plan.mode = "mix"
+        # keep a compatibility mirror for any code that still expects retrieval_mode
+        plan.retrieval_mode = plan.mode
+        
+        channels = ["text"]
+        if intent in ("visual","multimodal"):
+            channels.append("figure")
+        if intent in ("table","multimodal"):
+            channels.append("table")
+        plan.retrieval_channels = list(dict.fromkeys(channels))
         return plan
 
     def apply_policies(self, plan: QueryPlan, budgets: Dict[str, Any]) -> QueryPlan:
@@ -173,3 +217,14 @@ class MicroPlanner:
         if budgets:
             plan = self.apply_policies(plan, budgets)
         return normalized, intent, plan
+
+    def save_plan(self, plan: QueryPlan, *, query: str, normalized_query: str, intent: str, tags: List[str], output_dir: str | Path):
+        # folder per normalized query (avoid overwriting if you want; simplest is one folder)
+        out_dir = Path(output_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        p = plan.save_json(out_dir, query, normalized_query, intent, tags)
+        # also emit a tiny degrade file when applicable
+        if plan.eval_reason:
+            with open(out_dir / "degraded_plan.json", "w", encoding="utf-8") as f:
+                json.dump({"degrade_reason": plan.eval_reason, "degrade_reasons": plan.degrade_reasons}, f, ensure_ascii=False, indent=2)
+        return p
