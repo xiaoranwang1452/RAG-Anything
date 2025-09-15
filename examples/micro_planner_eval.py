@@ -42,6 +42,9 @@ async def run(file_path: str, working_dir: str, output_dir: str, api_key: str, b
     # Async LLM and VLM wrappers
     async def llm_model_func(prompt, system_prompt=None, history_messages=None, **kwargs):
         history_messages = history_messages or []
+        _safe_llm_keys = {"temperature", "max_tokens", "presence_penalty", "frequency_penalty", "stop", "top_p", "logprobs"}  # all chat-safe
+        _llm_kwargs = {k: v for k, v in kwargs.items() if k in _safe_llm_keys}
+
         return await openai_complete_if_cache(
             "gpt-4o-mini",
             prompt,
@@ -49,12 +52,15 @@ async def run(file_path: str, working_dir: str, output_dir: str, api_key: str, b
             history_messages=history_messages,
             api_key=api_key,
             base_url=base_url,
-            **kwargs,
+            **_llm_kwargs
         )
 
     async def vision_model_func(prompt, system_prompt=None, history_messages=None, image_data=None, messages=None, **kwargs):
         history_messages = history_messages or []
         if messages:
+            _safe_llm_keys = {"temperature", "max_tokens", "presence_penalty", "frequency_penalty", "stop", "top_p", "logprobs"}
+            _llm_kwargs = {k: v for k, v in kwargs.items() if k in _safe_llm_keys}
+
             return await openai_complete_if_cache(
                 "gpt-4o",
                 "",
@@ -63,9 +69,12 @@ async def run(file_path: str, working_dir: str, output_dir: str, api_key: str, b
                 messages=messages,
                 api_key=api_key,
                 base_url=base_url,
-                **kwargs,
+                **_llm_kwargs,
             )
         if image_data:
+            _safe_llm_keys = {"temperature", "max_tokens", "presence_penalty", "frequency_penalty", "stop", "top_p", "logprobs"}
+            _llm_kwargs = {k: v for k, v in kwargs.items() if k in _safe_llm_keys}
+
             return await openai_complete_if_cache(
                 "gpt-4o",
                 "",
@@ -82,7 +91,7 @@ async def run(file_path: str, working_dir: str, output_dir: str, api_key: str, b
                 ],
                 api_key=api_key,
                 base_url=base_url,
-                **kwargs,
+                **_llm_kwargs,
             )
         return await llm_model_func(prompt, system_prompt, history_messages, **kwargs)
 
@@ -144,7 +153,7 @@ async def run(file_path: str, working_dir: str, output_dir: str, api_key: str, b
     # Example queries touching different capabilities
     queries = [
         "Explain what are Figure 2 and 3 doing.",
-        "Summarise ‘RAG-Sequence’ vs ‘RAG-Token’ in 3 bullet points each. Quote the defining lines for both, with citations.",
+        "Summarise Table 1 findings",
         "Find the figure that explains training/inference differences (if any). If none exists, say so and fall back to the most relevant paragraph. Always cite.",
         "Find the table reporting FEVER results. Return the 2-way and 3-way accuracies, and briefly explain the difference between the two tasks, with citations.",
         "Extract the caption of Figure 2 verbatim. If OCR/parse fails, fall back to the nearest textual caption or paragraph that describes it, and explicitly state the fallback.",
