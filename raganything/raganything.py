@@ -285,7 +285,6 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
                     if hasattr(self.lightrag, "rerank_model_func") and callable(self.lightrag.rerank_model_func):
                         fn = self.lightrag.rerank_model_func
                         if not inspect.iscoroutinefunction(fn):
-                            self.logger.info("Wrapping synchronous LightRAG.rerank_model_func in async adapter")
                             async def _async_rerank(*args, **kwargs):
                                 return fn(*args, **kwargs)
                             self.lightrag.rerank_model_func = _async_rerank
