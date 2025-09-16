@@ -153,6 +153,7 @@ async def run(file_path: str, working_dir: str, output_dir: str, api_key: str, b
     # Example queries touching different capabilities
     queries = [
         "Explain what are Figure 2 and 3 doing.",
+        "Tell me what are the insights from Figure 1.",
         "Summarise Table 1 findings",
         "Find the figure that explains training/inference differences (if any). If none exists, say so and fall back to the most relevant paragraph. Always cite.",
         "Find the table reporting FEVER results. Return the 2-way and 3-way accuracies, and briefly explain the difference between the two tasks, with citations.",
