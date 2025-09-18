@@ -1,0 +1,6 @@
+"Explain what are Figure 2 and 3 doing."
+"Tell me what are the insights from Figure 1."
+"Summarise Table 1 findings."
+"Find the figure that explains training/inference differences (if any). If none exists, say so and fall back to the most relevant paragraph. Always cite."
+"Find the table reporting FEVER results. Return the 2-way and 3-way accuracies, and briefly explain the difference between the two tasks, with citations."
+"Extract the caption of Figure 2 verbatim. If OCR/parse fails, fall back to the nearest textual caption or paragraph that describes it, and explicitly state the fallback."
