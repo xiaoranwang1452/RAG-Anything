@@ -177,7 +177,7 @@ async def run(file_path: str, working_dir: str, output_dir: str, api_key: str, b
             logger.info("Answer: %s", result)
             logger.info("Eval score: %.2f reason: %s", eval_res.get("score", 0.0), eval_res.get("degrade_reason"))
         else:
-            result = await rag.aquery(q)
+            result = await rag.aquery(q, vlm_enhanced=False)
             logger.info("Answer: %s", result)
 
 
