@@ -36,7 +36,7 @@ async def run(file_path: str, working_dir: str, output_dir: str, api_key: str, b
         enable_image_processing=True,
         enable_table_processing=True,
         enable_equation_processing=True,
-        enable_micro_planner=True,
+        enable_micro_planner=(os.getenv("ENABLE_MICRO_PLANNER","true").lower() in ("1","true","yes")),
     )
 
     # Async LLM and VLM wrappers
