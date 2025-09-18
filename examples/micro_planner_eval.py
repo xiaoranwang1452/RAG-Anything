@@ -161,14 +161,24 @@ async def run(file_path: str, working_dir: str, output_dir: str, api_key: str, b
     ]
 
     for q in queries:
-        normalized, intent, plan = rag.micro_planner.plan(q)
         logger.info("\nQuery: %s", q)
-        logger.info("Planner intent: %s, tags: %s, confidence: %.2f", intent.intent, intent.tags, intent.confidence)
-        logger.info("Planner plan: mode=%s, top_k=%d, rerank_top_k=%d, use_vlm=%s", plan.retrieval_mode, plan.top_k, plan.rerank_top_k, plan.use_vlm)
-        result = await rag.aquery(q, mode=plan.retrieval_mode)
-        eval_res = rag.micro_planner.evaluate(q, result, {})
-        logger.info("Answer: %s", result)
-        logger.info("Eval score: %.2f reason: %s", eval_res.get("score", 0.0), eval_res.get("degrade_reason"))
+        if rag.micro_planner:
+            normalized, intent, plan = rag.micro_planner.plan(q)
+            logger.info("Planner intent: %s, tags: %s, confidence: %.2f", intent.intent, intent.tags, intent.confidence)
+            logger.info(
+                "Planner plan: mode=%s, top_k=%d, rerank_top_k=%d, use_vlm=%s",
+                plan.retrieval_mode,
+                plan.top_k,
+                plan.rerank_top_k,
+                plan.use_vlm,
+            )
+            result = await rag.aquery(q, mode=plan.retrieval_mode)
+            eval_res = rag.micro_planner.evaluate(q, result, {})
+            logger.info("Answer: %s", result)
+            logger.info("Eval score: %.2f reason: %s", eval_res.get("score", 0.0), eval_res.get("degrade_reason"))
+        else:
+            result = await rag.aquery(q)
+            logger.info("Answer: %s", result)
 
 
 def main():
