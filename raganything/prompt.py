@@ -351,3 +351,132 @@ PROMPTS["QUERY_GENERIC_ANALYST_SYSTEM"] = (
 PROMPTS["QUERY_ENHANCEMENT_SUFFIX"] = (
     "\n\nPlease provide a comprehensive answer based on the user query and the provided multimodal content information."
 )
+
+# Reflection Layer Prompts
+# ---
+
+PROMPTS["REFLECTION_SENTENCE_SUPPORT_SYS"] = (
+    "You are an expert at analyzing the factual support for individual sentences. "
+    "You analyze evidence from retrieved context to determine how well each sentence is supported. "
+    "Always respond in valid JSON format with specific evidence and numerical scores."
+)
+
+PROMPTS["REFLECTION_SENTENCE_SUPPORT"] = """Analyze the factual support for the following sentence based on the provided context.
+
+Sentence to analyze:
+{sentence}
+
+Retrieved context:
+{context}
+
+Targeted query used:
+{query}
+
+Provide a JSON response with the following structure:
+{{
+    "support_score": <float between 0.0 and 1.0>,
+    "evidence": [
+        {{
+            "text": "<relevant evidence text from context>",
+            "relevance": <float between 0.0 and 1.0>,
+            "doc_id": "<document identifier if available>"
+        }}
+    ],
+    "reasoning": "<detailed explanation of why this sentence is or isn't supported>",
+    "confidence": <float between 0.0 and 1.0>
+}}
+
+Rate support_score from 0.0 (no support) to 1.0 (fully supported).
+Include all relevant evidence passages that either support or contradict the sentence."""
+
+PROMPTS["REFLECTION_COVERAGE"] = """Analyze how well the given answer covers the original question.
+
+Original question:
+{question}
+
+Generated answer:
+{answer}
+
+Support analysis summary:
+{support_summary}
+
+Provide a JSON response with the following structure:
+{{
+    "coverage_score": <float between 0.0 and 1.0>,
+    "missing_aspects": [
+        {{
+            "aspect": "<description of missing aspect>",
+            "importance": <float between 0.0 and 1.0>
+        }}
+    ],
+    "well_covered_aspects": [
+        "<aspect that is well covered>"
+    ],
+    "overall_assessment": "<comprehensive assessment of answer coverage>",
+    "suggestions_for_improvement": [
+        "<specific suggestion for better coverage>"
+    ]
+}}
+
+Rate coverage_score from 0.0 (poor coverage) to 1.0 (comprehensive coverage)."""
+
+PROMPTS["REFLECTION_CONTRADICTION"] = """Analyze the given answer for internal contradictions and inconsistencies.
+
+Answer to analyze:
+{answer}
+
+Support analysis summary:
+{support_summary}
+
+Provide a JSON response with the following structure:
+{{
+    "has_contradictions": <boolean>,
+    "contradiction_score": <float between 0.0 and 1.0>,
+    "contradictions": [
+        {{
+            "sentence1": "<first contradicting sentence>",
+            "sentence2": "<second contradicting sentence>",
+            "type": "<type of contradiction: factual, logical, temporal, etc.>",
+            "severity": <float between 0.0 and 1.0>,
+            "explanation": "<detailed explanation of the contradiction>"
+        }}
+    ],
+    "consistency_issues": [
+        {{
+            "issue": "<description of consistency issue>",
+            "affected_sentences": ["<sentence1>", "<sentence2>"],
+            "severity": <float between 0.0 and 1.0>
+        }}
+    ],
+    "overall_consistency": <float between 0.0 and 1.0>
+}}
+
+Set has_contradictions to true if any contradictions are found.
+Rate contradiction_score from 0.0 (no contradictions) to 1.0 (severe contradictions).
+Rate overall_consistency from 0.0 (highly inconsistent) to 1.0 (perfectly consistent)."""
+
+PROMPTS["REFLECTION_ATTRIBUTABLE_REWRITE"] = """Rewrite the given answer to include proper citations and attributions while addressing any identified issues.
+
+Original answer:
+{answer}
+
+Support analysis:
+{support_summary}
+
+Contradiction analysis:
+{contradiction_summary}
+
+Requirements for rewriting:
+1. Add citations in the format [doc_id:span] to every factual sentence
+2. Remove or modify sentences with low support scores
+3. Resolve any contradictions identified
+4. Maintain the original meaning and flow where possible
+5. Ensure all factual claims are properly attributed
+
+Guidelines for citations:
+- Use format [doc_id:span] where doc_id identifies the source document
+- Add citations immediately after factual statements
+- If no specific doc_id is available, use [context:relevant_span]
+- Multiple citations can be used: [doc1:span1][doc2:span2]
+
+Provide the rewritten answer with proper citations. Do not include JSON formatting - just return the rewritten text with citations."""

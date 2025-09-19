@@ -8,6 +8,67 @@ from dataclasses import dataclass, field
 from typing import List
 from lightrag.utils import get_env_value
 
+@dataclass
+class ReflectionConfig:
+    """
+    Reflection Layer config with backward-compat.
+    - 支持两套字段/ENV 名（旧：ENABLE_REFLECTION/REFLECTION_TOP_K/...；新：REFLECTION_ENABLED/...）
+    - 暴露统一的新字段：enabled / max_iters / min_support / min_coverage / max_contradiction / min_attributable / targeted_topk
+    - 同时保留旧字段：enable_reflection / reflection_top_k / reflection_* 以兼容旧代码
+    """
+
+    # ===== 旧字段（兼容旧脚本）=====
+    enable_reflection: bool = field(
+        default=get_env_value("ENABLE_REFLECTION",
+                 get_env_value("REFLECTION_ENABLED", True, bool), bool)
+    )
+    reflection_top_k: int = field(
+        default=get_env_value("REFLECTION_TOP_K",
+                 get_env_value("REFLECTION_TOPK", 6, int), int)
+    )
+    reflection_query_mode: str = field(
+        default=get_env_value("REFLECTION_QUERY_MODE", "hybrid", str)
+    )
+    reflection_temperature: float = field(
+        default=get_env_value("REFLECTION_TEMPERATURE", 0.1, float)
+    )
+    reflection_max_sentences: int = field(
+        default=get_env_value("REFLECTION_MAX_SENTENCES", 20, int)
+    )
+    reflection_support_threshold: float = field(
+        default=get_env_value("REFLECTION_SUPPORT_THRESHOLD",
+                 get_env_value("REFLECTION_MIN_SUPPORT", 0.70, float), float)
+    )
+    reflection_enable_contradiction_check: bool = field(
+        default=get_env_value("REFLECTION_ENABLE_CONTRADICTION_CHECK", True, bool)
+    )
+    reflection_enable_coverage_check: bool = field(
+        default=get_env_value("REFLECTION_ENABLE_COVERAGE_CHECK", True, bool)
+    )
+    reflection_enable_attribution: bool = field(
+        default=get_env_value("REFLECTION_ENABLE_ATTRIBUTION", True, bool)
+    )
+
+    # ===== 新字段（推荐上层代码使用）=====
+    enabled: bool = field(init=False)
+    max_iters: int = field(default=get_env_value("REFLECTION_MAX_ITERS", 2, int))
+    min_support: float = field(
+        default=get_env_value("REFLECTION_MIN_SUPPORT",
+                 get_env_value("REFLECTION_SUPPORT_THRESHOLD", 0.70, float), float)
+    )
+    min_coverage: float = field(default=get_env_value("REFLECTION_MIN_COVERAGE", 0.85, float))
+    max_contradiction: float = field(default=get_env_value("REFLECTION_MAX_CONTRADICTION", 0.10, float))
+    min_attributable: float = field(default=get_env_value("REFLECTION_MIN_ATTRIBUTABLE", 0.80, float))
+    targeted_topk: int = field(init=False)
+
+    def __post_init__(self):
+        # 新字段由旧字段桥接，双向兼容
+        self.enabled = bool(self.enable_reflection)
+        self.targeted_topk = int(self.reflection_top_k)
+        # 保底同步旧字段
+        self.reflection_support_threshold = float(self.min_support)
+        self.reflection_top_k = int(self.targeted_topk)
+        self.enable_reflection = bool(self.enabled)
 
 @dataclass
 class RAGAnythingConfig:
@@ -102,6 +163,11 @@ class RAGAnythingConfig:
 
     content_format: str = field(default=get_env_value("CONTENT_FORMAT", "minerU", str))
     """Default content format for context extraction when processing documents."""
+
+    # Reflection Layer Configuration
+    # ---
+    reflection: ReflectionConfig = field(default_factory=ReflectionConfig)
+    """Reflection layer configuration for answer verification and attribution."""
 
     def __post_init__(self):
         """Post-initialization setup for backward compatibility"""
