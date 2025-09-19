@@ -18,6 +18,7 @@ from raganything.utils import (
     validate_image_file,
 )
 from raganything.reflection import ReflectionEngine, ReflectionConfig
+from raganything.faithful import FaithfulDecodingEngine, FaithfulDecodingConfig
 
 
 class QueryMixin:
@@ -222,6 +223,46 @@ class QueryMixin:
                 pass
 
         return better
+
+    async def aquery_faithful(
+        self,
+        query: str,
+        mode: str = "mix",
+        faithful_config: dict | None = None,
+        **kwargs,
+    ) -> str:
+        """
+        Faithfulness-aware decoding: sample N candidates and pick the most
+        faithful to retrieved context using an LLM-based verifier.
+
+        Steps:
+        1) Get LightRAG-built prompt (instructions+context) and base context.
+        2) Generate N candidates with low temperature.
+        3) Score candidates for faithfulness w.r.t. context; select best.
+        4) Optional constrained rewrite if top score is low.
+        """
+        await self._ensure_lightrag_initialized()
+
+        # Obtain prompt and context prepared by LightRAG for this query
+        prompt_only = await self.lightrag.aquery(
+            query, param=QueryParam(mode=mode, only_need_prompt=True, **kwargs)
+        )
+        context_only = await self.lightrag.aquery(
+            query, param=QueryParam(mode=mode, only_need_context=True, **kwargs)
+        )
+
+        # Build config
+        cfg = FaithfulDecodingConfig(**(faithful_config or {}))
+        engine = FaithfulDecodingEngine(self.llm_model_func)
+
+        # Run faithful decoding
+        result = await engine.generate(
+            query=query,
+            system_prompt=prompt_only,
+            context=context_only,
+            config=cfg,
+        )
+        return result
 
     async def aquery_with_multimodal(
         self,
@@ -806,6 +847,21 @@ class QueryMixin:
                 reflection_config=reflection_config,
                 verify_after_rewrite=verify_after_rewrite,
                 **kwargs,
+        )
+        )
+
+    def query_faithful(
+        self,
+        query: str,
+        mode: str = "mix",
+        faithful_config: dict | None = None,
+        **kwargs,
+    ) -> str:
+        """Synchronous wrapper for aquery_faithful."""
+        loop = always_get_an_event_loop()
+        return loop.run_until_complete(
+            self.aquery_faithful(
+                query, mode=mode, faithful_config=faithful_config, **kwargs
             )
         )
 
