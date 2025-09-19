@@ -15,6 +15,7 @@ import asyncio
 import logging
 import logging.config
 from pathlib import Path
+import numpy as np
 
 # Add project root directory to Python path
 import sys
@@ -113,6 +114,7 @@ async def process_with_rag(
             enable_image_processing=True,
             enable_table_processing=True,
             enable_equation_processing=True,
+            enable_micro_planner=True,
         )
 
         # Define LLM model function
@@ -130,7 +132,7 @@ async def process_with_rag(
             )
 
         # Define vision model function for image processing
-        def vision_model_func(
+        async def vision_model_func(
             prompt,
             system_prompt=None,
             history_messages=[],
@@ -140,10 +142,8 @@ async def process_with_rag(
         ):
             # If messages format is provided (for multimodal VLM enhanced query), use it directly
             if messages:
-                kwargs.setdefault("max_tokens", 512)
-                kwargs.setdefault("temperature", 0.2)
                 return openai_complete_if_cache(
-                    "gpt-4o-mini",
+                    "gpt-4o",
                     "",
                     system_prompt=None,
                     history_messages=[],
@@ -154,31 +154,33 @@ async def process_with_rag(
                 )
             # Traditional single image format
             elif image_data:
-                kwargs.setdefault("max_tokens", 512)
-                kwargs.setdefault("temperature", 0.2)
                 return openai_complete_if_cache(
-                    "gpt-4o-mini",
+                    "gpt-4o",
                     "",
                     system_prompt=None,
                     history_messages=[],
                     messages=[
-                        {"role": "system", "content": system_prompt}
-                        if system_prompt
-                        else None,
-                        {
-                            "role": "user",
-                            "content": [
-                                {"type": "text", "text": prompt},
-                                {
-                                    "type": "image_url",
-                                    "image_url": {
-                                        "url": f"data:image/jpeg;base64,{image_data}"
+                        (
+                            {"role": "system", "content": system_prompt}
+                            if system_prompt
+                            else None
+                        ),
+                        (
+                            {
+                                "role": "user",
+                                "content": [
+                                    {"type": "text", "text": prompt},
+                                    {
+                                        "type": "image_url",
+                                        "image_url": {
+                                            "url": f"data:image/jpeg;base64,{image_data}"
+                                        },
                                     },
-                                },
-                            ],
-                        }
-                        if image_data
-                        else {"role": "user", "content": prompt},
+                                ],
+                            }
+                            if image_data
+                            else {"role": "user", "content": prompt}
+                        ),
                     ],
                     api_key=api_key,
                     base_url=base_url,
@@ -186,7 +188,9 @@ async def process_with_rag(
                 )
             # Pure text format
             else:
-                return llm_model_func(prompt, system_prompt, history_messages, **kwargs)
+                return await llm_model_func(
+                    prompt, system_prompt, history_messages, **kwargs
+                )
 
         # Define embedding function
         embedding_func = EmbeddingFunc(
@@ -200,17 +204,47 @@ async def process_with_rag(
             ),
         )
 
+
+        # Define rerank model function using embedding similarity
+        async def rerank_model_func(
+            query: str, documents: list[str], top_n: int | None = None, **kwargs
+        ) -> list[dict[str, float]]:
+            texts = [query] + documents
+            embeddings = openai_embed(
+                texts,
+                model="text-embedding-3-large",
+                api_key=api_key,
+                base_url=base_url,
+            )
+            query_vec = np.array(embeddings[0])
+            doc_vecs = [np.array(e) for e in embeddings[1:]]
+            scores = [float(np.dot(doc_vec, query_vec)) for doc_vec in doc_vecs]
+            ranked = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
+            if top_n is not None:
+                ranked = ranked[:top_n]
+            return [
+                {"index": i, "relevance_score": scores[i]} for i in ranked
+            ]
+
         # Initialize RAGAnything with new dataclass structure
         rag = RAGAnything(
-            config=config,
             llm_model_func=llm_model_func,
             vision_model_func=vision_model_func,
-            embedding_func=embedding_func,
+            embedding_func=embedding_func, 
+            config=config,
+            lightrag_kwargs={"rerank_model_func": rerank_model_func},
         )
+
+        # Micro planner uses lexical fallback to avoid awaiting async evaluator
+        if rag.micro_planner:
+            rag.micro_planner.evaluator_func = None
 
         # Process document
         await rag.process_document_complete(
-            file_path=file_path, output_dir=output_dir, parse_method="auto"
+            file_path=file_path,
+            output_dir=output_dir,
+            parse_method="auto",
+            device="cpu",
         )
 
         # Example queries - demonstrating different query approaches
