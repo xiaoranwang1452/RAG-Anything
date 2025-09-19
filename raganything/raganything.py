@@ -13,6 +13,8 @@ import sys
 import asyncio
 from dataclasses import dataclass, field
 from pathlib import Path
+import logging
+import inspect
 
 # Add project root directory to Python path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -42,7 +44,7 @@ from raganything.modalprocessors import (
     ContextExtractor,
     ContextConfig,
 )
-
+from raganything.micro_planner import MicroPlanner
 
 @dataclass
 class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
@@ -94,6 +96,10 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
     _parser_installation_checked: bool = field(default=False, init=False)
     """Flag to track if parser installation has been checked."""
 
+    micro_planner: Optional[MicroPlanner] = field(default=None, init=False)
+    """Optional micro planner for query planning."""
+
+
     def __post_init__(self):
         """Post-initialization setup following LightRAG pattern"""
         # Initialize configuration if not provided
@@ -127,6 +133,11 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
             f"Equation: {self.config.enable_equation_processing}"
         )
         self.logger.info(f"  Max concurrent files: {self.config.max_concurrent_files}")
+
+        # Initialize micro planner if enabled
+        if self.config.enable_micro_planner:
+            self.micro_planner = MicroPlanner(evaluator_func=self.llm_model_func)
+            self.logger.info("  Micro planner enabled")
 
     def __del__(self):
         """Cleanup resources when object is destroyed"""
@@ -179,21 +190,30 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
         # Create different multimodal processors based on configuration
         self.modal_processors = {}
 
-        if self.config.enable_image_processing:
+        image_allowed = self.config.enable_image_processing
+        if self.micro_planner and not self.micro_planner.feature_flags.get("image", True):
+            image_allowed = False
+        if image_allowed:
             self.modal_processors["image"] = ImageModalProcessor(
                 lightrag=self.lightrag,
                 modal_caption_func=self.vision_model_func or self.llm_model_func,
                 context_extractor=self.context_extractor,
             )
 
-        if self.config.enable_table_processing:
+        table_allowed = self.config.enable_table_processing
+        if self.micro_planner and not self.micro_planner.feature_flags.get("table", True):
+            table_allowed = False
+        if table_allowed:
             self.modal_processors["table"] = TableModalProcessor(
                 lightrag=self.lightrag,
                 modal_caption_func=self.llm_model_func,
                 context_extractor=self.context_extractor,
             )
 
-        if self.config.enable_equation_processing:
+        equation_allowed = self.config.enable_equation_processing
+        if self.micro_planner and not self.micro_planner.feature_flags.get("equation", True):
+            equation_allowed = False
+        if equation_allowed:
             self.modal_processors["equation"] = EquationModalProcessor(
                 lightrag=self.lightrag,
                 modal_caption_func=self.llm_model_func,
@@ -210,6 +230,12 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
         self.logger.info("Multimodal processors initialized with context support")
         self.logger.info(f"Available processors: {list(self.modal_processors.keys())}")
         self.logger.info(f"Context configuration: {self._create_context_config()}")
+
+    def update_processor_availability(self):
+        """Refresh processors based on current planner feature flags."""
+        if self.lightrag is None:
+            return
+        self._initialize_processors()
 
     def update_config(self, **kwargs):
         """Update configuration with new values"""
@@ -253,6 +279,15 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
                         )
 
                         await initialize_pipeline_status()
+
+
+                    # Ensure pre-provided reranker is awaitable
+                    if hasattr(self.lightrag, "rerank_model_func") and callable(self.lightrag.rerank_model_func):
+                        fn = self.lightrag.rerank_model_func
+                        if not inspect.iscoroutinefunction(fn):
+                            async def _async_rerank(*args, **kwargs):
+                                return fn(*args, **kwargs)
+                            self.lightrag.rerank_model_func = _async_rerank
 
                     # Initialize parse cache if not already done
                     if self.parse_cache is None:
@@ -304,6 +339,15 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
 
             # Merge user-provided lightrag_kwargs, which can override defaults
             lightrag_params.update(self.lightrag_kwargs)
+
+            # Ensure reranker is awaitable
+            if "rerank_model_func" in lightrag_params and callable(lightrag_params["rerank_model_func"]):
+                fn = lightrag_params["rerank_model_func"]
+                if not inspect.iscoroutinefunction(fn):
+                    self.logger.info("Wrapping synchronous rerank_model_func in async adapter")
+                    async def _async_rerank(*args, **kwargs):
+                        return fn(*args, **kwargs)
+                    lightrag_params["rerank_model_func"] = _async_rerank
 
             # Log the parameters being used for initialization (excluding sensitive data)
             log_params = {
