@@ -7,11 +7,16 @@ This example shows how to:
 2. Perform pure text queries using aquery() method
 3. Perform multimodal queries with specific multimodal content using aquery_with_multimodal() method
 4. Handle different types of multimodal content (tables, equations) in queries
+
+Updates:
+- Loads model configuration (LLM, embeddings, vision) directly from environment/.env
+- Ingests every supported file inside a directory (default: ./example_doc) for multimodal processing
 """
 
 import os
 import argparse
 import asyncio
+import json
 import logging
 import logging.config
 from pathlib import Path
@@ -22,13 +27,116 @@ import sys
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from lightrag.llm.openai import openai_complete_if_cache, openai_embed
+from lightrag.llm.azure_openai import azure_openai_complete_if_cache, azure_openai_embed
 from lightrag.utils import EmbeddingFunc, logger, set_verbose_debug
 from raganything import RAGAnything, RAGAnythingConfig
 
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=".env", override=False)
+
+
+def _env_flag(name: str, default: str = "false") -> bool:
+    """Read boolean feature flags from environment."""
+    return os.getenv(name, default).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _env_list(name: str, separator: str = ",") -> list[str]:
+    value = os.getenv(name, "")
+    return [item.strip().lower() for item in value.split(separator) if item.strip()]
+
+
+def _env_int(name: str, default: int) -> int:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        return int(raw)
+    except (TypeError, ValueError):
+        return default
+
+
+def _env_float(name: str, default: float) -> float:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        return float(raw)
+    except (TypeError, ValueError):
+        return default
+
+
+def _azure_api_kwargs() -> dict[str, str]:
+    api_version = os.getenv("AZURE_OPENAI_API_VERSION") or os.getenv("OPENAI_API_VERSION")
+    return {"api_version": api_version} if api_version else {}
+
+
+def _http_post_json(url: str, payload: dict, timeout: int = 240) -> dict:
+    """Minimal helper to POST JSON without external deps."""
+    import urllib.error
+    import urllib.request
+
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", errors="ignore")
+        raise RuntimeError(f"HTTP {e.code} error from {url}: {body}")
+    except urllib.error.URLError as e:
+        raise RuntimeError(f"Failed to reach {url}: {e}")
+
+
+def _build_ollama_embedding_func() -> EmbeddingFunc:
+    """Create an embedding function that talks to Ollama via HTTP."""
+
+    host = os.getenv("EMBEDDING_BINDING_HOST", os.getenv("LLM_BINDING_HOST", "http://localhost:11434")).rstrip("/")
+    model = os.getenv("EMBEDDING_MODEL", "bge-m3:latest").strip()
+    url = f"{host}/api/embeddings"
+    timeout = _env_int("TIMEOUT", 240)
+    max_concurrency = max(1, _env_int("EMBEDDING_MAX_CONCURRENCY", 4))
+    embed_semaphore = asyncio.Semaphore(max_concurrency)
+
+    async def embed_batch(texts):
+        async def one(text):
+            payload = {"model": model, "prompt": text}
+            async with embed_semaphore:
+                resp = await asyncio.to_thread(_http_post_json, url, payload, timeout)
+            embedding = resp.get("embedding")
+            if not embedding:
+                raise RuntimeError("No embedding returned from Ollama")
+            return embedding
+
+        if not texts:
+            return []
+        return list(await asyncio.gather(*(one(t) for t in texts)))
+
+    dim = os.getenv("EMBEDDING_DIM")
+    embedding_dim = int(dim) if dim and dim.isdigit() else None
+
+    return EmbeddingFunc(
+        embedding_dim=embedding_dim or 1024,
+        max_token_size=_env_int("MAX_EMBED_TOKENS", 8192),
+        func=embed_batch,
+    )
+
+
+DEFAULT_LLM_MODEL = (
+    os.getenv("AZURE_OPENAI_DEPLOYMENT")
+    or os.getenv("LLM_MODEL", "gpt-4o-mini")
+)
+DEFAULT_VISION_MODEL = (
+    os.getenv("AZURE_OPENAI_VISION_DEPLOYMENT")
+    or os.getenv("VISION_MODEL")
+    or "gpt-4o"
+)
+DEFAULT_EMBEDDING_MODEL = (
+    os.getenv("AZURE_EMBEDDING_DEPLOYMENT")
+    or os.getenv("EMBEDDING_MODEL", "text-embedding-3-large")
+)
+DEFAULT_EMBEDDING_DIM = _env_int("EMBEDDING_DIM", 3072)
+DEFAULT_COMPLETION_MAX_TOKENS = _env_int("LLM_COMPLETION_MAX_TOKENS", 512)
 
 
 def configure_logging():
@@ -88,7 +196,7 @@ def configure_logging():
 
 
 async def process_with_rag(
-    file_path: str,
+    input_path: str,
     output_dir: str,
     api_key: str,
     base_url: str = None,
@@ -99,7 +207,7 @@ async def process_with_rag(
     Process document with RAGAnything
 
     Args:
-        file_path: Path to the document
+        input_path: Path to a document or directory with documents
         output_dir: Output directory for RAG results
         api_key: OpenAI API key
         base_url: Optional base URL for API
@@ -108,26 +216,29 @@ async def process_with_rag(
     try:
         # Create RAGAnything configuration
         config = RAGAnythingConfig(
-            working_dir=working_dir or "./rag_storage",
+            working_dir=working_dir or os.getenv("WORKING_DIR", "./rag_storage"),
             parser=parser,  # Parser selection: mineru or docling
-            parse_method="auto",  # Parse method: auto, ocr, or txt
-            enable_image_processing=True,
-            enable_table_processing=True,
-            enable_equation_processing=True,
-            enable_micro_planner=True,
+            parse_method=os.getenv("PARSE_METHOD", "auto"),
+            enable_image_processing=_env_flag("ENABLE_IMAGE_PROCESSING", "true"),
+            enable_table_processing=_env_flag("ENABLE_TABLE_PROCESSING", "true"),
+            enable_equation_processing=_env_flag("ENABLE_EQUATION_PROCESSING", "true"),
+            enable_micro_planner=_env_flag("ENABLE_MICRO_PLANNER", "true"),
         )
 
         # Define LLM model function
-        def llm_model_func(prompt, system_prompt=None, history_messages=[], **kwargs):
-            kwargs.setdefault("max_tokens", 512)     # 限制输出上限
-            kwargs.setdefault("temperature", 0.2)
-            return openai_complete_if_cache(
-                "gpt-4o-mini",
+        async def llm_model_func(prompt, system_prompt=None, history_messages=[], **kwargs):
+            kwargs = dict(kwargs)
+            kwargs.setdefault("max_tokens", DEFAULT_COMPLETION_MAX_TOKENS)
+            kwargs.setdefault("temperature", _env_float("TEMPERATURE", 0.2))
+            azure_kwargs = _azure_api_kwargs()
+            return await azure_openai_complete_if_cache(
+                DEFAULT_LLM_MODEL,
                 prompt,
                 system_prompt=system_prompt,
                 history_messages=history_messages,
                 api_key=api_key,
                 base_url=base_url,
+                **azure_kwargs,
                 **kwargs,
             )
 
@@ -142,48 +253,50 @@ async def process_with_rag(
         ):
             # If messages format is provided (for multimodal VLM enhanced query), use it directly
             if messages:
-                return openai_complete_if_cache(
-                    "gpt-4o",
-                    "",
+                return await azure_openai_complete_if_cache(
+                    DEFAULT_VISION_MODEL,
+                    None,
                     system_prompt=None,
-                    history_messages=[],
-                    messages=messages,
+                    history_messages=messages,
                     api_key=api_key,
                     base_url=base_url,
+                    **_azure_api_kwargs(),
                     **kwargs,
                 )
             # Traditional single image format
             elif image_data:
-                return openai_complete_if_cache(
-                    "gpt-4o",
-                    "",
-                    system_prompt=None,
-                    history_messages=[],
-                    messages=[
-                        (
-                            {"role": "system", "content": system_prompt}
-                            if system_prompt
-                            else None
-                        ),
-                        (
-                            {
-                                "role": "user",
-                                "content": [
-                                    {"type": "text", "text": prompt},
-                                    {
-                                        "type": "image_url",
-                                        "image_url": {
-                                            "url": f"data:image/jpeg;base64,{image_data}"
-                                        },
+                structured_messages = [
+                    (
+                        {"role": "system", "content": system_prompt}
+                        if system_prompt
+                        else None
+                    ),
+                    (
+                        {
+                            "role": "user",
+                            "content": [
+                                {"type": "text", "text": prompt},
+                                {
+                                    "type": "image_url",
+                                    "image_url": {
+                                        "url": f"data:image/jpeg;base64,{image_data}"
                                     },
-                                ],
-                            }
-                            if image_data
-                            else {"role": "user", "content": prompt}
-                        ),
-                    ],
+                                },
+                            ],
+                        }
+                        if image_data
+                        else {"role": "user", "content": prompt}
+                    ),
+                ]
+                structured_messages = [m for m in structured_messages if m]
+                return await azure_openai_complete_if_cache(
+                    DEFAULT_VISION_MODEL,
+                    None,
+                    system_prompt=None,
+                    history_messages=structured_messages,
                     api_key=api_key,
                     base_url=base_url,
+                    **_azure_api_kwargs(),
                     **kwargs,
                 )
             # Pure text format
@@ -193,16 +306,21 @@ async def process_with_rag(
                 )
 
         # Define embedding function
-        embedding_func = EmbeddingFunc(
-            embedding_dim=3072,
-            max_token_size=8192,
-            func=lambda texts: openai_embed(
-                texts,
-                model="text-embedding-3-large",
-                api_key=api_key,
-                base_url=base_url,
-            ),
-        )
+        embedding_binding = os.getenv("EMBEDDING_BINDING", "").strip().lower()
+        if embedding_binding == "ollama":
+            embedding_func = _build_ollama_embedding_func()
+        else:
+            embedding_func = EmbeddingFunc(
+                embedding_dim=DEFAULT_EMBEDDING_DIM,
+                max_token_size=_env_int("MAX_EMBED_TOKENS", 8192),
+                func=lambda texts: azure_openai_embed(
+                    texts,
+                    model=DEFAULT_EMBEDDING_MODEL,
+                    api_key=api_key,
+                    base_url=base_url,
+                    **_azure_api_kwargs(),
+                ),
+            )
 
 
         # Define rerank model function using embedding similarity
@@ -210,12 +328,7 @@ async def process_with_rag(
             query: str, documents: list[str], top_n: int | None = None, **kwargs
         ) -> list[dict[str, float]]:
             texts = [query] + documents
-            embeddings = openai_embed(
-                texts,
-                model="text-embedding-3-large",
-                api_key=api_key,
-                base_url=base_url,
-            )
+            embeddings = await embedding_func(texts)
             query_vec = np.array(embeddings[0])
             doc_vecs = [np.array(e) for e in embeddings[1:]]
             scores = [float(np.dot(doc_vec, query_vec)) for doc_vec in doc_vecs]
@@ -239,13 +352,44 @@ async def process_with_rag(
         if rag.micro_planner:
             rag.micro_planner.evaluator_func = None
 
-        # Process document
-        await rag.process_document_complete(
-            file_path=file_path,
-            output_dir=output_dir,
-            parse_method="auto",
-            device="cpu",
-        )
+        input_root = Path(input_path)
+        if not input_root.exists():
+            raise FileNotFoundError(f"Input path does not exist: {input_path}")
+
+        recursive = _env_flag("RECURSIVE_FOLDER_PROCESSING", "false")
+        supported_exts = set(_env_list("SUPPORTED_FILE_EXTENSIONS"))
+
+        if input_root.is_file():
+            files = [input_root]
+        elif recursive:
+            files = [p for p in input_root.rglob("*") if p.is_file()]
+        else:
+            files = [p for p in input_root.iterdir() if p.is_file()]
+
+        if supported_exts:
+            files = [f for f in files if f.suffix.lower() in supported_exts]
+
+        if not files:
+            raise FileNotFoundError(
+                f"No ingestible files found under {input_path}."
+            )
+
+        max_files = _env_int("MAX_CONCURRENT_FILES", 0)
+        if max_files > 0:
+            files = files[:max_files]
+
+        output_path = Path(output_dir).expanduser()
+        output_path.mkdir(parents=True, exist_ok=True)
+        output_dir = str(output_path)
+
+        for file in files:
+            logger.info(f"Processing document: {file}")
+            await rag.process_document_complete(
+                file_path=str(file),
+                output_dir=output_dir,
+                parse_method=config.parse_method,
+                device="cpu",
+            )
 
         # Example queries - demonstrating different query approaches
         logger.info("\nQuerying processed document:")
@@ -307,12 +451,23 @@ async def process_with_rag(
 def main():
     """Main function to run the example"""
     parser = argparse.ArgumentParser(description="MinerU RAG Example")
-    parser.add_argument("file_path", help="Path to the document to process")
     parser.add_argument(
-        "--working_dir", "-w", default="./rag_storage", help="Working directory path"
+        "--input",
+        "-i",
+        default=os.getenv("INPUT_DIR", "example_doc"),
+        help="Path to a document file or directory to process",
     )
     parser.add_argument(
-        "--output", "-o", default="./output", help="Output directory path"
+        "--working_dir",
+        "-w",
+        default=os.getenv("WORKING_DIR", "./rag_storage"),
+        help="Working directory path",
+    )
+    parser.add_argument(
+        "--output",
+        "-o",
+        default=os.getenv("OUTPUT_DIR", "./output"),
+        help="Output directory path",
     )
     parser.add_argument(
         "--api-key",
@@ -345,7 +500,7 @@ def main():
     # Process with RAG
     asyncio.run(
         process_with_rag(
-            args.file_path,
+            args.input,
             args.output,
             args.api_key,
             args.base_url,
