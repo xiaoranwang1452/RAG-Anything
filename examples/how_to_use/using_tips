@@ -1,0 +1,21 @@
+if you want to run these py file
+first, you need to run below command lines: 
+
+Remove-Item -Recurse -Force .\rag_storage -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force .\output -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force .\output_reflection -ErrorAction SilentlyContinue
+
+for clear cache (to prevent reuse of old indexes)
+
+把新 PDF 放进目录
+把你要测试的复杂 PDF 文件复制到：
+examples\example_doc\
+
+python examples/example.py --query "How to upload Tutorial Worksheets" --docs examples/example_doc --output ./output
+
+python .\examples\example.py --query "用中文总结文档并描述图片信息" --docs .\examples\example_doc --vlm
+
+
+python .\examples\example.py --query "What is RAG-Sequence Model? " --docs .\examples\example_doc --vlm
+
+python examples/raganything_reflection_example.py ./data/sample.pdf

@@ -327,13 +327,7 @@ def build_ollama_embedding_func() -> EmbeddingFunc:
     )
 
 
-async def run(
-    query: str,
-    docs_dir: str = "example_doc",
-    output_dir: str = "./output",
-    vlm_enhanced: Optional[bool] = None,
-    faithful: bool = False,
-):
+async def run(query: str, docs_dir: str = "example_doc", output_dir: str = "./output", vlm_enhanced: Optional[bool] = None):
     base_dir = Path(__file__).resolve().parent.parent
 
     # Resolve working_dir to repo root by default for consistency
@@ -394,10 +388,7 @@ async def run(
     logger.info(f"Query: {query}")
     if vlm_enhanced is None:
         vlm_enhanced = os.getenv("VLM_ENHANCED", "false").lower() == "true"
-    if faithful:
-        answer = await rag.aquery_faithful(query, mode="hybrid")
-    else:
-        answer = await rag.aquery(query, mode="hybrid", vlm_enhanced=vlm_enhanced)
+    answer = await rag.aquery(query, mode="hybrid", vlm_enhanced=vlm_enhanced)
     print("\n===== ANSWER =====\n" + str(answer) + "\n===================\n")
 
 
@@ -407,10 +398,9 @@ def main():
     parser.add_argument("--docs", default="example_doc", help="Folder of documents to ingest")
     parser.add_argument("--output", default="./output", help="Output directory for artifacts")
     parser.add_argument("--vlm", action="store_true", help="Enable VLM enhanced querying (may be heavy)")
-    parser.add_argument("--faithful", action="store_true", help="Use faithfulness-aware decoding (rerank candidates)")
     args = parser.parse_args()
 
-    asyncio.run(run(args.query, args.docs, args.output, vlm_enhanced=args.vlm, faithful=args.faithful))
+    asyncio.run(run(args.query, args.docs, args.output, vlm_enhanced=args.vlm))
 
 
 if __name__ == "__main__":

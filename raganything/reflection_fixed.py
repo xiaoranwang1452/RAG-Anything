@@ -9,7 +9,15 @@ import json
 import re
 from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass
-from lightrag import QueryParam
+try:
+    from lightrag import QueryParam
+except Exception:
+    # Minimal fallback to avoid import crash; actual class comes from lightrag
+    class QueryParam:
+        def __init__(self, **kwargs):
+            for k,v in kwargs.items():
+                setattr(self, k, v)
+
 from lightrag.utils import logger
 
 

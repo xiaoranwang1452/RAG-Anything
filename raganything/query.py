@@ -890,3 +890,89 @@ class QueryMixin:
         return loop.run_until_complete(
             self.aquery_with_multimodal(query, multimodal_content, mode=mode, **kwargs)
         )
+
+    async def answer_with_reflection(
+        self,
+        question: str,
+        mode: str = "hybrid",
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Generate answer with reflection layer verification
+
+        Args:
+            question: User question
+            mode: Query mode for initial answer and reflection
+            **kwargs: Additional query parameters
+
+        Returns:
+            Dict containing:
+                - question: Original question
+                - draft: Initial draft answer
+                - final: Final answer with citations
+                - reflection_report: Detailed reflection analysis
+        """
+        from raganything.reflection import ReflectionLayer
+
+        # Ensure LightRAG is initialized
+        await self._ensure_lightrag_initialized()
+
+        self.logger.info(f"Starting answer with reflection for: {question[:100]}...")
+
+        # Step 1: Get initial draft answer using standard query
+        self.logger.info("Generating initial draft answer")
+        draft_answer = await self.aquery(question, mode=mode, **kwargs)
+
+        # Step 2: Initialize reflection layer
+        reflection_config = getattr(self.config, 'reflection', None)
+        if not reflection_config:
+            # Create default reflection config if not provided
+            from raganything.config import ReflectionConfig
+            reflection_config = ReflectionConfig()
+
+        reflection_layer = ReflectionLayer(
+            lightrag=self.lightrag,
+            llm_model_func=self.llm_model_func,
+            config=reflection_config,
+        )
+
+        # Step 3: Run reflection process
+        self.logger.info("Running reflection analysis")
+        final_answer, reflection_report = await reflection_layer.run(
+            question=question,
+            draft_answer=draft_answer,
+            query_mode=getattr(reflection_config, 'reflection_query_mode', mode),
+        )
+
+        # Step 4: Construct result
+        result = {
+            "question": question,
+            "draft": draft_answer,
+            "final": final_answer,
+            "reflection_report": reflection_report.__dict__,  # Convert to dict for JSON serialization
+        }
+
+        self.logger.info("Answer with reflection completed")
+        return result
+
+    def answer_with_reflection_sync(
+        self,
+        question: str,
+        mode: str = "hybrid",
+        **kwargs
+    ) -> Dict[str, Any]:
+        """
+        Synchronous version of answer_with_reflection
+
+        Args:
+            question: User question
+            mode: Query mode for initial answer and reflection
+            **kwargs: Additional query parameters
+
+        Returns:
+            Dict containing question, draft, final answer and reflection report
+        """
+        loop = always_get_an_event_loop()
+        return loop.run_until_complete(
+            self.answer_with_reflection(question, mode=mode, **kwargs)
+        )
