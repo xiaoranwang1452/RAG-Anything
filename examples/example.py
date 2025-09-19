@@ -1,52 +1,80 @@
 #!/usr/bin/env python
 """
-Simple example: use Ollama (qwen2.5:3b-instruct) with RAG-Anything
+Example script demonstrating the integration of MinerU parser with RAGAnything
 
-What it does:
-- Loads configuration from .env (Ollama endpoints/models)
-- Builds minimal chat + embedding functions for Ollama HTTP API
-- Parses all documents in ./example_doc
-- Runs a query against the built knowledge base and prints the answer
+This example shows how to:
+1. Process documents with RAGAnything using MinerU parser
+2. Perform pure text queries using aquery() method
+3. Perform multimodal queries with specific multimodal content using aquery_with_multimodal() method
+4. Handle different types of multimodal content (tables, equations) in queries
 
-Prerequisites:
-- Ollama running locally with models pulled:
-  - LLM: qwen2.5:3b-instruct (default from .env LLM_MODEL)
-  - Embedding: bge-m3:latest (default from .env EMBEDDING_MODEL)
-  - Vision (for image processing): set env VISION_MODEL (e.g. qwen2.5vl:3b 或 llava:7b)
-  Example:
-    ollama pull qwen2.5:3b-instruct
-    ollama pull bge-m3:latest
-    ollama pull llava:7b  # or another VLM that supports images
-
-Run:
-  # optional: export VISION_MODEL=llava:7b:q4_0   # lighter VLM
-  # optional: export VLM_ENHANCED=false           # disable VLM during query (default)
-  python examples/example.py --query "用中文总结文档内容"
+Updates:
+- Loads model configuration (LLM, embeddings, vision) directly from environment/.env
+- Ingests every supported file inside a directory (default: ./example_doc) for multimodal processing
 """
 
 import os
-import json
-import asyncio
 import argparse
+import asyncio
+import json
+import logging
+import logging.config
 from pathlib import Path
-from typing import List, Optional
+import numpy as np
 
-# Ensure local imports resolve when running from repo root
+# Add project root directory to Python path
 import sys
+
 sys.path.append(str(Path(__file__).parent.parent))
 
-from dotenv import load_dotenv
+from lightrag.llm.azure_openai import azure_openai_complete_if_cache, azure_openai_embed
+from lightrag.utils import EmbeddingFunc, logger, set_verbose_debug
 from raganything import RAGAnything, RAGAnythingConfig
-from lightrag.utils import EmbeddingFunc, logger
 
+from dotenv import load_dotenv
 
 load_dotenv(dotenv_path=".env", override=False)
 
 
+def _env_flag(name: str, default: str = "false") -> bool:
+    """Read boolean feature flags from environment."""
+    return os.getenv(name, default).strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _env_list(name: str, separator: str = ",") -> list[str]:
+    value = os.getenv(name, "")
+    return [item.strip().lower() for item in value.split(separator) if item.strip()]
+
+
+def _env_int(name: str, default: int) -> int:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        return int(raw)
+    except (TypeError, ValueError):
+        return default
+
+
+def _env_float(name: str, default: float) -> float:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    try:
+        return float(raw)
+    except (TypeError, ValueError):
+        return default
+
+
+def _azure_api_kwargs() -> dict[str, str]:
+    api_version = os.getenv("AZURE_OPENAI_API_VERSION") or os.getenv("OPENAI_API_VERSION")
+    return {"api_version": api_version} if api_version else {}
+
+
 def _http_post_json(url: str, payload: dict, timeout: int = 240) -> dict:
-    """Minimal HTTP POST JSON helper using stdlib to avoid extra deps."""
-    import urllib.request
+    """Minimal helper to POST JSON without external deps."""
     import urllib.error
+    import urllib.request
 
     data = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"})
@@ -60,349 +88,435 @@ def _http_post_json(url: str, payload: dict, timeout: int = 240) -> dict:
         raise RuntimeError(f"Failed to reach {url}: {e}")
 
 
-def _maybe_downscale_base64_image(image_b64: str, max_side: int = 768, quality: int = 80) -> str:
-    """Downscale a base64 image if Pillow is available to reduce VLM memory usage.
+def _build_ollama_embedding_func() -> EmbeddingFunc:
+    """Create an embedding function that talks to Ollama via HTTP."""
 
-    Returns the (possibly) downscaled base64 string. On failure or if Pillow is
-    not available, returns the original string.
-    """
-    try:
-        from io import BytesIO
-        import base64
-        from PIL import Image
-
-        raw = base64.b64decode(image_b64)
-        im = Image.open(BytesIO(raw))
-        im = im.convert("RGB")
-        w, h = im.size
-        scale = 1.0
-        if max(w, h) > max_side:
-            scale = max_side / float(max(w, h))
-        if scale < 1.0:
-            new_w = max(1, int(w * scale))
-            new_h = max(1, int(h * scale))
-            im = im.resize((new_w, new_h))
-        buf = BytesIO()
-        im.save(buf, format="JPEG", quality=quality, optimize=True)
-        out_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
-        return out_b64
-    except Exception:
-        return image_b64
-
-
-def build_ollama_llm_func():
-    """Create a chat completion function for Ollama /api/chat.
-
-    Signature expected by RAGAnything examples:
-      (prompt, system_prompt=None, history_messages=[], messages=None, **kwargs) -> str
-    """
-    host = os.getenv("LLM_BINDING_HOST", "http://localhost:11434").rstrip("/")
-    model = os.getenv("LLM_MODEL", "qwen2.5:3b-instruct").strip()
-    url = f"{host}/api/chat"
-
-    def _chat_options():
-        return {
-            "num_ctx": int(os.getenv("MAX_TOKENS", "2048")),
-            "num_predict": int(os.getenv("NUM_PREDICT", "512")),
-            "temperature": float(os.getenv("TEMPERATURE", "0")),
-        }
-
-    async def llm_model_func(prompt: str,
-                             system_prompt: Optional[str] = None,
-                             history_messages: Optional[List[dict]] = None,
-                             messages: Optional[List[dict]] = None,
-                             **kwargs) -> str:
-        # Prefer explicit messages if provided (for multimodal-style calls; here we only forward text)
-        if messages:
-            # Filter to text-only contents if any complex structures present
-            norm_msgs = []
-            for m in messages:
-                role = m.get("role", "user")
-                content = m.get("content", "")
-                if isinstance(content, list):
-                    # Extract text parts only
-                    text_parts = [c.get("text", "") for c in content if isinstance(c, dict) and c.get("type") == "text"]
-                    content = "\n".join([t for t in text_parts if t])
-                norm_msgs.append({"role": role, "content": content})
-        else:
-            norm_msgs = []
-            if system_prompt:
-                norm_msgs.append({"role": "system", "content": system_prompt})
-            if history_messages:
-                # Expect objects like {"role": "user"|"assistant", "content": str}
-                for h in history_messages:
-                    if "role" in h and "content" in h:
-                        norm_msgs.append({"role": h["role"], "content": h["content"]})
-            norm_msgs.append({"role": "user", "content": prompt or ""})
-
-        payload = {
-            "model": model,
-            "messages": norm_msgs,
-            "stream": False,
-            "options": _chat_options(),
-            # Map common params if provided
-            **({"temperature": kwargs.get("temperature")} if kwargs.get("temperature") is not None else {}),
-        }
-
-        # Run blocking HTTP in thread to keep this function awaitable
-        resp = await asyncio.to_thread(
-            _http_post_json, url, payload, int(os.getenv("TIMEOUT", "240"))
-        )
-        # ollama chat response shape: {"message": {"role": "assistant", "content": "..."}, ...}
-        msg = resp.get("message") or {}
-        return msg.get("content", "")
-
-    return llm_model_func
-
-
-def build_ollama_vision_func():
-    """Create a vision-capable function for Ollama using /api/generate with images.
-
-    Looks for `VISION_MODEL` in env, falls back to `qwen2.5vl:3b`.
-    If no images are provided, falls back to text-only chat via /api/chat.
-    """
-    host = os.getenv("LLM_BINDING_HOST", "http://localhost:11434").rstrip("/")
-    vlm_model = os.getenv("VISION_MODEL", "qwen2.5vl:3b").strip()
-    gen_url = f"{host}/api/generate"
-    chat_url = f"{host}/api/chat"
-
-    vlm_semaphore = asyncio.Semaphore(int(os.getenv("VLM_MAX_CONCURRENCY", "1")))
-
-    def _gen_options():
-        return {
-            "num_ctx": int(os.getenv("MAX_TOKENS", "2048")),
-            "num_predict": int(os.getenv("NUM_PREDICT", "512")),
-            "temperature": float(os.getenv("TEMPERATURE", "0")),
-        }
-
-    async def vision_model_func(prompt: str,
-                                system_prompt: Optional[str] = None,
-                                history_messages: Optional[List[dict]] = None,
-                                image_data: Optional[str] = None,
-                                messages: Optional[List[dict]] = None,
-                                **kwargs) -> str:
-        # Prepare prompt and image list
-        images: List[str] = []
-        final_prompt_parts: List[str] = []
-
-        if system_prompt:
-            final_prompt_parts.append(system_prompt)
-
-        if messages:
-            # Flatten OpenAI-like message format into a single prompt and extract images
-            for m in messages:
-                role = m.get("role", "user")
-                content = m.get("content", "")
-                if isinstance(content, list):
-                    for c in content:
-                        if isinstance(c, dict) and c.get("type") == "text":
-                            t = c.get("text", "")
-                            if t:
-                                final_prompt_parts.append(t)
-                        elif isinstance(c, dict) and c.get("type") == "image_url":
-                            url = (c.get("image_url") or {}).get("url", "")
-                            if url.startswith("data:image") and "," in url:
-                                b64 = url.split(",", 1)[1]
-                                images.append(b64)
-                else:
-                    if isinstance(content, str) and content:
-                        final_prompt_parts.append(content)
-        else:
-            if prompt:
-                final_prompt_parts.append(prompt)
-            if image_data:
-                images.append(image_data)
-
-        # Cap number of images to avoid OOM (configurable)
-        max_images = int(os.getenv("VLM_MAX_IMAGES", "4"))
-        omitted = 0
-        if len(images) > max_images:
-            omitted = len(images) - max_images
-            images = images[:max_images]
-
-        note = f"\n[Note: {omitted} images omitted for resource limits]" if omitted else ""
-        final_prompt = ("\n".join([p for p in final_prompt_parts if p]) or "Describe the image.") + note
-
-        if images:
-            # Downscale images to reduce memory if possible
-            max_side = int(os.getenv("MAX_IMAGE_SIDE", "640"))
-            jpeg_q = int(os.getenv("IMAGE_JPEG_QUALITY", "80"))
-            images = [_maybe_downscale_base64_image(b64, max_side=max_side, quality=jpeg_q) for b64 in images]
-
-            payload = {
-                "model": vlm_model,
-                "prompt": final_prompt,
-                "images": images,
-                "stream": False,
-                "options": _gen_options(),
-            }
-
-            async def _call_vlm_with_retry(tries=2, delay=0.8):
-                last_err = None
-                for i in range(tries):
-                    try:
-                        async with vlm_semaphore:
-                            resp = await asyncio.to_thread(
-                                _http_post_json,
-                                gen_url,
-                                payload,
-                                int(os.getenv("VLM_TIMEOUT", os.getenv("TIMEOUT", "240"))),
-                            )
-                        return resp
-                    except Exception as e:
-                        last_err = e
-                        if i == tries - 1:
-                            break
-                        await asyncio.sleep(delay)
-                        delay *= 1.5
-                raise last_err
-
-            try:
-                resp = await _call_vlm_with_retry(tries=int(os.getenv("VLM_RETRIES", "2")))
-                return resp.get("response", "")
-            except Exception:
-                # Optionally disable vision on failure and return fallback text
-                if os.getenv("VLM_DISABLE_ON_FAILURE", "true").lower() == "true":
-                    os.environ["DISABLE_VISION"] = "true"
-                return os.getenv("VLM_FALLBACK_TEXT", "[Image omitted due to resource limits]")
-        else:
-            # Fallback to text-only chat if no image present
-            norm_msgs = []
-            if system_prompt:
-                norm_msgs.append({"role": "system", "content": system_prompt})
-            if history_messages:
-                for h in history_messages:
-                    if "role" in h and "content" in h:
-                        norm_msgs.append({"role": h["role"], "content": h["content"]})
-            norm_msgs.append({"role": "user", "content": final_prompt})
-            payload = {
-                "model": os.getenv("LLM_MODEL", "qwen2.5:3b-instruct").strip(),
-                "messages": norm_msgs,
-                "stream": False,
-                "options": _gen_options(),
-            }
-            async with vlm_semaphore:
-                resp = await asyncio.to_thread(
-                    _http_post_json,
-                    chat_url,
-                    payload,
-                    int(os.getenv("VLM_TIMEOUT", os.getenv("TIMEOUT", "240"))),
-                )
-            return (resp.get("message") or {}).get("content", "")
-
-    return vision_model_func
-
-
-def build_ollama_embedding_func() -> EmbeddingFunc:
-    """Create an EmbeddingFunc bound to Ollama /api/embeddings."""
     host = os.getenv("EMBEDDING_BINDING_HOST", os.getenv("LLM_BINDING_HOST", "http://localhost:11434")).rstrip("/")
     model = os.getenv("EMBEDDING_MODEL", "bge-m3:latest").strip()
     url = f"{host}/api/embeddings"
+    timeout = _env_int("TIMEOUT", 240)
+    max_concurrency = max(1, _env_int("EMBEDDING_MAX_CONCURRENCY", 4))
+    embed_semaphore = asyncio.Semaphore(max_concurrency)
 
-    embed_semaphore = asyncio.Semaphore(int(os.getenv("EMBEDDING_MAX_CONCURRENCY", "4")))
-
-    async def embed_batch(texts: List[str]) -> List[List[float]]:
-        async def one(t: str) -> List[float]:
-            payload = {"model": model, "prompt": t}
+    async def embed_batch(texts):
+        async def one(text):
+            payload = {"model": model, "prompt": text}
             async with embed_semaphore:
-                resp = await asyncio.to_thread(
-                    _http_post_json, url, payload, int(os.getenv("TIMEOUT", "240"))
-                )
-            emb = resp.get("embedding")
-            if not emb:
+                resp = await asyncio.to_thread(_http_post_json, url, payload, timeout)
+            embedding = resp.get("embedding")
+            if not embedding:
                 raise RuntimeError("No embedding returned from Ollama")
-            return emb
+            return embedding
 
-        results = await asyncio.gather(*(one(t) for t in texts))
-        return list(results)
+        if not texts:
+            return []
+        return list(await asyncio.gather(*(one(t) for t in texts)))
 
-    # Dimension is optional; if provided in .env use it, else leave None
     dim = os.getenv("EMBEDDING_DIM")
     embedding_dim = int(dim) if dim and dim.isdigit() else None
 
     return EmbeddingFunc(
         embedding_dim=embedding_dim or 1024,
-        max_token_size=int(os.getenv("MAX_EMBED_TOKENS", "8192")),
+        max_token_size=_env_int("MAX_EMBED_TOKENS", 8192),
         func=embed_batch,
     )
 
 
-async def run(query: str, docs_dir: str = "example_doc", output_dir: str = "./output", vlm_enhanced: Optional[bool] = None):
-    base_dir = Path(__file__).resolve().parent.parent
+DEFAULT_LLM_MODEL = (
+    os.getenv("AZURE_OPENAI_DEPLOYMENT")
+    or os.getenv("LLM_MODEL", "gpt-4o-mini")
+)
+DEFAULT_VISION_MODEL = (
+    os.getenv("AZURE_OPENAI_VISION_DEPLOYMENT")
+    or os.getenv("VISION_MODEL")
+    or "gpt-4o"
+)
+DEFAULT_EMBEDDING_MODEL = (
+    os.getenv("AZURE_EMBEDDING_DEPLOYMENT")
+    or os.getenv("EMBEDDING_MODEL", "text-embedding-3-large")
+)
+DEFAULT_EMBEDDING_DIM = _env_int("EMBEDDING_DIM", 3072)
+DEFAULT_COMPLETION_MAX_TOKENS = _env_int("LLM_COMPLETION_MAX_TOKENS", 512)
 
-    # Resolve working_dir to repo root by default for consistency
-    default_working_dir = str(base_dir / "rag_storage")
-    working_dir = os.getenv("WORKING_DIR", default_working_dir)
 
-    # Use a light config; allow toggling image via env
-    config = RAGAnythingConfig(
-        working_dir=working_dir,
-        parser=os.getenv("PARSER", "mineru"),
-        parse_method=os.getenv("PARSE_METHOD", "auto"),
-        enable_image_processing=os.getenv("ENABLE_IMAGE_PROCESSING", "true").lower() == "true",
-        enable_table_processing=False,
-        enable_equation_processing=False,
+def configure_logging():
+    """Configure logging for the application"""
+    # Get log directory path from environment variable or use current directory
+    log_dir = os.getenv("LOG_DIR", os.getcwd())
+    log_file_path = os.path.abspath(os.path.join(log_dir, "raganything_example.log"))
+
+    print(f"\nRAGAnything example log file: {log_file_path}\n")
+    os.makedirs(os.path.dirname(log_dir), exist_ok=True)
+
+    # Get log file max size and backup count from environment variables
+    log_max_bytes = int(os.getenv("LOG_MAX_BYTES", 10485760))  # Default 10MB
+    log_backup_count = int(os.getenv("LOG_BACKUP_COUNT", 5))  # Default 5 backups
+
+    logging.config.dictConfig(
+        {
+            "version": 1,
+            "disable_existing_loggers": False,
+            "formatters": {
+                "default": {
+                    "format": "%(levelname)s: %(message)s",
+                },
+                "detailed": {
+                    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                },
+            },
+            "handlers": {
+                "console": {
+                    "formatter": "default",
+                    "class": "logging.StreamHandler",
+                    "stream": "ext://sys.stderr",
+                },
+                "file": {
+                    "formatter": "detailed",
+                    "class": "logging.handlers.RotatingFileHandler",
+                    "filename": log_file_path,
+                    "maxBytes": log_max_bytes,
+                    "backupCount": log_backup_count,
+                    "encoding": "utf-8",
+                },
+            },
+            "loggers": {
+                "lightrag": {
+                    "handlers": ["console", "file"],
+                    "level": "INFO",
+                    "propagate": False,
+                },
+            },
+        }
     )
 
-    rag = RAGAnything(
-        config=config,
-        llm_model_func=build_ollama_llm_func(),
-        vision_model_func=build_ollama_vision_func(),
-        embedding_func=build_ollama_embedding_func(),
-    )
+    # Set the logger level to INFO
+    logger.setLevel(logging.INFO)
+    # Enable verbose debug if needed
+    set_verbose_debug(os.getenv("VERBOSE", "false").lower() == "true")
 
-    # Collect files under docs_dir (support running from repo root or examples/)
-    docs_path = Path(docs_dir)
-    if not docs_path.is_absolute():
-        if docs_path.exists() and docs_path.is_dir():
-            pass
-        elif (base_dir / docs_dir).exists() and (base_dir / docs_dir).is_dir():
-            docs_path = base_dir / docs_dir
-        else:
-            raise FileNotFoundError(
-                f"Documents folder not found: {docs_dir}. Tried: '{Path.cwd()/docs_path}', '{base_dir/docs_dir}'"
-            )
 
-    files = [p for p in docs_path.iterdir() if p.is_file()]
-    if not files:
-        raise FileNotFoundError(f"No files found in {docs_dir}")
+async def process_with_rag(
+    input_path: str,
+    output_dir: str,
+    api_key: str,
+    base_url: str = None,
+    working_dir: str = None,
+    parser: str = None,
+):
+    """
+    Process document with RAGAnything
 
-    out_path = Path(output_dir)
-    if not out_path.is_absolute():
-        out_path = base_dir / output_dir
-    os.makedirs(out_path, exist_ok=True)
-    logger.info(f"Using documents dir: {docs_path}")
-    logger.info(f"Using output dir: {out_path}")
-    logger.info(f"Using working dir: {working_dir}")
-
-    # Process each document
-    for f in files:
-        logger.info(f"Processing document: {f}")
-        await rag.process_document_complete(
-            file_path=str(f),
-            output_dir=str(out_path),
-            parse_method=config.parse_method,
-            device="cpu",
+    Args:
+        input_path: Path to a document or directory with documents
+        output_dir: Output directory for RAG results
+        api_key: OpenAI API key
+        base_url: Optional base URL for API
+        working_dir: Working directory for RAG storage
+    """
+    try:
+        # Create RAGAnything configuration
+        config = RAGAnythingConfig(
+            working_dir=working_dir or os.getenv("WORKING_DIR", "./rag_storage"),
+            parser=parser,  # Parser selection: mineru or docling
+            parse_method=os.getenv("PARSE_METHOD", "auto"),
+            enable_image_processing=_env_flag("ENABLE_IMAGE_PROCESSING", "true"),
+            enable_table_processing=_env_flag("ENABLE_TABLE_PROCESSING", "true"),
+            enable_equation_processing=_env_flag("ENABLE_EQUATION_PROCESSING", "true"),
+            enable_micro_planner=_env_flag("ENABLE_MICRO_PLANNER", "true"),
         )
 
-    # Ask
-    logger.info(f"Query: {query}")
-    if vlm_enhanced is None:
-        vlm_enhanced = os.getenv("VLM_ENHANCED", "false").lower() == "true"
-    answer = await rag.aquery(query, mode="hybrid", vlm_enhanced=vlm_enhanced)
-    print("\n===== ANSWER =====\n" + str(answer) + "\n===================\n")
+        # Define LLM model function
+        async def llm_model_func(prompt, system_prompt=None, history_messages=[], **kwargs):
+            kwargs = dict(kwargs)
+            kwargs.setdefault("max_tokens", DEFAULT_COMPLETION_MAX_TOKENS)
+            kwargs.setdefault("temperature", _env_float("TEMPERATURE", 0.2))
+            azure_kwargs = _azure_api_kwargs()
+            return await azure_openai_complete_if_cache(
+                DEFAULT_LLM_MODEL,
+                prompt,
+                system_prompt=system_prompt,
+                history_messages=history_messages,
+                api_key=api_key,
+                base_url=base_url,
+                **azure_kwargs,
+                **kwargs,
+            )
+
+        # Define vision model function for image processing
+        async def vision_model_func(
+            prompt,
+            system_prompt=None,
+            history_messages=[],
+            image_data=None,
+            messages=None,
+            **kwargs,
+        ):
+            # If messages format is provided (for multimodal VLM enhanced query), use it directly
+            if messages:
+                return await azure_openai_complete_if_cache(
+                    DEFAULT_VISION_MODEL,
+                    None,
+                    system_prompt=None,
+                    history_messages=messages,
+                    api_key=api_key,
+                    base_url=base_url,
+                    **_azure_api_kwargs(),
+                    **kwargs,
+                )
+            # Traditional single image format
+            elif image_data:
+                structured_messages = [
+                    (
+                        {"role": "system", "content": system_prompt}
+                        if system_prompt
+                        else None
+                    ),
+                    (
+                        {
+                            "role": "user",
+                            "content": [
+                                {"type": "text", "text": prompt},
+                                {
+                                    "type": "image_url",
+                                    "image_url": {
+                                        "url": f"data:image/jpeg;base64,{image_data}"
+                                    },
+                                },
+                            ],
+                        }
+                        if image_data
+                        else {"role": "user", "content": prompt}
+                    ),
+                ]
+                structured_messages = [m for m in structured_messages if m]
+                return await azure_openai_complete_if_cache(
+                    DEFAULT_VISION_MODEL,
+                    None,
+                    system_prompt=None,
+                    history_messages=structured_messages,
+                    api_key=api_key,
+                    base_url=base_url,
+                    **_azure_api_kwargs(),
+                    **kwargs,
+                )
+            # Pure text format
+            else:
+                return await llm_model_func(
+                    prompt, system_prompt, history_messages, **kwargs
+                )
+
+        # Define embedding function
+        embedding_binding = os.getenv("EMBEDDING_BINDING", "").strip().lower()
+        if embedding_binding == "ollama":
+            embedding_func = _build_ollama_embedding_func()
+        else:
+            embedding_func = EmbeddingFunc(
+                embedding_dim=DEFAULT_EMBEDDING_DIM,
+                max_token_size=_env_int("MAX_EMBED_TOKENS", 8192),
+                func=lambda texts: azure_openai_embed(
+                    texts,
+                    model=DEFAULT_EMBEDDING_MODEL,
+                    api_key=api_key,
+                    base_url=base_url,
+                    **_azure_api_kwargs(),
+                ),
+            )
+
+
+        # Define rerank model function using embedding similarity
+        async def rerank_model_func(
+            query: str, documents: list[str], top_n: int | None = None, **kwargs
+        ) -> list[dict[str, float]]:
+            texts = [query] + documents
+            embeddings = await embedding_func(texts)
+            query_vec = np.array(embeddings[0])
+            doc_vecs = [np.array(e) for e in embeddings[1:]]
+            scores = [float(np.dot(doc_vec, query_vec)) for doc_vec in doc_vecs]
+            ranked = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
+            if top_n is not None:
+                ranked = ranked[:top_n]
+            return [
+                {"index": i, "relevance_score": scores[i]} for i in ranked
+            ]
+
+        # Initialize RAGAnything with new dataclass structure
+        rag = RAGAnything(
+            llm_model_func=llm_model_func,
+            vision_model_func=vision_model_func,
+            embedding_func=embedding_func, 
+            config=config,
+            lightrag_kwargs={"rerank_model_func": rerank_model_func},
+        )
+
+        # Micro planner uses lexical fallback to avoid awaiting async evaluator
+        if rag.micro_planner:
+            rag.micro_planner.evaluator_func = None
+
+        input_root = Path(input_path)
+        if not input_root.exists():
+            raise FileNotFoundError(f"Input path does not exist: {input_path}")
+
+        recursive = _env_flag("RECURSIVE_FOLDER_PROCESSING", "false")
+        supported_exts = set(_env_list("SUPPORTED_FILE_EXTENSIONS"))
+
+        if input_root.is_file():
+            files = [input_root]
+        elif recursive:
+            files = [p for p in input_root.rglob("*") if p.is_file()]
+        else:
+            files = [p for p in input_root.iterdir() if p.is_file()]
+
+        if supported_exts:
+            files = [f for f in files if f.suffix.lower() in supported_exts]
+
+        if not files:
+            raise FileNotFoundError(
+                f"No ingestible files found under {input_path}."
+            )
+
+        max_files = _env_int("MAX_CONCURRENT_FILES", 0)
+        if max_files > 0:
+            files = files[:max_files]
+
+        output_path = Path(output_dir).expanduser()
+        output_path.mkdir(parents=True, exist_ok=True)
+        output_dir = str(output_path)
+
+        for file in files:
+            logger.info(f"Processing document: {file}")
+            await rag.process_document_complete(
+                file_path=str(file),
+                output_dir=output_dir,
+                parse_method=config.parse_method,
+                device="cpu",
+            )
+
+        # Example queries - demonstrating different query approaches
+        logger.info("\nQuerying processed document:")
+
+        # 1. Pure text queries using aquery()
+        text_queries = [
+            "What is the main content of the document?",
+            "What are the key topics discussed?",
+        ]
+
+        for query in text_queries:
+            logger.info(f"\n[Text Query]: {query}")
+            result = await rag.aquery(query, mode="hybrid")
+            logger.info(f"Answer: {result}")
+            await asyncio.sleep(2)
+
+        # # 2. Multimodal query with specific multimodal content using aquery_with_multimodal()
+        # logger.info(
+        #     "\n[Multimodal Query]: Analyzing performance data in context of document"
+        # )
+        # multimodal_result = await rag.aquery_with_multimodal(
+        #     "Compare this performance data with any similar results mentioned in the document",
+        #     multimodal_content=[
+        #         {
+        #             "type": "table",
+        #             "table_data": """Method,Accuracy,Processing_Time
+        #                         RAGAnything,95.2%,120ms
+        #                         Traditional_RAG,87.3%,180ms
+        #                         Baseline,82.1%,200ms""",
+        #             "table_caption": "Performance comparison results",
+        #         }
+        #     ],
+        #     mode="hybrid",
+        # )
+        # logger.info(f"Answer: {multimodal_result}")
+
+        # # 3. Another multimodal query with equation content
+        # logger.info("\n[Multimodal Query]: Mathematical formula analysis")
+        # equation_result = await rag.aquery_with_multimodal(
+        #     "Explain this formula and relate it to any mathematical concepts in the document",
+        #     multimodal_content=[
+        #         {
+        #             "type": "equation",
+        #             "latex": "F1 = 2 \\cdot \\frac{precision \\cdot recall}{precision + recall}",
+        #             "equation_caption": "F1-score calculation formula",
+        #         }
+        #     ],
+        #     mode="hybrid",
+        # )
+        # logger.info(f"Answer: {equation_result}")
+
+    except Exception as e:
+        logger.error(f"Error processing with RAG: {str(e)}")
+        import traceback
+
+        logger.error(traceback.format_exc())
 
 
 def main():
-    parser = argparse.ArgumentParser(description="RAG-Anything + Ollama example")
-    parser.add_argument("--query", "-q", default="Who write Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks", help="Query to ask")
-    parser.add_argument("--docs", default="example_doc", help="Folder of documents to ingest")
-    parser.add_argument("--output", default="./output", help="Output directory for artifacts")
-    parser.add_argument("--vlm", action="store_true", help="Enable VLM enhanced querying (may be heavy)")
+    """Main function to run the example"""
+    parser = argparse.ArgumentParser(description="MinerU RAG Example")
+    parser.add_argument(
+        "--input",
+        "-i",
+        default=os.getenv("INPUT_DIR", "example_doc"),
+        help="Path to a document file or directory to process",
+    )
+    parser.add_argument(
+        "--working_dir",
+        "-w",
+        default=os.getenv("WORKING_DIR", "./rag_storage"),
+        help="Working directory path",
+    )
+    parser.add_argument(
+        "--output",
+        "-o",
+        default=os.getenv("OUTPUT_DIR", "./output"),
+        help="Output directory path",
+    )
+    parser.add_argument(
+        "--api-key",
+        default=os.getenv("LLM_BINDING_API_KEY"),
+        help="OpenAI API key (defaults to LLM_BINDING_API_KEY env var)",
+    )
+    parser.add_argument(
+        "--base-url",
+        default=os.getenv("LLM_BINDING_HOST"),
+        help="Optional base URL for API",
+    )
+    parser.add_argument(
+        "--parser",
+        default=os.getenv("PARSER", "mineru"),
+        help="Optional base URL for API",
+    )
+
     args = parser.parse_args()
 
-    asyncio.run(run(args.query, args.docs, args.output, vlm_enhanced=args.vlm))
+    # Check if API key is provided
+    if not args.api_key:
+        logger.error("Error: OpenAI API key is required")
+        logger.error("Set api key environment variable or use --api-key option")
+        return
+
+    # Create output directory if specified
+    if args.output:
+        os.makedirs(args.output, exist_ok=True)
+
+    # Process with RAG
+    asyncio.run(
+        process_with_rag(
+            args.input,
+            args.output,
+            args.api_key,
+            args.base_url,
+            args.working_dir,
+            args.parser,
+        )
+    )
 
 
 if __name__ == "__main__":
+    # Configure logging first
+    configure_logging()
+
+    print("RAGAnything Example")
+    print("=" * 30)
+    print("Processing document with multimodal RAG pipeline")
+    print("=" * 30)
+
     main()

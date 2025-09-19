@@ -17,10 +17,11 @@ from raganything.utils import (
     encode_image_to_base64,
     validate_image_file,
 )
-from raganything.reflection import ReflectionEngine, ReflectionConfig
+# from raganything.reflection import ReflectionEngine, ReflectionConfig
 from raganything.micro_planner import MicroPlanner, IntentResult, QueryPlan
 import asyncio, inspect
-from typing import List, Dict, Anyfrom raganything.faithful import FaithfulDecodingEngine, FaithfulDecodingConfig
+from typing import List, Dict, Any
+from raganything.faithful import FaithfulDecodingEngine, FaithfulDecodingConfig
 
 
 class QueryMixin:
