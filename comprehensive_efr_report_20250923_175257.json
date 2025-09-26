@@ -1,0 +1,105 @@
+{
+  "evaluation_timestamp": "2025-09-23T17:52:57.242942",
+  "total_queries": 5,
+  "total_results": 10,
+  "system_comparison": {
+    "Standard RAG": {
+      "error": "No successful results"
+    },
+    "Enhanced EFR": {
+      "error": "No successful results"
+    }
+  },
+  "detailed_results": [
+    {
+      "query": "What is the main contribution of this paper?",
+      "system_type": "Standard RAG",
+      "success": false,
+      "error_message": "name 'system_prompt' is not defined",
+      "response_time": 4.789050817489624,
+      "response_length": 0,
+      "overall_score": 0.0
+    },
+    {
+      "query": "What are the key technologies used in ChartCitor?",
+      "system_type": "Standard RAG",
+      "success": false,
+      "error_message": "name 'system_prompt' is not defined",
+      "response_time": 4.595912218093872,
+      "response_length": 0,
+      "overall_score": 0.0
+    },
+    {
+      "query": "How does the multi-agent framework work?",
+      "system_type": "Standard RAG",
+      "success": false,
+      "error_message": "name 'system_prompt' is not defined",
+      "response_time": 5.267426013946533,
+      "response_length": 0,
+      "overall_score": 0.0
+    },
+    {
+      "query": "What are the experimental results and performance metrics?",
+      "system_type": "Standard RAG",
+      "success": false,
+      "error_message": "name 'system_prompt' is not defined",
+      "response_time": 4.452685117721558,
+      "response_length": 0,
+      "overall_score": 0.0
+    },
+    {
+      "query": "How does ChartCitor compare with other baseline methods?",
+      "system_type": "Standard RAG",
+      "success": false,
+      "error_message": "name 'system_prompt' is not defined",
+      "response_time": 4.567340850830078,
+      "response_length": 0,
+      "overall_score": 0.0
+    },
+    {
+      "query": "What is the main contribution of this paper?",
+      "system_type": "Enhanced EFR",
+      "success": false,
+      "error_message": "No LightRAG instance available. Please process documents first or provide a pre-initialized LightRAG instance.",
+      "response_time": 8.344650268554688e-06,
+      "response_length": 0,
+      "overall_score": 0.0
+    },
+    {
+      "query": "What are the key technologies used in ChartCitor?",
+      "system_type": "Enhanced EFR",
+      "success": false,
+      "error_message": "No LightRAG instance available. Please process documents first or provide a pre-initialized LightRAG instance.",
+      "response_time": 0.0,
+      "response_length": 0,
+      "overall_score": 0.0
+    },
+    {
+      "query": "How does the multi-agent framework work?",
+      "system_type": "Enhanced EFR",
+      "success": false,
+      "error_message": "No LightRAG instance available. Please process documents first or provide a pre-initialized LightRAG instance.",
+      "response_time": 9.5367431640625e-07,
+      "response_length": 0,
+      "overall_score": 0.0
+    },
+    {
+      "query": "What are the experimental results and performance metrics?",
+      "system_type": "Enhanced EFR",
+      "success": false,
+      "error_message": "No LightRAG instance available. Please process documents first or provide a pre-initialized LightRAG instance.",
+      "response_time": 0.0,
+      "response_length": 0,
+      "overall_score": 0.0
+    },
+    {
+      "query": "How does ChartCitor compare with other baseline methods?",
+      "system_type": "Enhanced EFR",
+      "success": false,
+      "error_message": "No LightRAG instance available. Please process documents first or provide a pre-initialized LightRAG instance.",
+      "response_time": 0.0,
+      "response_length": 0,
+      "overall_score": 0.0
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+Enhanced EFR Layer Test Results Summary
+==================================================
+
+Test Date: 2025-09-15T14:00:15.210673
+Total Queries: 5
+
+Query Results:
+------------------------------
+
+Query 1: What is the main contribution of this paper?
+  Standard RAG: ✅ 16.624s, 2316 chars
+  Enhanced EFR: ✅ 22.938s, 2241 chars
+  Comparison: Time +38.0%, Length -3.2%
+
+Query 2: What are the key technologies used in ChartCitor?
+  Standard RAG: ✅ 34.952s, 2604 chars
+  Enhanced EFR: ✅ 21.216s, 2198 chars
+  Comparison: Time -39.3%, Length -15.6%
+
+Query 3: How does the multi-agent framework work?
+  Standard RAG: ✅ 17.778s, 2672 chars
+  Enhanced EFR: ✅ 20.796s, 2745 chars
+  Comparison: Time +17.0%, Length +2.7%
+
+Query 4: What are the experimental results and performance metrics?
+  Standard RAG: ✅ 27.719s, 1323 chars
+  Enhanced EFR: ❌ Error code: 403 - {'error': {'message': '预扣费额度失败, 用户剩余额度: ＄0.025474, 需要预扣费额度: ＄0.045442 (request id: 20250915120302400857395kk6EuvtG)', 'type': 'new_api_error', 'param': '', 'code': 'insufficient_user_quota'}}
+
+Query 5: How does ChartCitor compare with other baseline methods?
+  Standard RAG: ❌ Error code: 403 - {'error': {'message': '预扣费额度失败, 用户剩余额度: ＄0.025356, 需要预扣费额度: ＄0.047876 (request id: 20250915120308893940125U5iTEAaw)', 'type': 'new_api_error', 'param': '', 'code': 'insufficient_user_quota'}}
+  Enhanced EFR: ❌ Error code: 403 - {'error': {'message': '预扣费额度失败, 用户剩余额度: ＄0.025350, 需要预扣费额度: ＄0.047876 (request id: 20250915120313822089713rUa2QKyP)', 'type': 'new_api_error', 'param': '', 'code': 'insufficient_user_quota'}}
+
+EFR Features:
+------------------------------
+  multilingual_support: True
+  hybrid_reranking: True
+  robustness_check: True
+  source_reliability: True
+  adaptive_mmr: True
+  mmr_top_k: 5
+  modality_weights: {'text': 1.0, 'table': 1.2, 'equation': 1.1, 'image': 0.8}
+  language_weights: {'zh': 1.0, 'en': 1.0}

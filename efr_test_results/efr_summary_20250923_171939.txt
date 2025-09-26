@@ -1,0 +1,44 @@
+Enhanced EFR Layer Test Results Summary
+==================================================
+
+Test Date: 2025-09-23T17:17:21.144374
+Total Queries: 5
+
+Query Results:
+------------------------------
+
+Query 1: What is the main contribution of this paper?
+  Standard RAG: ✅ 14.760s, 2454 chars
+  Enhanced EFR: ✅ 11.110s, 1492 chars
+  Comparison: Time -24.7%, Length -39.2%
+
+Query 2: What are the key technologies used in ChartCitor?
+  Standard RAG: ✅ 16.413s, 2642 chars
+  Enhanced EFR: ✅ 14.925s, 2369 chars
+  Comparison: Time -9.1%, Length -10.3%
+
+Query 3: How does the multi-agent framework work?
+  Standard RAG: ✅ 15.185s, 2884 chars
+  Enhanced EFR: ✅ 14.088s, 2661 chars
+  Comparison: Time -7.2%, Length -7.7%
+
+Query 4: What are the experimental results and performance metrics?
+  Standard RAG: ✅ 13.320s, 1607 chars
+  Enhanced EFR: ✅ 12.697s, 1905 chars
+  Comparison: Time -4.7%, Length +18.5%
+
+Query 5: How does ChartCitor compare with other baseline methods?
+  Standard RAG: ✅ 14.118s, 2403 chars
+  Enhanced EFR: ✅ 12.096s, 1813 chars
+  Comparison: Time -14.3%, Length -24.6%
+
+EFR Features:
+------------------------------
+  multilingual_support: True
+  hybrid_reranking: True
+  robustness_check: True
+  source_reliability: True
+  adaptive_mmr: True
+  mmr_top_k: 5
+  modality_weights: {'text': 1.0, 'table': 1.2, 'equation': 1.1, 'image': 0.8}
+  language_weights: {'zh': 1.0, 'en': 1.0}

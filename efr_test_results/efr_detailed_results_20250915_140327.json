@@ -1,0 +1,117 @@
+{
+  "query_results": {
+    "timestamp": "2025-09-15T14:00:15.210673",
+    "queries": [
+      {
+        "query_id": 1,
+        "question": "What is the main contribution of this paper?",
+        "standard_rag": {
+          "success": true,
+          "response_time": 16.624191999435425,
+          "response_length": 2316,
+          "response": "### Main Contribution\n\nThe paper presents **ChartCitor**, a novel multi-agent framework designed to improve visual chart understanding, particularly in chart question-answering (QA) tasks with large language models (LLMs). A key contribution of ChartCitor is its ability to provide fine-grained bounding box citations that ground LLM-generated responses in chart images, thereby enhancing the accuracy and trustworthiness of AI-generated answers. This is accomplished by orchestrating various specialized LLM agents to perform tasks such as chart-to-table extraction, answer reformulation, evidence retrieval, and visual data localization [DC 2502.00989v1.pdf].\n\n### System Workflow\n\nChartCitor's workflow involves multiple components, including a Table Extraction Agent, which converts charts into structured table formats, and an Entity Captioning Agent, which generates contextual descriptions for table elements. The Answer Reformulation Agent facilitates more accurate citations by breaking down responses into logical steps. ChartCitor also employs pre-filtering and re-ranking agents to refine cell retrieval based on relevance scores, ensuring precise citation matching. This process culminates in the Cell Localization Agent, which pinpoints visual elements in chart images [DC 2502.00989v1.pdf; DC 2502.00989v1.pdf].\n\n### Evaluation and Results\n\nEmpirical evaluations demonstrate that ChartCitor significantly outperforms existing models like LISA and Kosmos-2 in visual grounding tasks, achieving a high Intersection over Union (IoU) score of 27.4, which indicates its robustness in mapping visual elements to factual assertions. User studies further validate ChartCitor's effectiveness, with participants rating its citations as more accurate than those produced by GPT-4o [DC 2502.00989v1.pdf; KG ChartCitor - Performance Comparison of Chart Interpretation Methods (table)].\n\n### Conclusion\n\nOverall, ChartCitor represents a substantial advancement in chart QA by integrating multiple LLM agents for enhanced accuracy and reliability of AI-generated responses. Future work could focus on multi-chart interactions and improving multimodal content generation [DC 2502.00989v1.pdf].\n\n### References\n\n- [DC] 2502.00989v1.pdf\n- [KG] ChartCitor - Performance Comparison of Chart Interpretation Methods (table)"
+        },
+        "enhanced_efr": {
+          "success": true,
+          "response_time": 22.937941789627075,
+          "response_length": 2241,
+          "response": "### Main Contribution\n\nThe primary contribution of this paper is the introduction of **ChartCitor**, a comprehensive multi-agent framework designed to enhance accuracy in chart question-answering tasks through fine-grained bounding box citations. ChartCitor addresses key challenges faced by Large Language Models (LLMs) in generating accurate responses from chart data, such as hallucinations and the difficulty of mapping visual elements to source charts. By orchestrating multiple LLM agents, ChartCitor effectively extracts structured data from charts, reformulates answers, augments tables, retrieves evidence, and aligns answers with chart elements, leading to more reliable and explained citations.\n\n### Framework and Evaluation\n\nChartCitor leverages several components like the Chart2Table Extraction Agent for translating charts into structured formats, the Answer Reformulation Agent for decomposing answers into logical steps, and the Entity Captioning Agent for generating comprehensive descriptions. Furthermore, a user study demonstrated ChartCitor's superior performance and utility compared to direct GPT-4o prompting, with users rating its attributions as more accurate and useful for verifying chart-based queries [DC 2502.00989v1.pdf].\n\n### Performance Advantage\n\nThe framework significantly outperforms existing models, achieving an Intersection over Union (IoU) score of 27.4, which is higher than baseline models like Kosmos-2 and LISA. This empirical evidence highlights ChartCitor's robustness in visual grounding tasks, marking a substantial stride in multimodal AI understanding and citation accuracy [DC 2502.00989v1.pdf].\n\n### Conclusion\n\nChartCitor is presented as a promising solution for grounding LLM-generated responses in chart QA tasks, enhancing user trust and professional productivity by reducing hallucinations and improving explainability. While it currently excels in single-chart citations, opportunities exist for future work addressing more complex interactions across multiple charts and stronger citation-text mapping [DC 2502.00989v1.pdf].\n\n### References\n\n- [DC] 2502.00989v1.pdf\n- [KG] ChartCitor - User Study\n- [KG] ChartCitor - Performance Comparison of Chart Interpretation Methods (table)"
+        },
+        "comparison": {
+          "time_difference_percent": 37.97928819882537,
+          "length_difference_percent": -3.2383419689119166
+        }
+      },
+      {
+        "query_id": 2,
+        "question": "What are the key technologies used in ChartCitor?",
+        "standard_rag": {
+          "success": true,
+          "response_time": 34.95217680931091,
+          "response_length": 2604,
+          "response": "### Key Technologies Used in ChartCitor\n\nChartCitor employs several advanced technologies and components to enhance its performance in visual chart understanding and information extraction:\n\n1. **DETR (Detection Transformer)**: This is an image processing algorithm used by ChartCitor for identifying visual data marks such as bars and pie slices in chart images. It assists in the visualization process by providing bounding box predictions for chart elements, aiding in the accurate localization of data [KG] ChartCitor - DETR.\n\n2. **Multimodal Language Models (LLMs)**: ChartCitor integrates large language models such as GPT-4o, GPT-4V, and Claude-3.5 Sonnet for various tasks including generating descriptive captions, processing textual data, and performing extraction and reasoning over chart images. These models are central to ChartCitor's ability to process both text and visual data efficiently [KG] ChartCitor - GPT-4o, [KG] ChartCitor - GPT-4V.\n\n3. **LLM Agents and Components**: The system incorporates several LLM agents, each responsible for specific aspects of processing. For instance, the Table Extraction Agent transforms chart data into structured formats, and the LLM Prefiltering and Re-Ranking Agents enhance citation retrieval by selecting the most relevant data points for supporting claims made in text responses. RankGPT is one such re-ranking tool used to optimize citation accuracy [KG] ChartCitor - LLM Agents, [KG] ChartCitor - RankGPT.\n\n4. **Visual Fact Checking Framework**: Visual fact-checking is a core capability in ChartCitor, where extracted information from charts is verified against visual data to ensure accuracy. This involves integrating visual Intersection over Union (IoU) metrics to evaluate and validate the correctness of detected chart elements [KG] ChartCitor - Visual Fact Checking, [KG] ChartCitor - visual Intersection over Union (IoU).\n\n5. **Cell Localization and Set-of-Marks Techniques**: The Cell Localization Agent is used to map cited table cells to their corresponding visual elements in charts. This process is supported by DETR and set-of-marks prompting, which assists in the precise visual grounding necessary for accurate citation [KG] Cell Localization Agent, [KG] ChartCitor - DETR.\n\nChartCitor's use of these technologies enables it to provide robust and reliable visual insights and citations, outperforming other models in handling chart-based queries effectively.\n\n### References\n- [KG] ChartCitor - DETR\n- [KG] ChartCitor - GPT-4o\n- [KG] ChartCitor - GPT-4V\n- [KG] ChartCitor - LLM Agents\n- [KG] ChartCitor - Visual Fact Checking"
+        },
+        "enhanced_efr": {
+          "success": true,
+          "response_time": 21.215931177139282,
+          "response_length": 2198,
+          "response": "## Key Technologies Used in ChartCitor\n\nChartCitor leverages a blend of advanced technologies to enhance its capabilities in visual chart understanding and data extraction.\n\n### Multimodal Language Models (LLMs)\nChartCitor utilizes several LLMs including GPT-4o and GPT-4V, for its operations. Specifically, GPT-4o is employed for generating descriptive captions and processing textual data, while GPT-4V aids in tasks such as data extraction and answer reformulation [KG] ChartCitor - GPT-4o, [KG] ChartCitor - GPT-4V.\n\n### DETR for Image Processing\nThe system employs the DETR algorithm to identify visual data marks like bars and pie slices in chart images, which is crucial for precise visual data interpretation and bounding box creation [KG] ChartCitor - DETR.\n\n### RankGPT for Re-ranking Processes\nTo enhance citation retrieval performance, ChartCitor incorporates RankGPT. This tool plays a critical role in re-ranking table cells to determine their relevance to answer claims, ensuring higher accuracy and structure in citations [KG] ChartCitor - RankGPT.\n\n### Cell Localization and Set-of-Marks\nChartCitor uses a Cell Localization Agent coupled with visual self-reflection techniques and a set-of-marks prompting. This setup accurately maps table cells to visual chart elements, generating bounding box coordinates that correspond to cited data points [KG] Cell Localization Agent - ChartCitor System Workflow Diagram (image).\n\n### Visual Fact Checking and Multimodal Retrieval\nThe framework also emphasizes visual fact checking by integrating multimodal retrieval techniques to verify the accuracy of LLM-generated answers and provide reliable chart-based citations [KG] ChartCitor - Visual Fact Checking, [KG] ChartCitor - Multimodal Retrieval.\n\nThese technologies collectively allow ChartCitor to outperform other models by providing more robust and accurate visual grounding and chart data interpretation [KG] ChartCitor - Performance Comparison of Chart Interpretation Methods (table).\n\n## References\n- [KG] ChartCitor - GPT-4o\n- [KG] ChartCitor - GPT-4V\n- [KG] ChartCitor - DETR\n- [KG] ChartCitor - RankGPT\n- [KG] Cell Localization Agent - ChartCitor System Workflow Diagram (image)"
+        },
+        "comparison": {
+          "time_difference_percent": -39.300114860120615,
+          "length_difference_percent": -15.591397849462366
+        }
+      },
+      {
+        "query_id": 3,
+        "question": "How does the multi-agent framework work?",
+        "standard_rag": {
+          "success": true,
+          "response_time": 17.778017044067383,
+          "response_length": 2672,
+          "response": "# The Multi-Agent Framework of ChartCitor\n\nThe multi-agent framework in ChartCitor is designed to address challenges associated with chart-based question answering tasks. This framework employs multiple specialized Language Model (LLM) agents to ensure accurate information extraction and citation from chart images. Here's a detailed look at how this framework operates:\n\n## Workflow Components\n\n1. **Table Extraction Agent**: This is the initial stage, where the framework processes an input chart and converts it into an HTML table format using few-shot examples. This step sets the groundwork for further data extraction by providing a structured representation of the chart data [DC] 2502.00989v1.pdf.\n\n2. **Entity Captioning Agent**: Once the HTML table is prepared, this agent generates detailed descriptions for rows, columns, and cells. These captions provide context and enhance the semantic understanding of the table contents, thereby improving linkages between chart visuals and associated data [DC] 2502.00989v1.pdf.\n\n3. **LLM Prefiltering Agent**: It hypothesizes about the relevance of table rows and columns to the answer facts. This agent employs chain-of-thought and plan-and-solve prompting to generate relevance scores, which help in filtering out irrelevant data before re-ranking [DC] 2502.00989v1.pdf. \n\n4. **LLM Re-Ranking Agent**: Using RankGPT, this agent re-evaluates the filtered data to select the most relevant table cells that directly support answer claims. This step minimizes misinformation, improving citation accuracy [KG] LLM Re-ranking Agent - RankGPT.\n\n5. **Cell Localization Agent**: The final step involves mapping the previously cited table cells to their corresponding visual elements in the chart image. This is achieved by generating bounding box coordinates to accurately localize these elements, ensuring a precise match between visual data and cited claims [DC] 2502.00989v1.pdf.\n\n## Outcome and Evaluation\n\nChartCitor's multi-agent framework is evaluated using various metrics like the Intersection over Union (IoU), where it outperforms other models such as GPT-4V and LISA in visual grounding tasks, achieving a higher IoU score [DC] 2502.00989v1.pdf. The user evaluations indicate that ChartCitor provided more accurate citations, enhancing user trust and reducing the time needed for manual verification [DC] 2502.00989v1.pdf.\n\n## References\n\n- Chart-to-Table Extraction Agent [DC] 2502.00989v1.pdf\n- Entity Captioning Agent [DC] 2502.00989v1.pdf\n- LLM Prefiltering Agent [DC] 2502.00989v1.pdf\n- LLM Re-ranking Agent - RankGPT [KG]\n- Performance Comparison of Chart Interpretation Methods (table) [DC] 2502.00989v1.pdf"
+        },
+        "enhanced_efr": {
+          "success": true,
+          "response_time": 20.796051025390625,
+          "response_length": 2745,
+          "response": "## Multi-Agent Framework of ChartCitor\n\nChartCitor is a sophisticated multi-agent framework designed to enhance the accuracy of answer citations in chart question-answering tasks. The system orchestrates several specialized Large Language Model (LLM) agents to perform a series of tasks that transform input chart data into reliable and well-cited information.\n\n### Key Components\n\n1. **Chart-to-Table Extraction Agent**: This agent handles the initial conversion of chart images into structured data tables, such as HTML or CSV formats. It utilizes few-shot prompting with GPT-4V to achieve consistent re-plotted outputs, ensuring the extracted tables accurately reflect the original chart elements [DC] 2502.00989v1.pdf.\n\n2. **Entity Captioning Agent**: This agent expands the structured tables into detailed contextual descriptions at the row, column, and cell levels. It uses advanced techniques to generate rich semantic insights, which help in deciphering complex tabular data [DC] 2502.00989v1.pdf.\n\n3. **LLM Prefiltering Agent**: By establishing relevance scores for each table element, this agent filters out unrelated rows and columns before the re-ranking process. This step minimizes noise and ensures that only potentially relevant data is considered in the final decision-making process [KG] LLM Prefiltering Agent - Score Filter.\n\n4. **LLM Re-Ranking Agent**: Utilizing RankGPT, this agent refines the selection of table cells, ensuring that the citations directly support the claims made in the answers. This process enhances the logical consistency and decreases the likelihood of hallucinated responses [KG] LLM Re-ranking Agent - RankGPT.\n\n5. **Cell Localization Agent**: The final step involves this agent mapping identified table cells to their corresponding visual elements on the chart. It employs algorithms like DETR to generate bounding box coordinates, enabling precise localization of cited areas in the visualization [KG] Cell Localization Agent - Bounding Box Coordinates.\n\n### Results and Impact\n\nThe coordination of these agents allows ChartCitor to outperform competing models in visual grounding tasks, as demonstrated by its superior Intersection over Union (IoU) scores [DC] Performance Comparison of Chart Interpretation Methods (table). The system's ability to deliver clear and verifiable citations significantly boosts user trust in AI-generated chart analyses, providing a reliable tool for extracting and verifying information from complex chart data.\n\n### References\n\n- [DC] 2502.00989v1.pdf\n- [KG] LLM Prefiltering Agent - Score Filter\n- [KG] LLM Re-ranking Agent - RankGPT\n- [KG] Cell Localization Agent - Bounding Box Coordinates\n- [DC] Performance Comparison of Chart Interpretation Methods (table)"
+        },
+        "comparison": {
+          "time_difference_percent": 16.97621266670107,
+          "length_difference_percent": 2.7320359281437128
+        }
+      },
+      {
+        "query_id": 4,
+        "question": "What are the experimental results and performance metrics?",
+        "standard_rag": {
+          "success": true,
+          "response_time": 27.718669652938843,
+          "response_length": 1323,
+          "response": "## Experimental Results and Performance Metrics\n\nThe experimental results focus on the performance of ChartCitor compared to other models in visual grounding tasks. ChartCitor significantly outperforms other methods in mapping visual elements with the highest Intersection over Union (IoU) score of 27.4, indicating its superior accuracy and robustness. This score is notably higher than those of other methods, such as Kosmos-2, LISA, and GPT-4V, which scored 3.89, 4.34, and 12.5 respectively [KG] ChartCitor - Table Analysis; [DC] 2502.00989v1.pdf.\n\nAdditionally, user evaluations further reinforce ChartCitor's effectiveness. In the \"Completely ACCURATE\" category, ChartCitor was rated above 60%, significantly surpassing GPT-4o, which scored around 40%. This demonstrates ChartCitor's superior accuracy in verifying chart-based question answering, aligning with its strong performance in empirical tests [KG] ChartCitor - Accuracy Comparison; [DC] 2502.00989v1.pdf. \n\nOverall, the performance metrics reflect ChartCitor's capability to handle complex visual grounding tasks and enhance citation accuracy, contributing positively to user trust and efficiency in data interpretation and verification tasks.\n\n## References\n- [KG] ChartCitor - Table Analysis\n- [KG] ChartCitor - Accuracy Comparison\n- [DC] 2502.00989v1.pdf"
+        },
+        "enhanced_efr": {
+          "success": false,
+          "error": "Error code: 403 - {'error': {'message': '预扣费额度失败, 用户剩余额度: ＄0.025474, 需要预扣费额度: ＄0.045442 (request id: 20250915120302400857395kk6EuvtG)', 'type': 'new_api_error', 'param': '', 'code': 'insufficient_user_quota'}}"
+        },
+        "comparison": {}
+      },
+      {
+        "query_id": 5,
+        "question": "How does ChartCitor compare with other baseline methods?",
+        "standard_rag": {
+          "success": false,
+          "error": "Error code: 403 - {'error': {'message': '预扣费额度失败, 用户剩余额度: ＄0.025356, 需要预扣费额度: ＄0.047876 (request id: 20250915120308893940125U5iTEAaw)', 'type': 'new_api_error', 'param': '', 'code': 'insufficient_user_quota'}}"
+        },
+        "enhanced_efr": {
+          "success": false,
+          "error": "Error code: 403 - {'error': {'message': '预扣费额度失败, 用户剩余额度: ＄0.025350, 需要预扣费额度: ＄0.047876 (request id: 20250915120313822089713rUa2QKyP)', 'type': 'new_api_error', 'param': '', 'code': 'insufficient_user_quota'}}"
+        },
+        "comparison": {}
+      }
+    ]
+  },
+  "efr_features": {
+    "multilingual_support": true,
+    "hybrid_reranking": true,
+    "robustness_check": true,
+    "source_reliability": true,
+    "adaptive_mmr": true,
+    "mmr_top_k": 5,
+    "modality_weights": {
+      "text": 1.0,
+      "table": 1.2,
+      "equation": 1.1,
+      "image": 0.8
+    },
+    "language_weights": {
+      "zh": 1.0,
+      "en": 1.0
+    },
+    "multimodal_query": {
+      "success": false,
+      "error": "Error code: 403 - {'error': {'message': '预扣费额度失败, 用户剩余额度: ＄0.024790, 需要预扣费额度: ＄0.045116 (request id: 2025091512032782461396yW7PclEu)', 'type': 'new_api_error', 'param': '', 'code': 'insufficient_user_quota'}}"
+    }
+  }
+}

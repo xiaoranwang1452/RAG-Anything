@@ -1,0 +1,297 @@
+{
+  "doc-f014b24ce67c2f1f72fcd018e10b6ae9": {
+    "relation_pairs": [
+      [
+        "ChartCitor System Workflow Diagram (image)",
+        "HTML Table"
+      ],
+      [
+        "LISA",
+        "Table Analysis"
+      ],
+      [
+        "Cell Localization Agent",
+        "ChartCitor"
+      ],
+      [
+        "Table Analysis",
+        "Visual Grounding Tasks"
+      ],
+      [
+        "Cell Localization Agent",
+        "ChartCitor System Workflow Diagram (image)"
+      ],
+      [
+        "ChartCitor System Workflow Diagram (image)",
+        "Input Chart"
+      ],
+      [
+        "ChartCitor",
+        "Entity Captioning Agent"
+      ],
+      [
+        "Accuracy Comparison Bar Chart (image)",
+        "Accuracy Evaluation"
+      ],
+      [
+        "Claude-3.5 (Sonnet Direct Bbox Decoding)",
+        "Table Analysis"
+      ],
+      [
+        "Accuracy Comparison Bar Chart (image)",
+        "Somewhat INACCURATE"
+      ],
+      [
+        "Cell Captions",
+        "ChartCitor System Workflow Diagram (image)"
+      ],
+      [
+        "ChartCitor System Workflow Diagram (image)",
+        "RankGPT"
+      ],
+      [
+        "Accuracy Comparison",
+        "Accuracy Evaluation"
+      ],
+      [
+        "Accuracy Comparison",
+        "Somewhat INACCURATE"
+      ],
+      [
+        "Accuracy Comparison Bar Chart (image)",
+        "Completely INACCURATE"
+      ],
+      [
+        "Kosmos-2",
+        "Table Analysis"
+      ],
+      [
+        "Bounding Box Coordinates",
+        "ChartCitor System Workflow Diagram (image)"
+      ],
+      [
+        "Advanced Models",
+        "Historical Models"
+      ],
+      [
+        "DETR [2]+ Set-of-Marks Prompting [21]",
+        "Performance Comparison of Chart Interpretation Methods (table)"
+      ],
+      [
+        "Accuracy Comparison Bar Chart (image)",
+        "GPT-4o"
+      ],
+      [
+        "GPT-4V (Direct Bbox Decoding)",
+        "Table Analysis"
+      ],
+      [
+        "LISA",
+        "Performance Comparison of Chart Interpretation Methods (table)"
+      ],
+      [
+        "Accuracy Comparison",
+        "Completely INACCURATE"
+      ],
+      [
+        "Intersection over Union (IoU)",
+        "Table Analysis"
+      ],
+      [
+        "ChartCitor",
+        "Performance Comparison of Chart Interpretation Methods (table)"
+      ],
+      [
+        "ChartCitor",
+        "LLM Prefiltering Agent"
+      ],
+      [
+        "ChartCitor System Workflow Diagram (image)",
+        "Entity Captioning Agent"
+      ],
+      [
+        "ANSWER CITATIONS",
+        "Answer Reformulation Agent"
+      ],
+      [
+        "Accuracy Comparison Bar Chart (image)",
+        "Somewhat ACCURATE"
+      ],
+      [
+        "Bounding Box Coordinates",
+        "Cell Localization Agent"
+      ],
+      [
+        "Claude-3.5 (Sonnet Direct Bbox Decoding)",
+        "Performance Comparison of Chart Interpretation Methods (table)"
+      ],
+      [
+        "Performance Comparison of Chart Interpretation Methods (table)",
+        "Performance Scores"
+      ],
+      [
+        "ANSWER CITATIONS",
+        "ChartCitor System Workflow Diagram (image)"
+      ],
+      [
+        "Answer Reformulation Agent",
+        "ChartCitor"
+      ],
+      [
+        "Accuracy Comparison",
+        "Somewhat ACCURATE"
+      ],
+      [
+        "ChartCitor",
+        "Table Extraction Agent"
+      ],
+      [
+        "ChartCitor",
+        "Table Analysis"
+      ],
+      [
+        "Answer Reformulation Agent",
+        "ChartCitor System Workflow Diagram (image)"
+      ],
+      [
+        "Historical Models",
+        "Performance Comparison of Chart Interpretation Methods (table)"
+      ],
+      [
+        "LLM Re-Ranking Agent",
+        "RankGPT"
+      ],
+      [
+        "Accuracy Comparison",
+        "GPT-4o"
+      ],
+      [
+        "Accuracy Comparison Bar Chart (image)",
+        "ChartCitor"
+      ],
+      [
+        "Entity Captioning Agent",
+        "HTML Table"
+      ],
+      [
+        "Kosmos-2",
+        "Performance Comparison of Chart Interpretation Methods (table)"
+      ],
+      [
+        "Accuracy Comparison Bar Chart (image)",
+        "User Evaluation Results"
+      ],
+      [
+        "Accuracy Comparison Bar Chart (image)",
+        "Performance Metrics"
+      ],
+      [
+        "ChartCitor",
+        "ChartCitor System Workflow Diagram (image)"
+      ],
+      [
+        "Advanced Models",
+        "Performance Comparison of Chart Interpretation Methods (table)"
+      ],
+      [
+        "Atomic Fact",
+        "LLM Prefiltering Agent"
+      ],
+      [
+        "Performance Comparison of Chart Interpretation Methods (table)",
+        "Table Analysis"
+      ],
+      [
+        "ChartCitor",
+        "LLM Re-Ranking Agent"
+      ],
+      [
+        "ChartCitor System Workflow Diagram (image)",
+        "LLM Prefiltering Agent"
+      ],
+      [
+        "Accuracy Comparison",
+        "ChartCitor"
+      ],
+      [
+        "Intersection over Union (IoU)",
+        "Performance Comparison of Chart Interpretation Methods (table)"
+      ],
+      [
+        "GPT-4V (Direct Bbox Decoding)",
+        "Performance Comparison of Chart Interpretation Methods (table)"
+      ],
+      [
+        "Performance Comparison of Chart Interpretation Methods (table)",
+        "Visual Grounding Tasks"
+      ],
+      [
+        "Accuracy Comparison",
+        "Accuracy Comparison Bar Chart (image)"
+      ],
+      [
+        "ChartCitor System Workflow Diagram (image)",
+        "Set-of-Marks"
+      ],
+      [
+        "Accuracy Comparison Bar Chart (image)",
+        "Completely ACCURATE"
+      ],
+      [
+        "Accuracy Evaluation",
+        "User Evaluation Results"
+      ],
+      [
+        "ChartCitor System Workflow Diagram (image)",
+        "Table Extraction Agent"
+      ],
+      [
+        "Input Chart",
+        "Table Extraction Agent"
+      ],
+      [
+        "Accuracy Evaluation",
+        "Performance Metrics"
+      ],
+      [
+        "Cell Localization Agent",
+        "Set-of-Marks"
+      ],
+      [
+        "Accuracy Comparison",
+        "Completely ACCURATE"
+      ],
+      [
+        "Atomic Fact",
+        "ChartCitor System Workflow Diagram (image)"
+      ],
+      [
+        "ChartCitor System Workflow Diagram (image)",
+        "Score Filter"
+      ],
+      [
+        "ChartCitor System Workflow Diagram (image)",
+        "LLM Re-Ranking Agent"
+      ],
+      [
+        "ChartCitor System Workflow Diagram (image)",
+        "Row Captions"
+      ],
+      [
+        "DETR [2]+ Set-of-Marks Prompting [21]",
+        "Table Analysis"
+      ],
+      [
+        "LLM Prefiltering Agent",
+        "Score Filter"
+      ],
+      [
+        "ChartCitor System Workflow Diagram (image)",
+        "Column Captions"
+      ]
+    ],
+    "count": 72,
+    "update_time": 1757908811,
+    "_id": "doc-f014b24ce67c2f1f72fcd018e10b6ae9"
+  }
+}

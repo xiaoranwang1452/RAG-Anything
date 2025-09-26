@@ -1,0 +1,48 @@
+{
+  "doc-35dab1a9670eaded36457f5dd92f5ad7": {
+    "status": "processed",
+    "chunks_count": 29,
+    "chunks_list": [
+      "chunk-be11ff19951a5da380ec7c57e9d0f774",
+      "chunk-0c4d1e9cd488cf919d40a859d03c9295",
+      "chunk-2a058689f396f9948869181b4e35d86b",
+      "chunk-9b9de140312f67e7f2d6598149a691f8",
+      "chunk-d3fd620aa30bf6560c0452e3e22a5b82",
+      "chunk-e08c0b053c99ea6a92ea4f3beba5f921",
+      "chunk-5f2c9353b0b8313cea8dd93521358493",
+      "chunk-23a7f06b95f84637f32c50a9f98890ad",
+      "chunk-ef47fd07a7377b94f11ee0a4348cf1b1",
+      "chunk-6b046b3a3d5c9333bae80b4874d68e8a",
+      "chunk-88b6afd1a5461a754df54d609b370742",
+      "chunk-621349422796d54fe59c686c4614e2ce",
+      "chunk-82335384732cb1d22a6f2ebb27ac180c",
+      "chunk-b3e73eca6691f1d73f88752711bc074c",
+      "chunk-d70c6f37764e4792ca46bea09a315724",
+      "chunk-3547e8b4b8c6d06e5c87ace847239e13",
+      "chunk-ed49c26a398a6bba5d1b396a04a8fc38",
+      "chunk-3cb3c70372c63f01c7e14e4ca3b06e1c",
+      "chunk-67a3cd875d9c37aecd1b5e13b208485f",
+      "chunk-f81b9b5d1c9a7a4813270007967c2bf8",
+      "chunk-e677e8584c8111e2fbb38897fae32287",
+      "chunk-0e88be2ccc273f5476f809546920b89f",
+      "chunk-5a0294c30c4299ee3e2c0f5a634e94c0",
+      "chunk-9602588f9a41c6c9eaeca67413aaf7ae",
+      "chunk-1dd05d174cc46f951f0f9378efa364a9",
+      "chunk-0dc5f0a2ca0f99aef13c5f054b56fd98",
+      "chunk-4987aa3e480b586e707cdca6ecf793c5",
+      "chunk-497ebdf7aed01bdfbf8a90a7f8a88d97",
+      "chunk-fcc8a31ee693dbfc5b99acc3539c58ca"
+    ],
+    "content_summary": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks \n\nPatrick Lewis†‡, Ethan Perez?, \n\nAleksandra Piktus†, Fabio Petroni†, Vladimir Karpukhin†, Naman Goyal†, Heinrich Küttler†, \n\nMike Lewis†, Wen-tau $\\mathbf { V i h } ^ { \\dagger }$ , T...",
+    "content_length": 64572,
+    "created_at": "2025-09-14T16:07:50.116777+00:00",
+    "updated_at": "2025-09-15T02:17:36+00:00",
+    "file_path": "2005.11401v4.pdf",
+    "track_id": "insert_20250915_020750_912015e8",
+    "metadata": {
+      "processing_start_time": 1757866070,
+      "processing_end_time": 1757866344
+    },
+    "multimodal_processed": true
+  }
+}

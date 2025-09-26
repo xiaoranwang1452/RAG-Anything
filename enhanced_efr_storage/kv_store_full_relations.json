@@ -1,0 +1,1073 @@
+{
+  "doc-35dab1a9670eaded36457f5dd92f5ad7": {
+    "relation_pairs": [
+      [
+        "Jeopardy-QGen",
+        "RAG-Sequence"
+      ],
+      [
+        "Minimalist Background",
+        "RAG Performance Metrics Image (image)"
+      ],
+      [
+        "FEVER-2-way",
+        "FEVER-3-way"
+      ],
+      [
+        "Comparative Model Generations for Question Answering (table)",
+        "Middle Ear"
+      ],
+      [
+        "RAG-Token Probability Model (equation)",
+        "Seq2seq Generator"
+      ],
+      [
+        "p _ { \\mathrm { R A G . S e q u e n c e } } ( y | x ) ",
+        "p_{\\\\eta}"
+      ],
+      [
+        "BART",
+        "RAG-Token"
+      ],
+      [
+        "Diagram",
+        "RAG System Process Diagram (image)"
+      ],
+      [
+        "BART",
+        "RAG Models"
+      ],
+      [
+        "Human Assessments for Jeopardy Question Generation (table)",
+        "Specificity"
+      ],
+      [
+        "BART",
+        "RAG-Sequence"
+      ],
+      [
+        "Fixed DPR",
+        "Turquoise Line"
+      ],
+      [
+        "Bayesian Inference",
+        "Probabilistic Model"
+      ],
+      [
+        "Bleu-1 / Rouge-L score",
+        "RAG-Seq"
+      ],
+      [
+        "Open-Domain QA Tasks",
+        "T5"
+      ],
+      [
+        "BART",
+        "Tri-gram Diversity Ratios in Generation Tasks (table)"
+      ],
+      [
+        "Comparative Model Generations for Question Answering (table)",
+        "MS-MARCO"
+      ],
+      [
+        "Latent Space",
+        "document z"
+      ],
+      [
+        "FEVER-2",
+        "RAG Performance Results Table (table)"
+      ],
+      [
+        "Model Performance Comparison Table for RAG-based Architectures (table)",
+        "WQ"
+      ],
+      [
+        "Performance Metrics",
+        "RAG-Sequence"
+      ],
+      [
+        "Long-Dashed Orange Line",
+        "RAG-Tok"
+      ],
+      [
+        "Specificity",
+        "Table 4"
+      ],
+      [
+        "RAG System Process Diagram (image)",
+        "Visual Analysis"
+      ],
+      [
+        "BM25",
+        "RAG Performance Metrics Image (image)"
+      ],
+      [
+        "MSMARCO SotA",
+        "RAG Performance Results Table (table)"
+      ],
+      [
+        "Model Performance Comparison Table for RAG-based Architectures (table)",
+        "TQA"
+      ],
+      [
+        "RAG-Token",
+        "Tri-gram Diversity Ratios in Generation Tasks (table)"
+      ],
+      [
+        "Performance Metrics",
+        "Tri-gram Diversity Ratios in Generation Tasks (table)"
+      ],
+      [
+        "RAG Performance Metrics Image (image)",
+        "RAG-Tok"
+      ],
+      [
+        "Diagram",
+        "Retrieval-Augmented Generation (RAG) System"
+      ],
+      [
+        "RAG System Process Diagram (image)",
+        "Retrieval-Augmented Generation (RAG) System"
+      ],
+      [
+        "Inner Product",
+        "document z"
+      ],
+      [
+        "Open-Domain QA Tasks",
+        "RAG-Sequence"
+      ],
+      [
+        "RAG Performance Results Table (table)",
+        "Table 2"
+      ],
+      [
+        "A Farewell to Arms",
+        "Doc 1"
+      ],
+      [
+        "Probabilistic Model",
+        "RAG-Token Probability Model (equation)"
+      ],
+      [
+        "Comparative Model Generations for Question Answering (table)",
+        "Task"
+      ],
+      [
+        "BM25",
+        "Dotted Purple Line"
+      ],
+      [
+        "document z",
+        "maximum inner product search (MIPS)"
+      ],
+      [
+        "Hemingway",
+        "Hemingway Sentence Evaluation Interface (image)"
+      ],
+      [
+        "Havana, Cuba",
+        "Hemingway Sentence Evaluation Interface (image)"
+      ],
+      [
+        "Data Preparation for QA Systems",
+        "Task Instance Counts for Open-Domain QA Datasets (table)"
+      ],
+      [
+        "NQ Answer Recall @K",
+        "RAG-Tok"
+      ],
+      [
+        "Document Contexts",
+        "Document Generation Heatmap Visualization (image)"
+      ],
+      [
+        "Footnotes",
+        "Task Instance Counts for Open-Domain QA Datasets (table)"
+      ],
+      [
+        "Document Generation Heatmap Visualization (image)",
+        "Tokens"
+      ],
+      [
+        "Jeopardy QGen",
+        "Tri-gram Diversity Ratios in Generation Tasks (table)"
+      ],
+      [
+        "BART",
+        "Specificity"
+      ],
+      [
+        "Hemingway Sentence Evaluation Interface (image)",
+        "The Sun Also Rises"
+      ],
+      [
+        "Comparative Model Generations for Question Answering (table)",
+        "Generation"
+      ],
+      [
+        "RAG Performance Metrics Image (image)",
+        "Solid Orange Line"
+      ],
+      [
+        "Open-Domain QA Test Scores (table)",
+        "Table 1: Open-Domain QA Test Scores"
+      ],
+      [
+        "Task Instance Counts for Open-Domain QA Datasets (table)",
+        "WebQuestions"
+      ],
+      [
+        "p _ { \\mathrm { R A G . S e q u e n c e } } ( y | x ) ",
+        "p_{\\\\theta}"
+      ],
+      [
+        "A Farewell to Arms",
+        "RAG model"
+      ],
+      [
+        "Jeopardy B-1",
+        "RAG Performance Results Table (table)"
+      ],
+      [
+        "Document Contexts",
+        "RAG model"
+      ],
+      [
+        "Jeopardy-QGen",
+        "Model Performance Comparison Table for RAG-based Architectures (table)"
+      ],
+      [
+        "Comparative Model Generations for Question Answering (table)",
+        "Dante"
+      ],
+      [
+        "Control Questions",
+        "Hemingway Sentence Evaluation Interface (image)"
+      ],
+      [
+        "CT",
+        "Model Performance Comparison Table for RAG-based Architectures (table)"
+      ],
+      [
+        "Doc 2",
+        "The Sun Also Rises"
+      ],
+      [
+        "BART",
+        "Comparative Model Generations for Question Answering (table)"
+      ],
+      [
+        "CT",
+        "Open-Domain QA Test Scores (table)"
+      ],
+      [
+        "RAG Performance Metrics Image (image)",
+        "Turquoise Line"
+      ],
+      [
+        "RAG-Sequence Probability Equation (equation)",
+        "p _ { \\mathrm { R A G . S e q u e n c e } } ( y | x ) "
+      ],
+      [
+        "Open-Domain QA Test Scores (table)",
+        "WQ"
+      ],
+      [
+        "Open-Domain QA Test Scores (table)",
+        "TQA"
+      ],
+      [
+        "NQ",
+        "T5"
+      ],
+      [
+        "Question Generation Systems",
+        "RAG Performance Results Table (table)"
+      ],
+      [
+        "RAG Performance Metrics Image (image)",
+        "RAG-Seq"
+      ],
+      [
+        "Natural Language Processing (NLP)",
+        "RAG-Sequence Model"
+      ],
+      [
+        "Document Generation Heatmap Visualization (image)",
+        "Language Generation"
+      ],
+      [
+        "MS-MARCO",
+        "RAG Performance Results Table (table)"
+      ],
+      [
+        "RAG-Sequence-BM25",
+        "RAG-Token-BM25"
+      ],
+      [
+        "FEVER-3-way",
+        "Task Instance Counts for Open-Domain QA Datasets (table)"
+      ],
+      [
+        "Dotted Purple Line",
+        "RAG Performance Metrics Image (image)"
+      ],
+      [
+        "A Farewell to Arms",
+        "Hemingway"
+      ],
+      [
+        "NQ",
+        "RAG-Sequence"
+      ],
+      [
+        "Conditional Document Retrieval Probability (equation)",
+        "input query x"
+      ],
+      [
+        "Document Generation Heatmap Visualization (image)",
+        "The Sun Also Rises"
+      ],
+      [
+        "Comparative Model Generations for Question Answering (table)",
+        "RAG Models"
+      ],
+      [
+        "Human Assessments for Jeopardy Question Generation (table)",
+        "RAG"
+      ],
+      [
+        "Distinction Ratio",
+        "RAG-Token"
+      ],
+      [
+        "FEVER",
+        "RAG Performance Results Table (table)"
+      ],
+      [
+        "Densely Dashed Teal Line",
+        "RAG Performance Metrics Image (image)"
+      ],
+      [
+        "Data Preparation for QA Systems",
+        "Statistical Insights"
+      ],
+      [
+        "Diagram",
+        "Visual Analysis"
+      ],
+      [
+        "BERT",
+        "input query x"
+      ],
+      [
+        "Distinction Ratio",
+        "Tri-gram Diversity Ratios in Generation Tasks (table)"
+      ],
+      [
+        "RAG Performance Results Table (table)",
+        "Structure"
+      ],
+      [
+        "RAG-Token Probability Model (equation)",
+        "Retrieval-Augmented Generation"
+      ],
+      [
+        "FEVER-3",
+        "Table 2"
+      ],
+      [
+        "Open-Domain QA Tasks",
+        "RAG-Token"
+      ],
+      [
+        "Jeopardy Question Generation Task",
+        "RAG"
+      ],
+      [
+        "RAG-Sequence",
+        "RAG-Token"
+      ],
+      [
+        "Open-Domain QA Test Scores (table)",
+        "T5"
+      ],
+      [
+        "Jeopardy Question",
+        "RAG Models"
+      ],
+      [
+        "Control Questions",
+        "Human Evaluation Study"
+      ],
+      [
+        "Gold",
+        "Jeopardy QGen"
+      ],
+      [
+        "A Farewell to Arms",
+        "Document Generation Heatmap Visualization (image)"
+      ],
+      [
+        "Bayesian Inference",
+        "RAG-Token Probability Model (equation)"
+      ],
+      [
+        "RAG-Token",
+        "TQA"
+      ],
+      [
+        "RAG-Sequence",
+        "Tri-gram Diversity Ratios in Generation Tasks (table)"
+      ],
+      [
+        "RAG-Sequence Model",
+        "Wikipedia"
+      ],
+      [
+        "Hemingway Sentence Evaluation Interface (image)",
+        "Sentence A"
+      ],
+      [
+        "Factuality",
+        "Human Assessments for Jeopardy Question Generation (table)"
+      ],
+      [
+        "Comparative Model Generations for Question Answering (table)",
+        "Scotland"
+      ],
+      [
+        "Open-domain Question Answering Tasks",
+        "Table 7"
+      ],
+      [
+        "BART",
+        "RAG-Sequence Probability Equation (equation)"
+      ],
+      [
+        "Jeopardy",
+        "RAG Performance Results Table (table)"
+      ],
+      [
+        "NQ Exact Match",
+        "RAG Performance Metrics Image (image)"
+      ],
+      [
+        "RAG model",
+        "The Sun Also Rises"
+      ],
+      [
+        "BART",
+        "RAG"
+      ],
+      [
+        "Conditional Document Retrieval Probability (equation)",
+        "Inner Product"
+      ],
+      [
+        "Model Performance Comparison Table for RAG-based Architectures (table)",
+        "RAG-Token-Frozen"
+      ],
+      [
+        "Gold",
+        "Performance Metrics"
+      ],
+      [
+        "Table Analysis",
+        "Task Instance Counts for Open-Domain QA Datasets (table)"
+      ],
+      [
+        "Image Content Analysis",
+        "RAG System Process Diagram (image)"
+      ],
+      [
+        "Document Generation Heatmap Visualization (image)",
+        "Heatmap"
+      ],
+      [
+        "FEVER-2-way",
+        "Task Instance Counts for Open-Domain QA Datasets (table)"
+      ],
+      [
+        "Query Encoder q(x)",
+        "RAG System Process Diagram (image)"
+      ],
+      [
+        "Jeopardy Question",
+        "Scotland"
+      ],
+      [
+        "RAG-Sequence Probability Equation (equation)",
+        "Wikipedia"
+      ],
+      [
+        "DPR",
+        "Open-Domain QA Test Scores (table)"
+      ],
+      [
+        "A Farewell to Arms",
+        "Hemingway Sentence Evaluation Interface (image)"
+      ],
+      [
+        "Comparative Model Generations for Question Answering (table)",
+        "Table 3"
+      ],
+      [
+        "Inner Product",
+        "input query x"
+      ],
+      [
+        "Fixed DPR",
+        "RAG Performance Metrics Image (image)"
+      ],
+      [
+        "Model Performance Comparison Table for RAG-based Architectures (table)",
+        "RAG-Token"
+      ],
+      [
+        "Document Index",
+        "RAG-Token Probability Model (equation)"
+      ],
+      [
+        "Model Performance Comparison Table for RAG-based Architectures (table)",
+        "RAG-Sequence"
+      ],
+      [
+        "MSMARCO",
+        "Tri-gram Diversity Ratios in Generation Tasks (table)"
+      ],
+      [
+        "Open-Domain QA Tasks",
+        "REALM"
+      ],
+      [
+        "Conditional Document Retrieval Probability (equation)",
+        "Conditional Probability"
+      ],
+      [
+        "CuratedTrec",
+        "MS-MARCO"
+      ],
+      [
+        "Document Generation Heatmap Visualization (image)",
+        "RAG model"
+      ],
+      [
+        "Query Encoder q(x)",
+        "Retrieval-Augmented Generation (RAG) System"
+      ],
+      [
+        "RAG-Token",
+        "RAG-Token-BM25"
+      ],
+      [
+        "Document Index",
+        "RAG-Ioken"
+      ],
+      [
+        "RAG-Sequence",
+        "RAG-Sequence-Frozen"
+      ],
+      [
+        "Probabilistic Model",
+        "Seq2seq Generator"
+      ],
+      [
+        "RAG-Token",
+        "RAG-Token-Frozen"
+      ],
+      [
+        "RAG-Sequence",
+        "RAG-Sequence-BM25"
+      ],
+      [
+        "Markov Processes",
+        "RAG-Sequence Probability Equation (equation)"
+      ],
+      [
+        "NQ Exact Match",
+        "RAG-Tok"
+      ],
+      [
+        "Distinction Ratio",
+        "Gold"
+      ],
+      [
+        "NQ",
+        "RAG-Token"
+      ],
+      [
+        "Heatmap",
+        "RAG model"
+      ],
+      [
+        "NQ Answer Recall @K",
+        "RAG-Seq"
+      ],
+      [
+        "Dashed Teal Line",
+        "RAG-Seq"
+      ],
+      [
+        "Jeopardy",
+        "MS-MARCO"
+      ],
+      [
+        "Task Instance Counts for Open-Domain QA Datasets (table)",
+        "TriviaQA"
+      ],
+      [
+        "Computational Linguistics",
+        "Probabilistic Model"
+      ],
+      [
+        "Open-Domain QA Tasks",
+        "Open-Domain QA Test Scores (table)"
+      ],
+      [
+        "Bayesian Principles",
+        "RAG-Sequence Probability Equation (equation)"
+      ],
+      [
+        "Query Answering",
+        "RAG-Token Probability Model (equation)"
+      ],
+      [
+        "Hemingway",
+        "Sentence A"
+      ],
+      [
+        "BART",
+        "RAG Performance Results Table (table)"
+      ],
+      [
+        "FEVER-2",
+        "Table 2"
+      ],
+      [
+        "Hemingway",
+        "The Sun Also Rises"
+      ],
+      [
+        "MS-MARCO",
+        "Task Instance Counts for Open-Domain QA Datasets (table)"
+      ],
+      [
+        "Conditional Document Retrieval Probability (equation)",
+        "maximum inner product search (MIPS)"
+      ],
+      [
+        "MSMARCO SotA",
+        "Table 2"
+      ],
+      [
+        "MSMarco",
+        "RAG-Sequence"
+      ],
+      [
+        "RAG-Sequence Model",
+        "RAG-Sequence Probability Equation (equation)"
+      ],
+      [
+        "Doc 2",
+        "Document Generation Heatmap Visualization (image)"
+      ],
+      [
+        "Comparative Model Generations for Question Answering (table)",
+        "Jeopardy Question"
+      ],
+      [
+        "RAG",
+        "Table 4"
+      ],
+      [
+        "Generation",
+        "Model"
+      ],
+      [
+        "Input",
+        "Model"
+      ],
+      [
+        "Model Performance Comparison Table for RAG-based Architectures (table)",
+        "RAG-Sequence-Frozen"
+      ],
+      [
+        "K Retrieved Docs",
+        "RAG Performance Metrics Image (image)"
+      ],
+      [
+        "Long-Dashed Orange Line",
+        "RAG Performance Metrics Image (image)"
+      ],
+      [
+        "RAG-Sequence Probability Equation (equation)",
+        "p_{\\\\eta}"
+      ],
+      [
+        "Open-Domain QA Test Scores (table)",
+        "RAG-Sequence"
+      ],
+      [
+        "Computational Linguistics",
+        "RAG-Token Probability Model (equation)"
+      ],
+      [
+        "Knowledge Retrieval",
+        "Retrieval-Augmented Generation"
+      ],
+      [
+        "CuratedTrec",
+        "Task Instance Counts for Open-Domain QA Datasets (table)"
+      ],
+      [
+        "Factuality",
+        "Table 4"
+      ],
+      [
+        "Model Performance Comparison Table for RAG-based Architectures (table)",
+        "RAG-Sequence-BM25"
+      ],
+      [
+        "Fact-Checking Interface",
+        "Hemingway Sentence Evaluation Interface (image)"
+      ],
+      [
+        "Knowledge Retrieval",
+        "RAG-Ioken"
+      ],
+      [
+        "MS-MARCO",
+        "RAG Models"
+      ],
+      [
+        "Control Questions",
+        "The Sun Also Rises"
+      ],
+      [
+        "Latent Space",
+        "input query x"
+      ],
+      [
+        "NQ",
+        "REALM"
+      ],
+      [
+        "RAG Performance Results Table (table)",
+        "RAG-Sequence"
+      ],
+      [
+        "BART",
+        "Jeopardy QGen"
+      ],
+      [
+        "Gold",
+        "Tri-gram Diversity Ratios in Generation Tasks (table)"
+      ],
+      [
+        "Jeopardy B-1",
+        "Table 2"
+      ],
+      [
+        "Bleu-1 / Rouge-L score",
+        "RAG Performance Metrics Image (image)"
+      ],
+      [
+        "CT",
+        "RAG-Sequence"
+      ],
+      [
+        "BERT",
+        "Conditional Document Retrieval Probability (equation)"
+      ],
+      [
+        "NQ Exact Match",
+        "RAG-Seq"
+      ],
+      [
+        "BM25",
+        "NQ Answer Recall @K"
+      ],
+      [
+        "Image Content Analysis",
+        "Visual Analysis"
+      ],
+      [
+        "BART",
+        "RAG-Sequence Model"
+      ],
+      [
+        "Conditional Document Retrieval Probability (equation)",
+        "Latent Space"
+      ],
+      [
+        "Dante",
+        "The Divine Comedy"
+      ],
+      [
+        "Middle Ear",
+        "RAG Models"
+      ],
+      [
+        "Footnotes",
+        "Table Analysis"
+      ],
+      [
+        "Hemingway Sentence Evaluation Interface (image)",
+        "Sentence B"
+      ],
+      [
+        "BART",
+        "Performance Metrics"
+      ],
+      [
+        "Human Assessments for Jeopardy Question Generation (table)",
+        "Jeopardy Question Generation Task"
+      ],
+      [
+        "Conditional Document Retrieval Probability (equation)",
+        "Retrieval-Augmented Generation (RAG) model"
+      ],
+      [
+        "Natural Questions",
+        "TriviaQA"
+      ],
+      [
+        "Hemingway Sentence Evaluation Interface (image)",
+        "Human Evaluation Study"
+      ],
+      [
+        "document z",
+        "input query x"
+      ],
+      [
+        "RAG",
+        "Specificity"
+      ],
+      [
+        "FEVER-3",
+        "RAG Performance Results Table (table)"
+      ],
+      [
+        "BERT",
+        "Retrieval-Augmented Generation (RAG) model"
+      ],
+      [
+        "Open-Domain QA Test Scores (table)",
+        "REALM"
+      ],
+      [
+        "NQ",
+        "Open-Domain QA Test Scores (table)"
+      ],
+      [
+        "RAG-Sequence Probability Equation (equation)",
+        "p_{\\\\theta}"
+      ],
+      [
+        "Conditional Document Retrieval Probability (equation)",
+        "Exponential Function"
+      ],
+      [
+        "DPR",
+        "TQA"
+      ],
+      [
+        "Language Generation",
+        "RAG model"
+      ],
+      [
+        "Model Performance Comparison Table for RAG-based Architectures (table)",
+        "NQ"
+      ],
+      [
+        "Comparative Model Generations for Question Answering (table)",
+        "Input"
+      ],
+      [
+        "Table 7",
+        "Task Instance Counts for Open-Domain QA Datasets (table)"
+      ],
+      [
+        "Probabilistic Model",
+        "Query Answering"
+      ],
+      [
+        "Doc 1",
+        "Document Generation Heatmap Visualization (image)"
+      ],
+      [
+        "Comparative Model Generations for Question Answering (table)",
+        "The Divine Comedy"
+      ],
+      [
+        "MSMarco",
+        "Model Performance Comparison Table for RAG-based Architectures (table)"
+      ],
+      [
+        "Fact-Checking Interface",
+        "Human Evaluation Study"
+      ],
+      [
+        "MS-MARCO",
+        "Natural Questions"
+      ],
+      [
+        "Statistical Insights",
+        "Task Instance Counts for Open-Domain QA Datasets (table)"
+      ],
+      [
+        "Open-domain Question Answering Tasks",
+        "Task Instance Counts for Open-Domain QA Datasets (table)"
+      ],
+      [
+        "Bleu-1 / Rouge-L score",
+        "RAG-Tok"
+      ],
+      [
+        "MS-MARCO",
+        "Table 3"
+      ],
+      [
+        "Factuality",
+        "RAG"
+      ],
+      [
+        "Human Assessments for Jeopardy Question Generation (table)",
+        "Table 4"
+      ],
+      [
+        "Probabilistic Model",
+        "RAG-Ioken"
+      ],
+      [
+        "Comparative Model Generations for Question Answering (table)",
+        "Model"
+      ],
+      [
+        "BART",
+        "Jeopardy Question Generation Task"
+      ],
+      [
+        "RAG-Tok",
+        "Solid Orange Line"
+      ],
+      [
+        "Markov Processes",
+        "RAG-Sequence Model"
+      ],
+      [
+        "Gold",
+        "MSMARCO"
+      ],
+      [
+        "Jeopardy",
+        "Question Generation Systems"
+      ],
+      [
+        "Densely Dashed Teal Line",
+        "RAG-Seq"
+      ],
+      [
+        "RAG-Token Probability Model (equation)",
+        "Sequence Generation"
+      ],
+      [
+        "Knowledge Retrieval",
+        "RAG-Token Probability Model (equation)"
+      ],
+      [
+        "Heatmap",
+        "Tokens"
+      ],
+      [
+        "Natural Questions",
+        "Task Instance Counts for Open-Domain QA Datasets (table)"
+      ],
+      [
+        "Conditional Document Retrieval Probability (equation)",
+        "document z"
+      ],
+      [
+        "Open-Domain QA Test Scores (table)",
+        "RAG-Token"
+      ],
+      [
+        "BART",
+        "Factuality"
+      ],
+      [
+        "Bayesian Principles",
+        "RAG-Sequence Model"
+      ],
+      [
+        "RAG-Sequence",
+        "WQ"
+      ],
+      [
+        "Hemingway",
+        "Sentence B"
+      ],
+      [
+        "Havana, Cuba",
+        "Hemingway"
+      ],
+      [
+        "Footnotes",
+        "Table 7"
+      ],
+      [
+        "Natural Language Processing (NLP)",
+        "RAG-Sequence Probability Equation (equation)"
+      ],
+      [
+        "RAG-Sequence",
+        "TQA"
+      ],
+      [
+        "RAG-Ioken",
+        "RAG-Token Probability Model (equation)"
+      ],
+      [
+        "BERT",
+        "document z"
+      ],
+      [
+        "DPR",
+        "Open-Domain QA Tasks"
+      ],
+      [
+        "Model Performance Comparison Table for RAG-based Architectures (table)",
+        "RAG-Token-BM25"
+      ],
+      [
+        "Jeopardy Question Generation",
+        "Task Instance Counts for Open-Domain QA Datasets (table)"
+      ],
+      [
+        "BART",
+        "Human Assessments for Jeopardy Question Generation (table)"
+      ],
+      [
+        "RAG Performance Results Table (table)",
+        "RAG-Token"
+      ],
+      [
+        "NQ Answer Recall @K",
+        "RAG Performance Metrics Image (image)"
+      ],
+      [
+        "Dashed Teal Line",
+        "RAG Performance Metrics Image (image)"
+      ],
+      [
+        "BART",
+        "Table 4"
+      ]
+    ],
+    "count": 266,
+    "update_time": 1757866656,
+    "_id": "doc-35dab1a9670eaded36457f5dd92f5ad7"
+  }
+}

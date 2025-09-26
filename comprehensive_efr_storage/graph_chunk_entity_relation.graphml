@@ -1,0 +1,1649 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d11" for="edge" attr.name="created_at" attr.type="long" />
+  <key id="d10" for="edge" attr.name="file_path" attr.type="string" />
+  <key id="d9" for="edge" attr.name="source_id" attr.type="string" />
+  <key id="d8" for="edge" attr.name="keywords" attr.type="string" />
+  <key id="d7" for="edge" attr.name="description" attr.type="string" />
+  <key id="d6" for="edge" attr.name="weight" attr.type="double" />
+  <key id="d5" for="node" attr.name="created_at" attr.type="long" />
+  <key id="d4" for="node" attr.name="file_path" attr.type="string" />
+  <key id="d3" for="node" attr.name="source_id" attr.type="string" />
+  <key id="d2" for="node" attr.name="description" attr.type="string" />
+  <key id="d1" for="node" attr.name="entity_type" attr.type="string" />
+  <key id="d0" for="node" attr.name="entity_id" attr.type="string" />
+  <graph edgedefault="undirected">
+    <node id="ChartCitor">
+      <data key="d0">ChartCitor</data>
+      <data key="d1">organization</data>
+      <data key="d2">ChartCitor is a multi-agent framework designed to provide fine-grained bounding box citations for chart question-answering tasks, enhancing the reliability of LLM-generated responses.&lt;SEP&gt;ChartCitor is a multimodal language model designed for understanding and analyzing data charts through enhanced citation mechanisms.&lt;SEP&gt;ChartCitor is a reasoning-based zero-shot segmentation model designed to generate masks from implicit and complex textual queries, demonstrating effectiveness in visual chart understanding.&lt;SEP&gt;ChartCitor is a multi-agent framework designed for performing various functions including table extraction, answer reformulation, entity captioning, row/col retrieval, and cell localization in chart images.&lt;SEP&gt;ChartCitor is an advanced method that achieves the highest Intersection over Union (IoU) score of 27.4 in a chart attribution task, indicating superior performance in visual data interpretation.&lt;SEP&gt;ChartCitor is associated with the user evaluation depicted in Figure 2, focusing on multimodal feedback.</data>
+      <data key="d3">chunk-440a3f8c27cf2c3a9ea2c39e03796577&lt;SEP&gt;chunk-674ae697ba691bf3c9f7514577fa45ad&lt;SEP&gt;chunk-9af5c81195bb45458709701521978b72&lt;SEP&gt;chunk-b7417b0fc5267b9a05b69c6b9151f2c9&lt;SEP&gt;chunk-55dbce32b9e75616fed4909a73d6bc54&lt;SEP&gt;chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613866</data>
+    </node>
+    <node id="Kanika Goswami">
+      <data key="d0">Kanika Goswami</data>
+      <data key="d1">person</data>
+      <data key="d2">Kanika Goswami is associated with IGDTUW in Delhi, India, contributing to the development of the ChartCitor framework.</data>
+      <data key="d3">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613787</data>
+    </node>
+    <node id="Puneet Mathur">
+      <data key="d0">Puneet Mathur</data>
+      <data key="d1">person</data>
+      <data key="d2">Puneet Mathur is affiliated with Adobe Research in the USA and is part of the team that developed ChartCitor.&lt;SEP&gt;Puneet Mathur is a co-author of a paper on multi-agent table structure attribution presented at a conference.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f&lt;SEP&gt;chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613787</data>
+    </node>
+    <node id="Ryan Rossi">
+      <data key="d0">Ryan Rossi</data>
+      <data key="d1">person</data>
+      <data key="d2">Ryan Rossi works at Adobe Research in the USA, contributing to the ChartCitor project.</data>
+      <data key="d3">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613787</data>
+    </node>
+    <node id="Franck Dernoncourt">
+      <data key="d0">Franck Dernoncourt</data>
+      <data key="d1">person</data>
+      <data key="d2">Franck Dernoncourt is a team member at Adobe Research in the USA, involved in the ChartCitor framework development.</data>
+      <data key="d3">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613787</data>
+    </node>
+    <node id="LLMs">
+      <data key="d0">LLMs</data>
+      <data key="d1">category</data>
+      <data key="d2">LLMs, or large language models, are AI systems capable of performing chart question-answering tasks, though they often generate unverified responses.</data>
+      <data key="d3">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613787</data>
+    </node>
+    <node id="Fine-grained Structured Chart Attribution">
+      <data key="d0">Fine-grained Structured Chart Attribution</data>
+      <data key="d1">event</data>
+      <data key="d2">Fine-grained Structured Chart Attribution is a task aimed at identifying specific chart elements that support factual claims in generated text responses.</data>
+      <data key="d3">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613787</data>
+    </node>
+    <node id="Multiple LLM Agents">
+      <data key="d0">Multiple LLM Agents</data>
+      <data key="d1">category</data>
+      <data key="d2">Multiple LLM Agents refers to the various specialized AI models working together within ChartCitor to enhance the reliability of chart-based answers.</data>
+      <data key="d3">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613787</data>
+    </node>
+    <node id="Visual Fact Checking">
+      <data key="d0">Visual Fact Checking</data>
+      <data key="d1">category</data>
+      <data key="d2">Visual Fact Checking is a method for verifying information generated by LLMs, particularly in the context of chart data.</data>
+      <data key="d3">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613788</data>
+    </node>
+    <node id="Adobe Research">
+      <data key="d0">Adobe Research</data>
+      <data key="d1">organization</data>
+      <data key="d2">Adobe Research is a division of Adobe Systems that focuses on research and development in various technology fields, including generative AI and machine learning.</data>
+      <data key="d3">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613788</data>
+    </node>
+    <node id="India">
+      <data key="d0">India</data>
+      <data key="d1">geo</data>
+      <data key="d2">India is a country located in South Asia, where Kanika Goswami is based.</data>
+      <data key="d3">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613788</data>
+    </node>
+    <node id="USA">
+      <data key="d0">USA</data>
+      <data key="d1">geo</data>
+      <data key="d2">USA is a country located in North America, where Puneet Mathur, Ryan Rossi, and Franck Dernoncourt are based.</data>
+      <data key="d3">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613788</data>
+    </node>
+    <node id="Llama-3.2">
+      <data key="d0">Llama-3.2</data>
+      <data key="d1">category</data>
+      <data key="d2">Llama-3.2 is a specific large language model that has shown effectiveness in utilizing in-context learning and visual prompting for interpreting chart images.</data>
+      <data key="d3">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613788</data>
+    </node>
+    <node id="Claude-3.5 Sonnet">
+      <data key="d0">Claude-3.5 Sonnet</data>
+      <data key="d1">category</data>
+      <data key="d2">Claude-3.5 Sonnet is another type of large language model known for its capabilities in reasoning over chart images.</data>
+      <data key="d3">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613788</data>
+    </node>
+    <node id="GPT-4V">
+      <data key="d0">GPT-4V</data>
+      <data key="d1">organization</data>
+      <data key="d2">GPT-4V is an advanced large language model utilized in the ChartCitor framework for various tasks, including chart data extraction and answer verification.&lt;SEP&gt;GPT-4V is a variant of the GPT model mentioned as a method for prompting in chart element detection, though it showed weak performance in comparison.&lt;SEP&gt;GPT-4V refers to an advanced large language model involving visual grounding capabilities in its framework.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f&lt;SEP&gt;chunk-9af5c81195bb45458709701521978b72&lt;SEP&gt;chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613788</data>
+    </node>
+    <node id="GPT-4o">
+      <data key="d0">GPT-4o</data>
+      <data key="d1">organization</data>
+      <data key="d2">GPT-4o is a language model API provided by OpenAI, utilized for generating contextual descriptions and enhancing citation performance in chart analysis.</data>
+      <data key="d3">chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613788</data>
+    </node>
+    <node id="TabCite benchmark">
+      <data key="d0">TabCite benchmark</data>
+      <data key="d1">category</data>
+      <data key="d2">TabCite benchmark consists of data tables designed for evaluation purposes in the context of chart citation tasks.</data>
+      <data key="d3">chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613789</data>
+    </node>
+    <node id="Detr">
+      <data key="d0">Detr</data>
+      <data key="d1">organization</data>
+      <data key="d2">DETR is a model utilized for identifying visual elements in chart images during the chart attribution process.</data>
+      <data key="d3">chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613789</data>
+    </node>
+    <node id="RankGPT">
+      <data key="d0">RankGPT</data>
+      <data key="d1">organization</data>
+      <data key="d2">RankGPT is a listwise re-ranker that enhances the ranking of table cells relevant to citation claims, improving the citation retrieval process.</data>
+      <data key="d3">chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613789</data>
+    </node>
+    <node id="Kosmos-2">
+      <data key="d0">Kosmos-2</data>
+      <data key="d1">organization</data>
+      <data key="d2">Kosmos-2 is a multimodal language model with text-to-visual grounding capabilities, aiding in generating bounding boxes for visual grounding tasks.&lt;SEP&gt;Kosmos-2 is a model that struggled with factual grounding in charts evidenced by its low IoU scores.&lt;SEP&gt;Kosmos-2 refers to a multimodal large language model that is grounded in the world, as discussed in a recent arXiv preprint.&lt;SEP&gt;Kosmos-2 is a method that received a relatively low IoU score of 3.89, indicating challenges in accurately interpreting visual data.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f&lt;SEP&gt;chunk-b839fa86d69937abbbfac9da3a686d58&lt;SEP&gt;chunk-9af5c81195bb45458709701521978b72&lt;SEP&gt;chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613866</data>
+    </node>
+    <node id="LISA">
+      <data key="d0">LISA</data>
+      <data key="d1">organization</data>
+      <data key="d2">LISA is a language model that generates segmentation masks based on implicit textual queries, used for reasoning-based segmentation tasks.&lt;SEP&gt;LISA is another model mentioned that performed poorly in interpreting charts, particularly with geometrical proportions.&lt;SEP&gt;LISA is a method with an IoU score of 4.34, reflecting its limited effectiveness in chart attribution compared to more advanced techniques.</data>
+      <data key="d3">chunk-b839fa86d69937abbbfac9da3a686d58&lt;SEP&gt;chunk-9af5c81195bb45458709701521978b72&lt;SEP&gt;chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613868</data>
+    </node>
+    <node id="LLM Re-ranking Agent">
+      <data key="d0">LLM Re-ranking Agent</data>
+      <data key="d1">category</data>
+      <data key="d2">The LLM Re-ranking Agent enhances the accuracy of citation retrieval by re-ranking table cells for their relevance to answer claims.</data>
+      <data key="d3">chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613789</data>
+    </node>
+    <node id="Cell Localization Agent">
+      <data key="d0">Cell Localization Agent</data>
+      <data key="d1">category</data>
+      <data key="d2">The Cell Localization Agent maps cited table cells to their corresponding visual chart elements to assist in chart attribution.</data>
+      <data key="d3">chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613789</data>
+    </node>
+    <node id="LLM Pre-filtering Agent">
+      <data key="d0">LLM Pre-filtering Agent</data>
+      <data key="d1">category</data>
+      <data key="d2">The LLM Pre-filtering Agent uses a relevance scoring method to filter out irrelevant rows and columns in data tables, improving the citation retrieval process.</data>
+      <data key="d3">chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613790</data>
+    </node>
+    <node id="Cell Captioning Agent">
+      <data key="d0">Cell Captioning Agent</data>
+      <data key="d1">category</data>
+      <data key="d2">The Cell Captioning Agent generates descriptions for each cell in relation to its row and column headers, enhancing understanding and context in data analysis.</data>
+      <data key="d3">chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613790</data>
+    </node>
+    <node id="Federal Reserve">
+      <data key="d0">Federal Reserve</data>
+      <data key="d1">organization</data>
+      <data key="d2">The Federal Reserve is referenced indirectly in the context of economic policy and its influence on market trends, particularly regarding interest rates.</data>
+      <data key="d3">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613790</data>
+    </node>
+    <node id="Participants">
+      <data key="d0">Participants</data>
+      <data key="d1">person</data>
+      <data key="d2">Participants in the user study evaluated the citation accuracy and utility of ChartCitor's outputs compared to GPT-4o, providing feedback.</data>
+      <data key="d3">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613790</data>
+    </node>
+    <node id="Bounding Boxes">
+      <data key="d0">Bounding Boxes</data>
+      <data key="d1">category</data>
+      <data key="d2">Bounding boxes are used in chart detection, but the document discusses difficulties in non-rectangular bounding box segmentation tasks.</data>
+      <data key="d3">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613790</data>
+    </node>
+    <node id="Charts">
+      <data key="d0">Charts</data>
+      <data key="d1">category</data>
+      <data key="d2">Charts represent visual data that require accurate interpretation and citation for question-answering tasks.</data>
+      <data key="d3">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613790</data>
+    </node>
+    <node id="Visual Chart Understanding">
+      <data key="d0">Visual Chart Understanding</data>
+      <data key="d1">category</data>
+      <data key="d2">Visual chart understanding is the overall concept of making sense of chart elements based on textual queries and displayed data.</data>
+      <data key="d3">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613790</data>
+    </node>
+    <node id="Josh Achiam">
+      <data key="d0">Josh Achiam</data>
+      <data key="d1">person</data>
+      <data key="d2">Josh Achiam is mentioned as one of the authors of a technical report on GPT-4, contributing to the body of research in language models.</data>
+      <data key="d3">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613791</data>
+    </node>
+    <node id="Steven Adler">
+      <data key="d0">Steven Adler</data>
+      <data key="d1">person</data>
+      <data key="d2">Steven Adler is listed as one of the authors who contributed to the GPT-4 technical report, indicating involvement in advanced AI research.</data>
+      <data key="d3">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613791</data>
+    </node>
+    <node id="Sandhini Agarwal">
+      <data key="d0">Sandhini Agarwal</data>
+      <data key="d1">person</data>
+      <data key="d2">Sandhini Agarwal is cited as an author of the GPT-4 technical report, showing participation in AI language model research.</data>
+      <data key="d3">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613791</data>
+    </node>
+    <node id="Lama Ahmad">
+      <data key="d0">Lama Ahmad</data>
+      <data key="d1">person</data>
+      <data key="d2">Lama Ahmad is mentioned among the authors of the technical report for GPT-4, contributing to research in language AI.</data>
+      <data key="d3">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613791</data>
+    </node>
+    <node id="Ilge Akkaya">
+      <data key="d0">Ilge Akkaya</data>
+      <data key="d1">person</data>
+      <data key="d2">Ilge Akkaya is one of the contributors to the GPT-4 technical report, reflecting involvement in language model development.</data>
+      <data key="d3">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613791</data>
+    </node>
+    <node id="Florencia Leoni Aleman">
+      <data key="d0">Florencia Leoni Aleman</data>
+      <data key="d1">person</data>
+      <data key="d2">Florencia Leoni Aleman is an author listed in the GPT-4 technical report, contributing insights to AI research.</data>
+      <data key="d3">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613791</data>
+    </node>
+    <node id="Diogo Almeida">
+      <data key="d0">Diogo Almeida</data>
+      <data key="d1">person</data>
+      <data key="d2">Diogo Almeida is mentioned as one of the contributing authors of the GPT-4 technical report.</data>
+      <data key="d3">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613791</data>
+    </node>
+    <node id="Janko Altenschmidt">
+      <data key="d0">Janko Altenschmidt</data>
+      <data key="d1">person</data>
+      <data key="d2">Janko Altenschmidt is included among the authors of the GPT-4 technical report, showcasing involvement in AI research.</data>
+      <data key="d3">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613791</data>
+    </node>
+    <node id="Sam Altman">
+      <data key="d0">Sam Altman</data>
+      <data key="d1">person</data>
+      <data key="d2">Sam Altman is recognized as one of the authors of the GPT-4 technical report, indicating a role in language model advancements.</data>
+      <data key="d3">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613792</data>
+    </node>
+    <node id="Shyamal Anadkat">
+      <data key="d0">Shyamal Anadkat</data>
+      <data key="d1">person</data>
+      <data key="d2">Shyamal Anadkat is listed as a contributing author to the GPT-4 technical report, reflecting expertise in AI language models.</data>
+      <data key="d3">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613792</data>
+    </node>
+    <node id="Layer-of-Thoughts Prompting (LoT)">
+      <data key="d0">Layer-of-Thoughts Prompting (LoT)</data>
+      <data key="d1">category</data>
+      <data key="d2">Layer-of-Thoughts Prompting (LoT) refers to a technique leveraging LLM-based retrieval with constraint hierarchies in language model performance.</data>
+      <data key="d3">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613792</data>
+    </node>
+    <node id="ale Fung">
+      <data key="d0">ale Fung</data>
+      <data key="d1">person</data>
+      <data key="d2">ale Fung is an author who conducted a survey on hallucination in natural language generation, providing insights in a computer surveys publication.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613792</data>
+    </node>
+    <node id="Ehsan Kamalloo">
+      <data key="d0">Ehsan Kamalloo</data>
+      <data key="d1">person</data>
+      <data key="d2">Ehsan Kamalloo is a co-author involved in creating a dataset for human-LLM collaboration in generative information-seeking with attribution.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613792</data>
+    </node>
+    <node id="Aref Jafari">
+      <data key="d0">Aref Jafari</data>
+      <data key="d1">person</data>
+      <data key="d2">Aref Jafari is a co-author of the HAGRID dataset aimed at facilitating collaborative interactions between humans and language models.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613792</data>
+    </node>
+    <node id="Xinyu Zhang">
+      <data key="d0">Xinyu Zhang</data>
+      <data key="d1">person</data>
+      <data key="d2">Xinyu Zhang is a co-author involved in the development of the HAGRID dataset focusing on interaction-driven approaches with language models.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613793</data>
+    </node>
+    <node id="Nandan Thakur">
+      <data key="d0">Nandan Thakur</data>
+      <data key="d1">person</data>
+      <data key="d2">Nandan Thakur is a co-author contributing to the HAGRID dataset, which supports information-seeking capabilities in AI.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613793</data>
+    </node>
+    <node id="Jimmy Lin">
+      <data key="d0">Jimmy Lin</data>
+      <data key="d1">person</data>
+      <data key="d2">Jimmy Lin is a co-author of the HAGRID dataset that targets generative capabilities of language models with attribution.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613793</data>
+    </node>
+    <node id="Lisa">
+      <data key="d0">Lisa</data>
+      <data key="d1">category</data>
+      <data key="d2">Lisa refers to a method for reasoning segmentation in large language models, presented in conference proceedings.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613793</data>
+    </node>
+    <node id="IEEE/CVF Conference on Computer Vision and Pattern Recognition">
+      <data key="d0">IEEE/CVF Conference on Computer Vision and Pattern Recognition</data>
+      <data key="d1">event</data>
+      <data key="d2">The IEEE/CVF Conference on Computer Vision and Pattern Recognition is an academic event where significant advances in computer vision are presented.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613793</data>
+    </node>
+    <node id="Alexa Siu">
+      <data key="d0">Alexa Siu</data>
+      <data key="d1">person</data>
+      <data key="d2">Alexa Siu is a co-author of a study on multi-agent systems presented at the conference on empirical methods in natural language processing.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613793</data>
+    </node>
+    <node id="Nedim Lipka">
+      <data key="d0">Nedim Lipka</data>
+      <data key="d1">person</data>
+      <data key="d2">Nedim Lipka is a co-author involved in developing multi-agent attribution methodologies in a conference paper.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613793</data>
+    </node>
+    <node id="Tong Sun">
+      <data key="d0">Tong Sun</data>
+      <data key="d1">person</data>
+      <data key="d2">Tong Sun is a co-author who contributed to research on multi-agent systems, presented at an NLP conference.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613794</data>
+    </node>
+    <node id="Baharan Nouriinanloo">
+      <data key="d0">Baharan Nouriinanloo</data>
+      <data key="d1">person</data>
+      <data key="d2">Baharan Nouriinanloo is a co-author investigating the pre-filtering aspects for re-ranking with language models in a study.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613794</data>
+    </node>
+    <node id="Maxime Lamothe">
+      <data key="d0">Maxime Lamothe</data>
+      <data key="d1">person</data>
+      <data key="d2">Maxime Lamothe is a co-author of research focused on step-by-step re-ranking methodologies in natural language processing.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613794</data>
+    </node>
+    <node id="Zhiliang Peng">
+      <data key="d0">Zhiliang Peng</data>
+      <data key="d1">person</data>
+      <data key="d2">Zhiliang Peng is a co-author working on grounding multimodal large language models in research presented in arXiv preprints.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613794</data>
+    </node>
+    <node id="Wenhui Wang">
+      <data key="d0">Wenhui Wang</data>
+      <data key="d1">person</data>
+      <data key="d2">Wenhui Wang is a co-author involved in a study related to multimodal grounding in large language models.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613794</data>
+    </node>
+    <node id="Li Dong">
+      <data key="d0">Li Dong</data>
+      <data key="d1">person</data>
+      <data key="d2">Li Dong is a contributor to research on grounding multimodal language models laid out in an arXiv paper.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613794</data>
+    </node>
+    <node id="Yaru Hao">
+      <data key="d0">Yaru Hao</data>
+      <data key="d1">person</data>
+      <data key="d2">Yaru Hao is a co-author of research examining grounding techniques for multimodal models in AI studies.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613795</data>
+    </node>
+    <node id="Shaohan Huang">
+      <data key="d0">Shaohan Huang</data>
+      <data key="d1">person</data>
+      <data key="d2">Shaohan Huang is a co-author focused on the development of large language models in conjunction with multimodal inputs.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613795</data>
+    </node>
+    <node id="Shuming Ma">
+      <data key="d0">Shuming Ma</data>
+      <data key="d1">person</data>
+      <data key="d2">Shuming Ma is involved in research pertaining to the development of large language models, contributing to grounding efforts.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613795</data>
+    </node>
+    <node id="Furu Wei">
+      <data key="d0">Furu Wei</data>
+      <data key="d1">person</data>
+      <data key="d2">Furu Wei is a co-author of a paper discussing advancements in multimodal large language models and their applications.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613795</data>
+    </node>
+    <node id="Noah Shinn">
+      <data key="d0">Noah Shinn</data>
+      <data key="d1">person</data>
+      <data key="d2">Noah Shinn is a co-author of Reflexion, researching autonomous agents with dynamic memory capabilities.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613795</data>
+    </node>
+    <node id="Beck Labash">
+      <data key="d0">Beck Labash</data>
+      <data key="d1">person</data>
+      <data key="d2">Beck Labash is a co-author investigating autonomous agents in a research study about memory and self-reflection.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613795</data>
+    </node>
+    <node id="Ashwin Gopinath">
+      <data key="d0">Ashwin Gopinath</data>
+      <data key="d1">person</data>
+      <data key="d2">Ashwin Gopinath is a co-author involved in research on autonomous agents and their self-reflective capacities.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613795</data>
+    </node>
+    <node id="Ben Snyder">
+      <data key="d0">Ben Snyder</data>
+      <data key="d1">person</data>
+      <data key="d2">Ben Snyder is a co-author investigating hallucinations in factual question-answering systems in a research paper.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613795</data>
+    </node>
+    <node id="Marius Moisescu">
+      <data key="d0">Marius Moisescu</data>
+      <data key="d1">person</data>
+      <data key="d2">Marius Moisescu is a co-author contributing to early detection methodologies of hallucinations in AI systems.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613795</data>
+    </node>
+    <node id="Muhammad Bilal Zafar">
+      <data key="d0">Muhammad Bilal Zafar</data>
+      <data key="d1">person</data>
+      <data key="d2">Muhammad Bilal Zafar is a co-author researching early detection techniques for hallucinations in AI responses.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613795</data>
+    </node>
+    <node id="Weiwei Sun">
+      <data key="d0">Weiwei Sun</data>
+      <data key="d1">person</data>
+      <data key="d2">Weiwei Sun is a co-author involved in exploring the effectiveness of ChatGPT in search-related tasks.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613796</data>
+    </node>
+    <node id="Lingyong Yan">
+      <data key="d0">Lingyong Yan</data>
+      <data key="d1">person</data>
+      <data key="d2">Lingyong Yan is a co-author working on assessing large language models as re-ranking agents in search applications.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613796</data>
+    </node>
+    <node id="Xinyu Ma">
+      <data key="d0">Xinyu Ma</data>
+      <data key="d1">person</data>
+      <data key="d2">Xinyu Ma is a co-author evaluating large language models in search and retrieval tasks in an NLP context.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613796</data>
+    </node>
+    <node id="Shuaiqiang Wang">
+      <data key="d0">Shuaiqiang Wang</data>
+      <data key="d1">person</data>
+      <data key="d2">Shuaiqiang Wang is a contributor to research examining large language models' re-ranking abilities in search applications.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613796</data>
+    </node>
+    <node id="Pengjie Ren">
+      <data key="d0">Pengjie Ren</data>
+      <data key="d1">person</data>
+      <data key="d2">Pengjie Ren is a co-author assessing the performance of language models in search contexts.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613796</data>
+    </node>
+    <node id="Zhumin Chen">
+      <data key="d0">Zhumin Chen</data>
+      <data key="d1">person</data>
+      <data key="d2">Zhumin Chen is a co-author involved in analysis related to large language models as search agents.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613796</data>
+    </node>
+    <node id="Dawei Yin">
+      <data key="d0">Dawei Yin</data>
+      <data key="d1">person</data>
+      <data key="d2">Dawei Yin is a co-author exploring the interactions of language models in search contexts.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613797</data>
+    </node>
+    <node id="Zhaochun Ren">
+      <data key="d0">Zhaochun Ren</data>
+      <data key="d1">person</data>
+      <data key="d2">Zhaochun Ren is a co-author involved in research evaluating search capabilities of large language models.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613797</data>
+    </node>
+    <node id="Hugo Touvron">
+      <data key="d0">Hugo Touvron</data>
+      <data key="d1">person</data>
+      <data key="d2">Hugo Touvron is a co-author researching efficient foundation models in language processing systems.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613797</data>
+    </node>
+    <node id="Thibaut Lavril">
+      <data key="d0">Thibaut Lavril</data>
+      <data key="d1">person</data>
+      <data key="d2">Thibaut Lavril is a co-author working on foundational efficiency in language models.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613797</data>
+    </node>
+    <node id="Gautier Izacard">
+      <data key="d0">Gautier Izacard</data>
+      <data key="d1">person</data>
+      <data key="d2">Gautier Izacard is a co-author focusing on efficient language model structures in computational systems.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613798</data>
+    </node>
+    <node id="Xavier Martinet">
+      <data key="d0">Xavier Martinet</data>
+      <data key="d1">person</data>
+      <data key="d2">Xavier Martinet is a co-author involved in foundational research pertaining to language models in AI.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613798</data>
+    </node>
+    <node id="Marie-Anne Lachaux">
+      <data key="d0">Marie-Anne Lachaux</data>
+      <data key="d1">person</data>
+      <data key="d2">Marie-Anne Lachaux is a co-author examining foundation language models' efficiency in computational linguistics.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613798</data>
+    </node>
+    <node id="Timothée Lacroix">
+      <data key="d0">Timothée Lacroix</data>
+      <data key="d1">person</data>
+      <data key="d2">Timothée Lacroix is a co-author focused on advancements in foundational language models for computational tasks.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613798</data>
+    </node>
+    <node id="Baptiste Rozière">
+      <data key="d0">Baptiste Rozière</data>
+      <data key="d1">person</data>
+      <data key="d2">Baptiste Rozière is a contributor researching efficient structures in foundation language models in AI systems.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613799</data>
+    </node>
+    <node id="Naman Goyal">
+      <data key="d0">Naman Goyal</data>
+      <data key="d1">person</data>
+      <data key="d2">Naman Goyal is a co-author involved in foundational language model research in computational linguistics.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613799</data>
+    </node>
+    <node id="Eric Hambro">
+      <data key="d0">Eric Hambro</data>
+      <data key="d1">person</data>
+      <data key="d2">Eric Hambro is a co-author researching methodologies for efficient language models in AI.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613799</data>
+    </node>
+    <node id="Faisal Azhar">
+      <data key="d0">Faisal Azhar</data>
+      <data key="d1">person</data>
+      <data key="d2">Faisal Azhar is a co-author contributing to foundational studies in language model efficiency.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613799</data>
+    </node>
+    <node id="Chain of Thought Prompting">
+      <data key="d0">Chain of Thought Prompting</data>
+      <data key="d1">category</data>
+      <data key="d2">Chain of Thought Prompting is a method that encourages reasoning in large language models through structured prompts.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613800</data>
+    </node>
+    <node id="Annual Meeting of the Association for Computational Linguistics">
+      <data key="d0">Annual Meeting of the Association for Computational Linguistics</data>
+      <data key="d1">event</data>
+      <data key="d2">The Annual Meeting of the Association for Computational Linguistics is a premier conference focusing on advancements in language technologies.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613800</data>
+    </node>
+    <node id="Set-of-mark prompting">
+      <data key="d0">Set-of-mark prompting</data>
+      <data key="d1">category</data>
+      <data key="d2">Set-of-mark prompting is a technique aimed at improving visual grounding in AI models through structured queries.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613800</data>
+    </node>
+    <node id="Reflexion">
+      <data key="d0">Reflexion</data>
+      <data key="d1">category</data>
+      <data key="d2">Reflexion is described as an autonomous agent with dynamic memory and self-reflection capabilities, developed in recent research.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613800</data>
+    </node>
+    <node id="Chain of Thought Prompting Elicits Reasoning in Large Language Models">
+      <data key="d0">Chain of Thought Prompting Elicits Reasoning in Large Language Models</data>
+      <data key="d1">category</data>
+      <data key="d2">The method of Chain of Thought Prompting aims to enhance reasoning in large language models, discussed in a paper presented at the Annual Meeting of the Association for Computational Linguistics.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613800</data>
+    </node>
+    <node id="API">
+      <data key="d0">API</data>
+      <data key="d1">organization</data>
+      <data key="d2">API refers to an interface for programmatic access to the research data related to language models.</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613800</data>
+    </node>
+    <node id="ArXiv">
+      <data key="d0">ArXiv</data>
+      <data key="d1">organization</data>
+      <data key="d2">ArXiv is an online repository for scholarly articles, particularly in the fields of physics, mathematics, computer science, and more, where the specific article abs/2310.11441 is hosted.</data>
+      <data key="d3">chunk-b7255d18a8df30a4afaa5abde11b9392</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613801</data>
+    </node>
+    <node id="2023">
+      <data key="d0">2023</data>
+      <data key="d1">event</data>
+      <data key="d2">2023 refers to the year of publication of the article abs/2310.11441 on ArXiv.</data>
+      <data key="d3">chunk-b7255d18a8df30a4afaa5abde11b9392</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613801</data>
+    </node>
+    <node id="abs/2310.11441">
+      <data key="d0">abs/2310.11441</data>
+      <data key="d1">category</data>
+      <data key="d2">abs/2310.11441 is a unique identifier for a specific article hosted on ArXiv, usually representing a study or research paper.</data>
+      <data key="d3">chunk-b7255d18a8df30a4afaa5abde11b9392</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613801</data>
+    </node>
+    <node id="Corpus ID">
+      <data key="d0">Corpus ID</data>
+      <data key="d1">category</data>
+      <data key="d2">Corpus ID refers to a unique identifier for academic publications within the Semantic Scholar database, facilitating easy reference to specific articles.</data>
+      <data key="d3">chunk-b7255d18a8df30a4afaa5abde11b9392</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613801</data>
+    </node>
+    <node id="Survey of hallucination in natural language generation">
+      <data key="d0">Survey of hallucination in natural language generation</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d2">ale Fung authored this survey which examines hallucination in language generation technologies.</data>
+      <data key="d1">UNKNOWN</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613836</data>
+    </node>
+    <node id="HAGRID">
+      <data key="d0">HAGRID</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d2">Ehsan Kamalloo contributed to the creation of the HAGRID dataset, focusing on generative information seeking with language models.</data>
+      <data key="d1">UNKNOWN</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613838</data>
+    </node>
+    <node id="MATSA">
+      <data key="d0">MATSA</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d2">Puneet Mathur co-authored a paper on multi-agent table structure attribution, showcasing collaborative AI work.</data>
+      <data key="d1">UNKNOWN</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613838</data>
+    </node>
+    <node id="Llama">
+      <data key="d0">Llama</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d2">Hugo Touvron collaborated on the Llama project, which focuses on the efficiency of language models in AI applications.</data>
+      <data key="d1">UNKNOWN</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613839</data>
+    </node>
+    <node id="Is ChatGPT Good at Search?">
+      <data key="d0">Is ChatGPT Good at Search?</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d2">Weiwei Sun analyzed and evaluated the performance of ChatGPT in search-related tasks and methodologies.</data>
+      <data key="d1">UNKNOWN</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613839</data>
+    </node>
+    <node id="Dynamic Memory">
+      <data key="d0">Dynamic Memory</data>
+      <data key="d3">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d2">Reflexion employs dynamic memory techniques that enhance its autonomous functioning and self-reflection abilities.</data>
+      <data key="d1">UNKNOWN</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613840</data>
+    </node>
+    <node id="image_19dac96db0867fce20c04fd96a79f23f">
+      <data key="d0">image_19dac96db0867fce20c04fd96a79f23f</data>
+      <data key="d1">image</data>
+      <data key="d2">Image content: {'type': 'image', 'img_path': '/Users/gozachary/Downloads/Data-2/RAG-Anything/comprehensive_efr_outp</data>
+      <data key="d3">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613850</data>
+    </node>
+    <node id="Method Performance in Chart Attribution Tasks (table)">
+      <data key="d0">Method Performance in Chart Attribution Tasks (table)</data>
+      <data key="d1">table</data>
+      <data key="d2">The table compares various approaches for chart attribution based on their Intersection over Union (IoU) scores, highlighting ChartCitor's superior performance (27.4 IoU) against other methods, thereby supporting the surrounding content's advocacy for enhanced visual interpretation techniques.</data>
+      <data key="d3">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613850</data>
+    </node>
+    <node id="image_a41fd604bab831ea98fc132badfc103e">
+      <data key="d0">image_a41fd604bab831ea98fc132badfc103e</data>
+      <data key="d1">image</data>
+      <data key="d2">Image content: {'type': 'image', 'img_path': '/Users/gozachary/Downloads/Data-2/RAG-Anything/comprehensive_efr_outp</data>
+      <data key="d3">chunk-b7417b0fc5267b9a05b69c6b9151f2c9</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613850</data>
+    </node>
+    <node id="Figure 1">
+      <data key="d0">Figure 1</data>
+      <data key="d1">event</data>
+      <data key="d2">Figure 1 refers to the chart or image depicting the functionalities of the ChartCitor framework.</data>
+      <data key="d3">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613866</data>
+    </node>
+    <node id="/Users/gozachary/Downloads/Data-2/RAG-Anything/comprehensive_efr_output/2502.00989v1/auto/images/dc80eb40fe8039ab9fcd844aa4438af28967c504f10187490fad92565b27f5ce.jpg">
+      <data key="d0">/Users/gozachary/Downloads/Data-2/RAG-Anything/comprehensive_efr_output/2502.00989v1/auto/images/dc80eb40fe8039ab9fcd844aa4438af28967c504f10187490fad92565b27f5ce.jpg</data>
+      <data key="d1">geo</data>
+      <data key="d2">This is the path to the image file illustrating the ChartCitor framework.</data>
+      <data key="d3">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613866</data>
+    </node>
+    <node id="ChartCitor Framework">
+      <data key="d0">ChartCitor Framework</data>
+      <data key="d1">category</data>
+      <data key="d2">ChartCitor Framework is a classification of advanced tools designed for multi-agent tasks such as table extraction and entity captioning from chart images.</data>
+      <data key="d3">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613866</data>
+    </node>
+    <node id="Image Content Analysis">
+      <data key="d0">Image Content Analysis</data>
+      <data key="d1">event</data>
+      <data key="d2">Image Content Analysis refers to the assessment process involving the interpretation and extraction of information from the specified image.</data>
+      <data key="d3">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613866</data>
+    </node>
+    <node id="Visual Analysis">
+      <data key="d0">Visual Analysis</data>
+      <data key="d1">event</data>
+      <data key="d2">Visual Analysis denotes the examination of the visual elements present in the image to derive meaningful insights.</data>
+      <data key="d3">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613866</data>
+    </node>
+    <node id="DETR">
+      <data key="d0">DETR</data>
+      <data key="d1">organization</data>
+      <data key="d2">DETR is a method that, when combined with Set-of-Marks Prompting, achieves an IoU of 18.6 in chart attribution tasks, demonstrating its effectiveness in visual data processing.</data>
+      <data key="d3">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613866</data>
+    </node>
+    <node id="Set-of-Marks Prompting">
+      <data key="d0">Set-of-Marks Prompting</data>
+      <data key="d1">category</data>
+      <data key="d2">Set-of-Marks Prompting is a technique used in conjunction with DETR to improve the IoU score in visual data tasks, enhancing model performance significantly.</data>
+      <data key="d3">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613868</data>
+    </node>
+    <node id="Intersection over Union (IoU)">
+      <data key="d0">Intersection over Union (IoU)</data>
+      <data key="d1">category</data>
+      <data key="d2">Intersection over Union (IoU) is a metric used to measure the accuracy of methods in visual data interpretation tasks, expressed as numerical scores in this context.</data>
+      <data key="d3">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613868</data>
+    </node>
+    <node id="GPT-4V (Direct Bbox Decoding)">
+      <data key="d0">GPT-4V (Direct Bbox Decoding)</data>
+      <data key="d1">organization</data>
+      <data key="d2">GPT-4V (Direct Bbox Decoding) is a method evaluated in the chart attribution task, achieving an IoU score of 12.5.</data>
+      <data key="d3">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613868</data>
+    </node>
+    <node id="Claude-3.5 (Sonnet Direct Bbox Decoding)">
+      <data key="d0">Claude-3.5 (Sonnet Direct Bbox Decoding)</data>
+      <data key="d1">organization</data>
+      <data key="d2">Claude-3.5 (Sonnet Direct Bbox Decoding) is a method that received an IoU score of 13.8 in the chart attribution task.</data>
+      <data key="d3">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613868</data>
+    </node>
+    <node id="DETR [2]+ Set-of-Marks Prompting [21]">
+      <data key="d0">DETR [2]+ Set-of-Marks Prompting [21]</data>
+      <data key="d1">organization</data>
+      <data key="d2">DETR [2]+ Set-of-Marks Prompting [21] is a method that achieved an IoU score of 18.6, indicating its effectiveness in chart attribution.</data>
+      <data key="d3">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613868</data>
+    </node>
+    <node id="Figure 2">
+      <data key="d0">Figure 2</data>
+      <data key="d1">event</data>
+      <data key="d2">Figure 2 depicts the outcomes of an ablation analysis of multimodal feedback agents and includes a user evaluation of ChartCitor.</data>
+      <data key="d3">chunk-b7417b0fc5267b9a05b69c6b9151f2c9</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613868</data>
+    </node>
+    <node id="Multimodal Feedback Agents">
+      <data key="d0">Multimodal Feedback Agents</data>
+      <data key="d1">category</data>
+      <data key="d2">Multimodal feedback agents are a topic of analysis in the study, likely involving the interaction of multiple forms of feedback in a user interface context.</data>
+      <data key="d3">chunk-b7417b0fc5267b9a05b69c6b9151f2c9</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613868</data>
+    </node>
+    <node id="Ablation Analysis">
+      <data key="d0">Ablation Analysis</data>
+      <data key="d1">event</data>
+      <data key="d2">Ablation analysis refers to the systematic investigation undertaken to evaluate the performance or impact of multimodal feedback agents, as portrayed in Figure 2.</data>
+      <data key="d3">chunk-b7417b0fc5267b9a05b69c6b9151f2c9</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613868</data>
+    </node>
+    <node id="Image Path">
+      <data key="d0">Image Path</data>
+      <data key="d3">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d2">Figure 1 is linked to the specified image path, where the visualization of ChartCitor can be found.</data>
+      <data key="d1">UNKNOWN</data>
+      <data key="d4">2502.00989v1.pdf</data>
+      <data key="d5">1758613870</data>
+    </node>
+    <edge source="ChartCitor" target="Kanika Goswami">
+      <data key="d6">8.0</data>
+      <data key="d7">Kanika Goswami is a key contributor to the ChartCitor framework at IGDTUW, indicating her role in its development.</data>
+      <data key="d8">development team,organizational contribution</data>
+      <data key="d9">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613808</data>
+    </edge>
+    <edge source="ChartCitor" target="Puneet Mathur">
+      <data key="d6">8.0</data>
+      <data key="d7">Puneet Mathur plays a significant role in the development of ChartCitor at Adobe Research, highlighting his contribution to the project.</data>
+      <data key="d8">development team,organizational contribution</data>
+      <data key="d9">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613810</data>
+    </edge>
+    <edge source="ChartCitor" target="Ryan Rossi">
+      <data key="d6">8.0</data>
+      <data key="d7">Ryan Rossi is involved in the development of ChartCitor, contributing to its capabilities as a member of the Adobe Research team.</data>
+      <data key="d8">development team,organizational contribution</data>
+      <data key="d9">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613812</data>
+    </edge>
+    <edge source="ChartCitor" target="Franck Dernoncourt">
+      <data key="d6">8.0</data>
+      <data key="d7">Franck Dernoncourt is one of the developers of ChartCitor at Adobe Research, highlighting his involvement in the project's success.</data>
+      <data key="d8">development team,organizational contribution</data>
+      <data key="d9">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613813</data>
+    </edge>
+    <edge source="ChartCitor" target="Adobe Research">
+      <data key="d6">9.0</data>
+      <data key="d7">ChartCitor is developed by a team at Adobe Research, highlighting the organization's role in its creation and refinement.</data>
+      <data key="d8">organizational development,technology focus</data>
+      <data key="d9">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613814</data>
+    </edge>
+    <edge source="ChartCitor" target="Llama-3.2">
+      <data key="d6">8.0</data>
+      <data key="d7">Llama-3.2 is employed as part of the ChartCitor framework to help with tasks related to chart question-answering.</data>
+      <data key="d8">AI integration,model application</data>
+      <data key="d9">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613815</data>
+    </edge>
+    <edge source="ChartCitor" target="Claude-3.5 Sonnet">
+      <data key="d6">8.0</data>
+      <data key="d7">Claude-3.5 Sonnet is utilized within the ChartCitor framework for generating responses based on visual data from charts.</data>
+      <data key="d8">AI integration,model application</data>
+      <data key="d9">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613816</data>
+    </edge>
+    <edge source="ChartCitor" target="GPT-4V">
+      <data key="d6">18.0</data>
+      <data key="d7">GPT-4V is tasked with understanding PDF images and outputting structured data as part of the ChartCitor's functionality.&lt;SEP&gt;ChartCitor is compared with GPT-4V to demonstrate its superior performance in generating citations for charts.</data>
+      <data key="d8">comparison,data extraction,model application,performance</data>
+      <data key="d9">chunk-9af5c81195bb45458709701521978b72&lt;SEP&gt;chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613817</data>
+    </edge>
+    <edge source="ChartCitor" target="GPT-4o">
+      <data key="d6">9.0</data>
+      <data key="d7">ChartCitor utilizes GPT-4o for generating rich contextual descriptions that support citation mechanisms in chart analysis.</data>
+      <data key="d8">AI application,technology utilization</data>
+      <data key="d9">chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613818</data>
+    </edge>
+    <edge source="ChartCitor" target="TabCite benchmark">
+      <data key="d6">8.0</data>
+      <data key="d7">ChartCitor employs TabCite benchmark data for evaluating its effectiveness in citation retrieval tasks.</data>
+      <data key="d8">benchmarking,evaluation framework</data>
+      <data key="d9">chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613820</data>
+    </edge>
+    <edge source="ChartCitor" target="Kosmos-2">
+      <data key="d6">7.0</data>
+      <data key="d7">Kosmos-2 aids ChartCitor by providing visual grounding capabilities through its multimodal functionality.</data>
+      <data key="d8">multimodal capabilities,support</data>
+      <data key="d9">chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613821</data>
+    </edge>
+    <edge source="ChartCitor" target="LISA">
+      <data key="d6">8.0</data>
+      <data key="d7">LISA enhances ChartCitor's capabilities by generating segmentation masks for complex queries.</data>
+      <data key="d8">advanced technique,zero-shot segmentation</data>
+      <data key="d9">chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613822</data>
+    </edge>
+    <edge source="ChartCitor" target="LLM Pre-filtering Agent">
+      <data key="d6">9.0</data>
+      <data key="d7">The LLM Pre-filtering Agent's relevance scoring is utilized by ChartCitor to reduce noise and improve citation accuracy in chart analysis.</data>
+      <data key="d8">citation accuracy,data relevance</data>
+      <data key="d9">chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613823</data>
+    </edge>
+    <edge source="ChartCitor" target="Participants">
+      <data key="d6">8.0</data>
+      <data key="d7">Participants evaluated the performance of ChartCitor in terms of citation accuracy and perceived utility during a user study.</data>
+      <data key="d8">evaluation,user feedback</data>
+      <data key="d9">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613824</data>
+    </edge>
+    <edge source="ChartCitor" target="Bounding Boxes">
+      <data key="d6">7.0</data>
+      <data key="d7">ChartCitor utilizes bounding boxes in its segmentation task but faces challenges with non-rectangular charts.</data>
+      <data key="d8">segmentation challenge,technique</data>
+      <data key="d9">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613825</data>
+    </edge>
+    <edge source="ChartCitor" target="Josh Achiam">
+      <data key="d6">8.0</data>
+      <data key="d7">Josh Achiam is identified as an author of the technical report related to ChartCitor, connecting him to the development of this model.</data>
+      <data key="d8">author contribution,research connection</data>
+      <data key="d9">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613826</data>
+    </edge>
+    <edge source="ChartCitor" target="Steven Adler">
+      <data key="d6">8.0</data>
+      <data key="d7">Steven Adler contributed to the GPT-4 report, indicating a connection to research involving ChartCitor and its methodologies.</data>
+      <data key="d8">author contribution,research connection</data>
+      <data key="d9">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613827</data>
+    </edge>
+    <edge source="ChartCitor" target="Sandhini Agarwal">
+      <data key="d6">8.0</data>
+      <data key="d7">Sandhini Agarwal is associated with the GPT-4 report, linking her work to the advancements associated with ChartCitor.</data>
+      <data key="d8">author contribution,research connection</data>
+      <data key="d9">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613835</data>
+    </edge>
+    <edge source="ChartCitor" target="Lama Ahmad">
+      <data key="d6">8.0</data>
+      <data key="d7">Lama Ahmad's authorship of the GPT-4 report establishes a relationship to the development of ChartCitor.</data>
+      <data key="d8">author contribution,research connection</data>
+      <data key="d9">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613836</data>
+    </edge>
+    <edge source="ChartCitor" target="Ilge Akkaya">
+      <data key="d6">8.0</data>
+      <data key="d7">Ilge Akkaya's involvement in the GPT-4 technical report links him to the ChartCitor model development.</data>
+      <data key="d8">author contribution,research connection</data>
+      <data key="d9">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613838</data>
+    </edge>
+    <edge source="ChartCitor" target="Florencia Leoni Aleman">
+      <data key="d6">8.0</data>
+      <data key="d7">Florencia Leoni Aleman's participation as an author connects her to the research surrounding ChartCitor.</data>
+      <data key="d8">author contribution,research connection</data>
+      <data key="d9">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613838</data>
+    </edge>
+    <edge source="ChartCitor" target="Diogo Almeida">
+      <data key="d6">8.0</data>
+      <data key="d7">Diogo Almeida's role as an author of the GPT-4 report establishes a relationship to the ChartCitor model.</data>
+      <data key="d8">author contribution,research connection</data>
+      <data key="d9">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613839</data>
+    </edge>
+    <edge source="ChartCitor" target="Janko Altenschmidt">
+      <data key="d6">8.0</data>
+      <data key="d7">Janko Altenschmidt's authorship in the GPT-4 report ties him to the efforts in developing ChartCitor.</data>
+      <data key="d8">author contribution,research connection</data>
+      <data key="d9">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613841</data>
+    </edge>
+    <edge source="ChartCitor" target="Sam Altman">
+      <data key="d6">8.0</data>
+      <data key="d7">Sam Altman's contribution as an author links him to the advancements in ChartCitor technology.</data>
+      <data key="d8">author contribution,research connection</data>
+      <data key="d9">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613842</data>
+    </edge>
+    <edge source="ChartCitor" target="Shyamal Anadkat">
+      <data key="d6">8.0</data>
+      <data key="d7">Shyamal Anadkat is an author of the GPT-4 technical report, thus related to ChartCitor's research initiatives.</data>
+      <data key="d8">author contribution,research connection</data>
+      <data key="d9">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613843</data>
+    </edge>
+    <edge source="ChartCitor" target="Figure 1">
+      <data key="d6">8.0</data>
+      <data key="d7">ChartCitor is illustrated through Figure 1, showcasing its various capabilities in handling chart images.</data>
+      <data key="d8">framework illustration,functionality overview</data>
+      <data key="d9">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613869</data>
+    </edge>
+    <edge source="ChartCitor" target="image_19dac96db0867fce20c04fd96a79f23f">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity ChartCitor belongs to image_19dac96db0867fce20c04fd96a79f23f</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613870</data>
+    </edge>
+    <edge source="ChartCitor" target="Intersection over Union (IoU)">
+      <data key="d6">9.0</data>
+      <data key="d7">ChartCitor achieved the highest IoU score of 27.4, highlighting its effectiveness in visual data interpretation tasks.</data>
+      <data key="d8">advanced method,performance measure</data>
+      <data key="d9">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613871</data>
+    </edge>
+    <edge source="ChartCitor" target="Method Performance in Chart Attribution Tasks (table)">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity ChartCitor belongs to Method Performance in Chart Attribution Tasks (table)</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613874</data>
+    </edge>
+    <edge source="ChartCitor" target="Ablation Analysis">
+      <data key="d6">7.0</data>
+      <data key="d7">ChartCitor is connected to the user evaluation aspect of the ablation analysis, suggesting its role in interpreting the results.</data>
+      <data key="d8">analysis tool,evaluation connection</data>
+      <data key="d9">chunk-b7417b0fc5267b9a05b69c6b9151f2c9</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613879</data>
+    </edge>
+    <edge source="ChartCitor" target="image_a41fd604bab831ea98fc132badfc103e">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity ChartCitor belongs to image_a41fd604bab831ea98fc132badfc103e</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-b7417b0fc5267b9a05b69c6b9151f2c9</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613881</data>
+    </edge>
+    <edge source="Kanika Goswami" target="India">
+      <data key="d6">7.0</data>
+      <data key="d7">Kanika Goswami is located in India, where she works with IGDTUW on the ChartCitor project.</data>
+      <data key="d8">location,professional affiliation</data>
+      <data key="d9">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613809</data>
+    </edge>
+    <edge source="Puneet Mathur" target="USA">
+      <data key="d6">7.0</data>
+      <data key="d7">Puneet Mathur is based in the USA, where he works at Adobe Research on the ChartCitor system.</data>
+      <data key="d8">location,professional affiliation</data>
+      <data key="d9">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613809</data>
+    </edge>
+    <edge source="Puneet Mathur" target="MATSA">
+      <data key="d6">9.0</data>
+      <data key="d7">Puneet Mathur co-authored a paper on multi-agent table structure attribution, showcasing collaborative AI work.</data>
+      <data key="d8">AI methodologies,research collaboration</data>
+      <data key="d9">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613838</data>
+    </edge>
+    <edge source="Ryan Rossi" target="USA">
+      <data key="d6">7.0</data>
+      <data key="d7">Ryan Rossi works at Adobe Research in the USA, indicating his professional location and association with the organization.</data>
+      <data key="d8">location,professional affiliation</data>
+      <data key="d9">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613810</data>
+    </edge>
+    <edge source="Franck Dernoncourt" target="USA">
+      <data key="d6">7.0</data>
+      <data key="d7">Franck Dernoncourt is located in the USA, contributing to the work at Adobe Research on the ChartCitor framework.</data>
+      <data key="d8">location,professional affiliation</data>
+      <data key="d9">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613812</data>
+    </edge>
+    <edge source="LLMs" target="Fine-grained Structured Chart Attribution">
+      <data key="d6">9.0</data>
+      <data key="d7">LLMs are instrumental in addressing the Fine-grained Structured Chart Attribution task within the ChartCitor framework.</data>
+      <data key="d8">functionality,task support</data>
+      <data key="d9">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613808</data>
+    </edge>
+    <edge source="LLMs" target="Visual Fact Checking">
+      <data key="d6">9.0</data>
+      <data key="d7">Visual Fact Checking utilizes the capabilities of LLMs to verify information, particularly in chart-related contexts.</data>
+      <data key="d8">AI application,verification method</data>
+      <data key="d9">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613809</data>
+    </edge>
+    <edge source="Fine-grained Structured Chart Attribution" target="Multiple LLM Agents">
+      <data key="d6">9.0</data>
+      <data key="d7">Multiple LLM Agents are utilized in the task of Fine-grained Structured Chart Attribution, showcasing their collaborative function.</data>
+      <data key="d8">collaboration,task execution</data>
+      <data key="d9">chunk-674ae697ba691bf3c9f7514577fa45ad</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613809</data>
+    </edge>
+    <edge source="GPT-4V" target="Set-of-mark prompting">
+      <data key="d6">9.0</data>
+      <data key="d7">Set-of-mark prompting techniques are applied to enhance the performance of the GPT-4V model in visual grounding tasks.</data>
+      <data key="d8">performance enhancement,visual grounding</data>
+      <data key="d9">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613840</data>
+    </edge>
+    <edge source="Detr" target="Cell Localization Agent">
+      <data key="d6">8.0</data>
+      <data key="d7">The Cell Localization Agent employs DETR to identify visual elements that correspond to cited table cells.</data>
+      <data key="d8">chart attribution,visual recognition</data>
+      <data key="d9">chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613813</data>
+    </edge>
+    <edge source="RankGPT" target="LLM Re-ranking Agent">
+      <data key="d6">9.0</data>
+      <data key="d7">The LLM Re-ranking Agent uses RankGPT to improve the relevancy of table cells during citation retrieval processes.</data>
+      <data key="d8">collaboration,performance enhancement</data>
+      <data key="d9">chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613813</data>
+    </edge>
+    <edge source="Kosmos-2" target="LISA">
+      <data key="d6">7.0</data>
+      <data key="d7">Kosmos-2 and LISA are both mentioned as models that performed poorly with chart data, indicating a common shortcoming in this area.</data>
+      <data key="d8">model comparison,performance issue</data>
+      <data key="d9">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613817</data>
+    </edge>
+    <edge source="Kosmos-2" target="HAGRID">
+      <data key="d6">8.0</data>
+      <data key="d7">Kosmos-2 is grounded in the capabilities developed through datasets like HAGRID, enhancing AI performance in contextual understanding.</data>
+      <data key="d8">capability linkage,dataset application</data>
+      <data key="d9">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613840</data>
+    </edge>
+    <edge source="Kosmos-2" target="Intersection over Union (IoU)">
+      <data key="d6">6.0</data>
+      <data key="d7">Kosmos-2's low IoU score of 3.89 indicates its limited effectiveness in visual data interpretation tasks.</data>
+      <data key="d8">performance limitation,visual data challenges</data>
+      <data key="d9">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613872</data>
+    </edge>
+    <edge source="Kosmos-2" target="Method Performance in Chart Attribution Tasks (table)">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity Kosmos-2 belongs to Method Performance in Chart Attribution Tasks (table)</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613876</data>
+    </edge>
+    <edge source="LISA" target="Intersection over Union (IoU)">
+      <data key="d6">5.0</data>
+      <data key="d7">LISA's IoU score of 4.34 suggests its ineffectiveness relative to newer methods in the context of visual data tasks.</data>
+      <data key="d8">performance limitation,visual data challenges</data>
+      <data key="d9">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613874</data>
+    </edge>
+    <edge source="LISA" target="Method Performance in Chart Attribution Tasks (table)">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity LISA belongs to Method Performance in Chart Attribution Tasks (table)</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613877</data>
+    </edge>
+    <edge source="LLM Pre-filtering Agent" target="Cell Captioning Agent">
+      <data key="d6">8.0</data>
+      <data key="d7">The LLM Pre-filtering Agent assists the Cell Captioning Agent by narrowing down the relevant data elements to focus on, enhancing efficiency in analysis.</data>
+      <data key="d8">efficiency improvement,process optimization</data>
+      <data key="d9">chunk-b839fa86d69937abbbfac9da3a686d58</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613815</data>
+    </edge>
+    <edge source="Charts" target="Visual Chart Understanding">
+      <data key="d6">10.0</data>
+      <data key="d7">Charts are integral to the concept of visual chart understanding, as accurate interpretation is needed for effective analysis.</data>
+      <data key="d8">data analysis,interpretation</data>
+      <data key="d9">chunk-9af5c81195bb45458709701521978b72</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613818</data>
+    </edge>
+    <edge source="ale Fung" target="Survey of hallucination in natural language generation">
+      <data key="d6">9.0</data>
+      <data key="d7">ale Fung authored this survey which examines hallucination in language generation technologies.</data>
+      <data key="d8">publication,research authorship</data>
+      <data key="d9">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613836</data>
+    </edge>
+    <edge source="Ehsan Kamalloo" target="HAGRID">
+      <data key="d6">8.0</data>
+      <data key="d7">Ehsan Kamalloo contributed to the creation of the HAGRID dataset, focusing on generative information seeking with language models.</data>
+      <data key="d8">collaboration,dataset creation</data>
+      <data key="d9">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613838</data>
+    </edge>
+    <edge source="Noah Shinn" target="Reflexion">
+      <data key="d6">8.0</data>
+      <data key="d7">Noah Shinn co-authored research on an autonomous agent named Reflexion, which features innovative memory techniques.</data>
+      <data key="d8">AI innovation,research focus</data>
+      <data key="d9">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613838</data>
+    </edge>
+    <edge source="Noah Shinn" target="Chain of Thought Prompting">
+      <data key="d6">9.0</data>
+      <data key="d7">Chain of Thought Prompting is discussed in the context of Noah Shinn's research, highlighting reasoning capabilities in AI models.</data>
+      <data key="d8">AI reasoning,methodology discussion</data>
+      <data key="d9">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613839</data>
+    </edge>
+    <edge source="Weiwei Sun" target="Is ChatGPT Good at Search?">
+      <data key="d6">9.0</data>
+      <data key="d7">Weiwei Sun analyzed and evaluated the performance of ChatGPT in search-related tasks and methodologies.</data>
+      <data key="d8">AI assessment,performance evaluation</data>
+      <data key="d9">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613839</data>
+    </edge>
+    <edge source="Hugo Touvron" target="Llama">
+      <data key="d6">9.0</data>
+      <data key="d7">Hugo Touvron collaborated on the Llama project, which focuses on the efficiency of language models in AI applications.</data>
+      <data key="d8">language model efficiency,project collaboration</data>
+      <data key="d9">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613839</data>
+    </edge>
+    <edge source="Reflexion" target="Dynamic Memory">
+      <data key="d6">9.0</data>
+      <data key="d7">Reflexion employs dynamic memory techniques that enhance its autonomous functioning and self-reflection abilities.</data>
+      <data key="d8">autonomous functioning,memory enhancement</data>
+      <data key="d9">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613840</data>
+    </edge>
+    <edge source="Chain of Thought Prompting Elicits Reasoning in Large Language Models" target="Llama">
+      <data key="d6">8.0</data>
+      <data key="d7">The approach of Chain of Thought Prompting is relevant to the methodologies developed in the Llama project for efficient language modeling.</data>
+      <data key="d8">language modeling,methodology relevance</data>
+      <data key="d9">chunk-30a776bce427dd986de9cf5abd6e011f</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613840</data>
+    </edge>
+    <edge source="ArXiv" target="abs/2310.11441">
+      <data key="d6">9.0</data>
+      <data key="d7">ArXiv hosts the article abs/2310.11441 as part of its repository of scholarly papers.</data>
+      <data key="d8">repository,scholarly publication</data>
+      <data key="d9">chunk-b7255d18a8df30a4afaa5abde11b9392</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613841</data>
+    </edge>
+    <edge source="ArXiv" target="Corpus ID">
+      <data key="d6">8.0</data>
+      <data key="d7">The article abs/2310.11441 has an associated Corpus ID, allowing for identification within the Semantic Scholar platform.</data>
+      <data key="d8">academic reference,identification</data>
+      <data key="d9">chunk-b7255d18a8df30a4afaa5abde11b9392</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613843</data>
+    </edge>
+    <edge source="2023" target="abs/2310.11441">
+      <data key="d6">8.0</data>
+      <data key="d7">The article abs/2310.11441 was published in the year 2023.</data>
+      <data key="d8">publication year,research</data>
+      <data key="d9">chunk-b7255d18a8df30a4afaa5abde11b9392</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613843</data>
+    </edge>
+    <edge source="image_19dac96db0867fce20c04fd96a79f23f" target="/Users/gozachary/Downloads/Data-2/RAG-Anything/comprehensive_efr_output/2502.00989v1/auto/images/dc80eb40fe8039ab9fcd844aa4438af28967c504f10187490fad92565b27f5ce.jpg">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity /Users/gozachary/Downloads/Data-2/RAG-Anything/comprehensive_efr_output/2502.00989v1/auto/images/dc80eb40fe8039ab9fcd844aa4438af28967c504f10187490fad92565b27f5ce.jpg belongs to image_19dac96db0867fce20c04fd96a79f23f</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613869</data>
+    </edge>
+    <edge source="image_19dac96db0867fce20c04fd96a79f23f" target="Visual Analysis">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity Visual Analysis belongs to image_19dac96db0867fce20c04fd96a79f23f</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613871</data>
+    </edge>
+    <edge source="image_19dac96db0867fce20c04fd96a79f23f" target="Image Content Analysis">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity Image Content Analysis belongs to image_19dac96db0867fce20c04fd96a79f23f</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613872</data>
+    </edge>
+    <edge source="image_19dac96db0867fce20c04fd96a79f23f" target="Figure 1">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity Figure 1 belongs to image_19dac96db0867fce20c04fd96a79f23f</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613874</data>
+    </edge>
+    <edge source="image_19dac96db0867fce20c04fd96a79f23f" target="ChartCitor Framework">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity ChartCitor Framework belongs to image_19dac96db0867fce20c04fd96a79f23f</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613875</data>
+    </edge>
+    <edge source="Method Performance in Chart Attribution Tasks (table)" target="DETR">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity DETR belongs to Method Performance in Chart Attribution Tasks (table)</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613875</data>
+    </edge>
+    <edge source="Method Performance in Chart Attribution Tasks (table)" target="Set-of-Marks Prompting">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity Set-of-Marks Prompting belongs to Method Performance in Chart Attribution Tasks (table)</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613879</data>
+    </edge>
+    <edge source="Method Performance in Chart Attribution Tasks (table)" target="GPT-4V (Direct Bbox Decoding)">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity GPT-4V (Direct Bbox Decoding) belongs to Method Performance in Chart Attribution Tasks (table)</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613879</data>
+    </edge>
+    <edge source="Method Performance in Chart Attribution Tasks (table)" target="Claude-3.5 (Sonnet Direct Bbox Decoding)">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity Claude-3.5 (Sonnet Direct Bbox Decoding) belongs to Method Performance in Chart Attribution Tasks (table)</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613881</data>
+    </edge>
+    <edge source="Method Performance in Chart Attribution Tasks (table)" target="Intersection over Union (IoU)">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity Intersection over Union (IoU) belongs to Method Performance in Chart Attribution Tasks (table)</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613881</data>
+    </edge>
+    <edge source="Method Performance in Chart Attribution Tasks (table)" target="DETR [2]+ Set-of-Marks Prompting [21]">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity DETR [2]+ Set-of-Marks Prompting [21] belongs to Method Performance in Chart Attribution Tasks (table)</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613882</data>
+    </edge>
+    <edge source="image_a41fd604bab831ea98fc132badfc103e" target="Figure 2">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity Figure 2 belongs to image_a41fd604bab831ea98fc132badfc103e</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-b7417b0fc5267b9a05b69c6b9151f2c9</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613879</data>
+    </edge>
+    <edge source="image_a41fd604bab831ea98fc132badfc103e" target="Multimodal Feedback Agents">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity Multimodal Feedback Agents belongs to image_a41fd604bab831ea98fc132badfc103e</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-b7417b0fc5267b9a05b69c6b9151f2c9</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613879</data>
+    </edge>
+    <edge source="image_a41fd604bab831ea98fc132badfc103e" target="Ablation Analysis">
+      <data key="d6">10.0</data>
+      <data key="d7">Entity Ablation Analysis belongs to image_a41fd604bab831ea98fc132badfc103e</data>
+      <data key="d8">belongs_to,contained_in,part_of</data>
+      <data key="d9">chunk-b7417b0fc5267b9a05b69c6b9151f2c9</data>
+      <data key="d10">example_doc/2502.00989v1.pdf</data>
+      <data key="d11">1758613881</data>
+    </edge>
+    <edge source="Figure 1" target="Image Path">
+      <data key="d6">7.0</data>
+      <data key="d7">Figure 1 is linked to the specified image path, where the visualization of ChartCitor can be found.</data>
+      <data key="d8">image file,visual representation</data>
+      <data key="d9">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613870</data>
+    </edge>
+    <edge source="ChartCitor Framework" target="Image Content Analysis">
+      <data key="d6">8.0</data>
+      <data key="d7">ChartCitor Framework is utilized in the process of Image Content Analysis to perform various functions.</data>
+      <data key="d8">data processing,framework utilization</data>
+      <data key="d9">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613870</data>
+    </edge>
+    <edge source="ChartCitor Framework" target="Visual Analysis">
+      <data key="d6">7.0</data>
+      <data key="d7">The ChartCitor Framework supports Visual Analysis by enabling effective interaction with visual data.</data>
+      <data key="d8">data interaction,supportive roles</data>
+      <data key="d9">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613872</data>
+    </edge>
+    <edge source="Image Content Analysis" target="Visual Analysis">
+      <data key="d6">9.0</data>
+      <data key="d7">Image Content Analysis encompasses the Visual Analysis process, where images are systematically examined for data extraction.</data>
+      <data key="d8">data extraction,image assessment</data>
+      <data key="d9">chunk-55dbce32b9e75616fed4909a73d6bc54</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613869</data>
+    </edge>
+    <edge source="DETR" target="Set-of-Marks Prompting">
+      <data key="d6">8.0</data>
+      <data key="d7">The combination of DETR and Set-of-Marks Prompting resulted in a significant IoU score of 18.6, showcasing the benefits of tailored methods.</data>
+      <data key="d8">method enhancement,performance improvement</data>
+      <data key="d9">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613871</data>
+    </edge>
+    <edge source="Intersection over Union (IoU)" target="GPT-4V (Direct Bbox Decoding)">
+      <data key="d6">7.0</data>
+      <data key="d7">GPT-4V (Direct Bbox Decoding) achieved an IoU score of 12.5, reflecting its performance in visual data tasks.</data>
+      <data key="d8">model evaluation,performance measure</data>
+      <data key="d9">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613875</data>
+    </edge>
+    <edge source="Intersection over Union (IoU)" target="Claude-3.5 (Sonnet Direct Bbox Decoding)">
+      <data key="d6">7.0</data>
+      <data key="d7">Claude-3.5 (Sonnet Direct Bbox Decoding) earned an IoU score of 13.8 in the chart attribution task, indicating its performance level.</data>
+      <data key="d8">model evaluation,performance measure</data>
+      <data key="d9">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613876</data>
+    </edge>
+    <edge source="Intersection over Union (IoU)" target="DETR [2]+ Set-of-Marks Prompting [21]">
+      <data key="d6">8.0</data>
+      <data key="d7">The method of DETR [2]+ Set-of-Marks Prompting [21] was evaluated with an IoU score of 18.6 in chart attribution tasks.</data>
+      <data key="d8">model evaluation,performance measure</data>
+      <data key="d9">chunk-440a3f8c27cf2c3a9ea2c39e03796577</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613877</data>
+    </edge>
+    <edge source="Figure 2" target="Ablation Analysis">
+      <data key="d6">8.0</data>
+      <data key="d7">Figure 2 visually represents the outcomes of the ablation analysis, indicating its relevance to the depicted analysis results.</data>
+      <data key="d8">analysis results,visual representation</data>
+      <data key="d9">chunk-b7417b0fc5267b9a05b69c6b9151f2c9</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613877</data>
+    </edge>
+    <edge source="Multimodal Feedback Agents" target="Ablation Analysis">
+      <data key="d6">9.0</data>
+      <data key="d7">The ablation analysis focuses on the performance aspects of multimodal feedback agents, establishing a relationship between the two.</data>
+      <data key="d8">analysis focus,performance evaluation</data>
+      <data key="d9">chunk-b7417b0fc5267b9a05b69c6b9151f2c9</data>
+      <data key="d10">2502.00989v1.pdf</data>
+      <data key="d11">1758613878</data>
+    </edge>
+  </graph>
+</graphml>
