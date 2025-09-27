@@ -17,7 +17,7 @@ from raganything.utils import (
     encode_image_to_base64,
     validate_image_file,
 )
-from raganything.reflection import ReflectionEngine, ReflectionConfig
+from raganything.reflection_fixed import ReflectionLayer as ReflectionEngine, ReflectionConfig
 from raganything.micro_planner import MicroPlanner, IntentResult, QueryPlan
 import asyncio, inspect
 from typing import List, Dict, Any
@@ -50,9 +50,6 @@ class QueryMixin:
                 "response_type",
                 "top_k",
                 "chunk_top_k",
-                "kg_hops",
-                "mmr_lambda",
-                "min_rerank_score",
                 "temperature",
                 "max_tokens",
             ]
@@ -97,37 +94,22 @@ class QueryMixin:
             "definition": {
                 "top_k": 3,
                 "chunk_top_k": 2,
-                "kg_hops": 0,
-                "mmr_lambda": 0.8,
-                "min_rerank_score": 0.4,
             },
             "comparison": {
                 "top_k": 6,
                 "chunk_top_k": 4,
-                "kg_hops": 2,
-                "mmr_lambda": 0.6,
-                "min_rerank_score": 0.3,
             },
             "calculation": {
                 "top_k": 4,
                 "chunk_top_k": 3,
-                "kg_hops": 0,
-                "mmr_lambda": 0.7,
-                "min_rerank_score": 0.5,
             },
             "process": {
                 "top_k": 5,
                 "chunk_top_k": 3,
-                "kg_hops": 1,
-                "mmr_lambda": 0.65,
-                "min_rerank_score": 0.35,
             },
             "other": {
                 "top_k": 5,
                 "chunk_top_k": 3,
-                "kg_hops": 1,
-                "mmr_lambda": 0.7,
-                "min_rerank_score": 0.35,
             },
         }
         return presets.get(intent, presets["other"])
@@ -391,9 +373,6 @@ class QueryMixin:
                             },
                             "top_k": effective_kwargs.get("top_k"),
                             "chunk_top_k": effective_kwargs.get("chunk_top_k"),
-                            "kg_hops": effective_kwargs.get("kg_hops"),
-                            "mmr_lambda": effective_kwargs.get("mmr_lambda"),
-                            "min_rerank_score": effective_kwargs.get("min_rerank_score"),
                             "answer_length": len(str(result)) if result is not None else 0,
                             "ensemble_votes": None,
                             "agreement_ratio": None,
@@ -652,9 +631,6 @@ class QueryMixin:
                                 "strategy_used": {"mode": mode, "vlm_enhanced": False},
                                 "top_k": kwargs.get("top_k"),
                                 "chunk_top_k": kwargs.get("chunk_top_k"),
-                                "kg_hops": kwargs.get("kg_hops"),
-                                "mmr_lambda": kwargs.get("mmr_lambda"),
-                                "min_rerank_score": kwargs.get("min_rerank_score"),
                                 "answer_length": len(str(result)) if result is not None else 0,
                                 "ensemble_votes": None,
                                 "agreement_ratio": None,

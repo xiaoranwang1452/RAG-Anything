@@ -8,7 +8,7 @@ This script integrates:
 """
 
 import os
-from typing import Dict, Any, Optional, Callable
+from typing import Dict, Any, Optional, Callable, Union
 import sys
 import asyncio
 from dataclasses import dataclass, field
@@ -30,6 +30,7 @@ load_dotenv(dotenv_path=".env", override=False)
 # Import configuration and modules
 from raganything.config import RAGAnythingConfig
 from raganything.query import QueryMixin
+from raganything.enhanced_query import EnhancedQueryMixin
 from raganything.processor import ProcessorMixin
 from raganything.batch import BatchMixin
 from raganything.utils import get_processor_supports
@@ -47,7 +48,7 @@ from raganything.modalprocessors import (
 from raganything.micro_planner import MicroPlanner
 
 @dataclass
-class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
+class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin, EnhancedQueryMixin):
     """Multimodal Document Processing Pipeline - Complete document parsing and insertion pipeline"""
 
     # Core Components
@@ -98,6 +99,26 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
 
     micro_planner: Optional[MicroPlanner] = field(default=None, init=False)
     """Optional micro planner for query planning."""
+    
+    # EFR Layer Configuration
+    # ---
+    efr_config: Optional[Union[Any, Dict[str, Any]]] = field(default=None)
+    """EFR layer configuration."""
+    
+    enable_efr: bool = field(default=False)
+    """Enable EFR layer."""
+    
+    use_enhanced_efr: bool = field(default=False)
+    """Use enhanced EFR layer."""
+    
+    use_optimized_efr: bool = field(default=False)
+    """Use optimized EFR layer."""
+    
+    use_enhanced_efr_v2: bool = field(default=False)
+    """Use enhanced EFR layer V2 with advanced algorithms."""
+    
+    efr_layer: Optional[Any] = field(default=None, init=False)
+    """EFR layer instance."""
 
 
     def __post_init__(self):
@@ -138,6 +159,52 @@ class RAGAnything(QueryMixin, ProcessorMixin, BatchMixin):
         if self.config.enable_micro_planner:
             self.micro_planner = MicroPlanner(evaluator_func=self.llm_model_func)
             self.logger.info("  Micro planner enabled")
+        
+        # Initialize EFR layer if enabled
+        if self.enable_efr:
+            self._setup_efr_layer()
+    
+    def _setup_efr_layer(self):
+        """Setup EFR layer based on configuration"""
+        try:
+            if self.use_enhanced_efr_v2:
+                from raganything.enhanced_efr_layer_v2 import EnhancedEFRLayerV2, EnhancedEFRConfigV2
+                if isinstance(self.efr_config, EnhancedEFRConfigV2):
+                    config = self.efr_config
+                else:
+                    config = EnhancedEFRConfigV2()
+                self.efr_layer = EnhancedEFRLayerV2(config)
+                self.logger.info("  Enhanced EFR Layer V2 enabled")
+            elif self.use_optimized_efr:
+                from raganything.optimized_efr_layer import OptimizedEFRLayer, OptimizedEFRConfig
+                if isinstance(self.efr_config, OptimizedEFRConfig):
+                    config = self.efr_config
+                else:
+                    config = OptimizedEFRConfig()
+                self.efr_layer = OptimizedEFRLayer(config)
+                self.logger.info("  Optimized EFR layer enabled")
+            elif self.use_enhanced_efr:
+                from raganything.enhanced_efr_layer import EnhancedEFRLayer, EnhancedEFRConfig
+                if isinstance(self.efr_config, EnhancedEFRConfig):
+                    config = self.efr_config
+                else:
+                    config = EnhancedEFRConfig()
+                self.efr_layer = EnhancedEFRLayer(config)
+                self.logger.info("  Enhanced EFR layer enabled")
+            else:
+                from raganything.efr_layer import EFRLayer, EFRConfig
+                if isinstance(self.efr_config, EFRConfig):
+                    config = self.efr_config
+                else:
+                    config = EFRConfig()
+                self.efr_layer = EFRLayer(config)
+                self.logger.info("  Standard EFR layer enabled")
+        except ImportError as e:
+            self.logger.warning(f"Failed to import EFR layer: {e}")
+            self.efr_layer = None
+        except Exception as e:
+            self.logger.error(f"Failed to setup EFR layer: {e}")
+            self.efr_layer = None
 
     def __del__(self):
         """Cleanup resources when object is destroyed"""
