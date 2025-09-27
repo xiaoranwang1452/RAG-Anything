@@ -17,7 +17,7 @@ from raganything.utils import (
     encode_image_to_base64,
     validate_image_file,
 )
-# from raganything.reflection import ReflectionEngine, ReflectionConfig
+from raganything.reflection import ReflectionEngine, ReflectionConfig
 from raganything.micro_planner import MicroPlanner, IntentResult, QueryPlan
 import asyncio, inspect
 from typing import List, Dict, Any
@@ -26,6 +26,149 @@ from raganything.faithful import FaithfulDecodingEngine, FaithfulDecodingConfig
 
 class QueryMixin:
     """QueryMixin class containing query functionality for RAGAnything"""
+
+    # -----------------------------
+    # Internal helpers for query-only enhancements
+    # -----------------------------
+    def _generate_text_cache_key(self, query: str, mode: str, **kwargs) -> str:
+        """
+        Generate a cache key for pure text queries using stable, relevant fields.
+
+        This is a lightweight cache fully scoped to the query layer and leverages
+        LightRAG's llm_response_cache if available.
+        """
+        cache_data = {
+            "query": query.strip(),
+            "mode": mode,
+        }
+
+        relevant_kwargs = {
+            k: v
+            for k, v in kwargs.items()
+            if k
+            in [
+                "response_type",
+                "top_k",
+                "chunk_top_k",
+                "kg_hops",
+                "mmr_lambda",
+                "min_rerank_score",
+                "temperature",
+                "max_tokens",
+            ]
+        }
+        cache_data.update(relevant_kwargs)
+
+        cache_str = json.dumps(cache_data, sort_keys=True, ensure_ascii=False)
+        cache_hash = hashlib.md5(cache_str.encode()).hexdigest()
+        return f"text_query:{cache_hash}"
+
+    def _classify_intent_simple(self, query: str) -> str:
+        """
+        Cheap rule-based intent classifier scoped to the query layer only.
+        Returns one of: definition | comparison | calculation | process | other
+        """
+        q = query.lower().strip()
+
+        # calculation indicators
+        if re.search(r"\b(derive|derivative|integral|integrate|differentiate|solve|calculate|compute)\b", q):
+            return "calculation"
+
+        # comparison indicators
+        if re.search(r"\b(compare|vs\.?|versus|difference between)\b", q):
+            return "comparison"
+
+        # process/how-to indicators
+        if re.search(r"\b(how (do|does)|process|steps|workflow|pipeline)\b", q):
+            return "process"
+
+        # definition/factoid indicators
+        if re.search(r"\b(what is|define|definition of|explain|meaning of)\b", q):
+            return "definition"
+
+        return "other"
+
+    def _get_presets_for_intent(self, intent: str) -> Dict[str, Any]:
+        """
+        Provide conservative retrieval presets for different intents.
+        These are merged as defaults and won't override explicit kwargs from caller.
+        """
+        presets: Dict[str, Any] = {
+            "definition": {
+                "top_k": 3,
+                "chunk_top_k": 2,
+                "kg_hops": 0,
+                "mmr_lambda": 0.8,
+                "min_rerank_score": 0.4,
+            },
+            "comparison": {
+                "top_k": 6,
+                "chunk_top_k": 4,
+                "kg_hops": 2,
+                "mmr_lambda": 0.6,
+                "min_rerank_score": 0.3,
+            },
+            "calculation": {
+                "top_k": 4,
+                "chunk_top_k": 3,
+                "kg_hops": 0,
+                "mmr_lambda": 0.7,
+                "min_rerank_score": 0.5,
+            },
+            "process": {
+                "top_k": 5,
+                "chunk_top_k": 3,
+                "kg_hops": 1,
+                "mmr_lambda": 0.65,
+                "min_rerank_score": 0.35,
+            },
+            "other": {
+                "top_k": 5,
+                "chunk_top_k": 3,
+                "kg_hops": 1,
+                "mmr_lambda": 0.7,
+                "min_rerank_score": 0.35,
+            },
+        }
+        return presets.get(intent, presets["other"])
+
+    def _estimate_intent_confidence(self, query: str, intent: str) -> float:
+        """
+        Lightweight rule-based intent confidence estimate in [0,1].
+        """
+        q = query.lower()
+        score = 0.5
+        if intent == "calculation":
+            if re.search(r"\b(derive|derivative|integral|integrate|differentiate|solve|calculate|compute)\b", q):
+                score = 0.9
+            elif re.search(r"\b(result|value|equation)\b", q):
+                score = 0.7
+            else:
+                score = 0.4
+        elif intent == "comparison":
+            if re.search(r"\b(compare|vs\.?|versus|difference between)\b", q):
+                score = 0.9
+            elif re.search(r"\b(difference|contrast)\b", q):
+                score = 0.7
+            else:
+                score = 0.4
+        elif intent == "process":
+            if re.search(r"\b(how (do|does)|process|steps|workflow|pipeline)\b", q):
+                score = 0.85
+            elif re.search(r"\b(how|explain)\b", q):
+                score = 0.65
+            else:
+                score = 0.45
+        elif intent == "definition":
+            if re.search(r"\b(what is|define|definition of|meaning of)\b", q):
+                score = 0.9
+            elif re.search(r"\b(explain|what)\b", q):
+                score = 0.65
+            else:
+                score = 0.5
+        else:
+            score = 0.5
+        return max(0.0, min(1.0, score))
 
     def _generate_multimodal_cache_key(
         self, query: str, multimodal_content: List[Dict[str, Any]], mode: str, **kwargs
@@ -102,44 +245,6 @@ class QueryMixin:
 
         return f"multimodal_query:{cache_hash}"
 
-    _CHANNEL_BIASES = {
-        "text":   "",
-        "figure": " figure fig. chart graph diagram plot image caption",
-        "table":  " table tabular rows columns metrics caption",
-    }
-
-    async def _get_prompt_only(self, q: str, mode: str, **kwargs) -> str:
-        param = QueryParam(mode=mode, only_need_prompt=True, **kwargs)
-        return await self.lightrag.aquery(q, param=param)
-
-    async def _get_context_only(self, q: str, mode: str, **kwargs) -> str:
-        # ask LightRAG for context only (works with mix/local/global modes)
-        param = QueryParam(mode=mode, only_need_context=True, **kwargs)
-        ctx = await self.lightrag.aquery(q, param=param)
-        return ctx if isinstance(ctx, str) else str(ctx)
-
-    async def _collect_channel_prompts(self, base_query: str, channels: List[str], mode: str, **kwargs) -> Dict[str, str]:
-        out: Dict[str, str] = {}
-        for ch in channels:
-            biased = base_query + self._CHANNEL_BIASES.get(ch, "")
-            out[ch] = await self._get_prompt_only(biased, mode, **kwargs)
-        return out
-
-    async def _collect_channel_contexts(self, base_query: str, channels: List[str], mode: str, **kwargs) -> Dict[str, str]:
-        out: Dict[str, str] = {}
-        for ch in channels:
-            biased = base_query + self._CHANNEL_BIASES.get(ch, "")
-            out[ch] = await self._get_context_only(biased, mode, **kwargs)
-        return out
-
-    def _merge_contexts_in_order(self, channels: List[str], ch2ctx: Dict[str, str]) -> str:
-        parts = []
-        for ch in channels:
-            ctx = (ch2ctx.get(ch) or "").strip()
-            if ctx:
-                parts.append(f"### {ch.upper()} CONTEXT\n{ctx}")
-        return "\n\n".join(parts)
-
     async def aquery(self, query: str, mode: str = "mix", **kwargs) -> str:
         """
         Pure text query - directly calls LightRAG's query functionality
@@ -160,181 +265,154 @@ class QueryMixin:
                 "No LightRAG instance available. Please process documents first or provide a pre-initialized LightRAG instance."
             )
 
-        planner_plan: QueryPlan | None = None
-        intent_result: IntentResult | None = None
-        if getattr(self.config, "enable_micro_planner", False) and getattr(
-            self, "micro_planner", None
+        # Check if VLM enhanced query should be used
+        vlm_enhanced = kwargs.pop("vlm_enhanced", None)
+
+        # Auto-determine VLM enhanced based on availability
+        if vlm_enhanced is None:
+            vlm_enhanced = (
+                hasattr(self, "vision_model_func")
+                and self.vision_model_func is not None
+            )
+
+        # Use VLM enhanced query if enabled and available
+        if (
+            vlm_enhanced
+            and hasattr(self, "vision_model_func")
+            and self.vision_model_func
         ):
-            budgets = {
-                "time_ms": self.config.query_time_budget_ms,
-                "memory_gb": self.config.memory_budget_gb,
-            }
-            original_query = query
-            query, intent_result, planner_plan = self.micro_planner.plan(
-                query, budgets=budgets
-            )
-            self.logger.info(f"Normalized query: {query}")
-            self.logger.info(
-                "Planner intent: %s, tags: %s, confidence: %.2f",
-                intent_result.intent,
-                intent_result.tags,
-                intent_result.confidence,
+            return await self.aquery_vlm_enhanced(query, mode=mode, **kwargs)
+        elif vlm_enhanced and (
+            not hasattr(self, "vision_model_func") or not self.vision_model_func
+        ):
+            self.logger.warning(
+                "VLM enhanced query requested but vision_model_func is not available, falling back to normal query"
             )
 
+        # Intent-aware defaults (query-layer only). Users can override via kwargs.
+        enable_intent_presets = kwargs.pop("enable_intent_presets", True)
+        # Metrics logging flags (Milestone 1)
+        enable_metrics_logging = kwargs.pop("enable_metrics_logging", False)
+        metrics_namespace = kwargs.pop("metrics_namespace", None)
+        # M2: intent calibration controls
+        enable_intent_calibration = kwargs.pop("enable_intent_calibration", True)
+        intent_conf_threshold = kwargs.pop("intent_conf_threshold", 0.6)
+        fallback_intents = kwargs.pop("fallback_intents", ["definition", "process"])  # ordered
 
-
-            self.logger.debug(f"Planner metadata: {intent_result.metadata}")
-            self.logger.info(
-                "Planner plan: mode=%s, top_k=%s, rerank_top_k=%s, use_vlm=%s, model=%s, feature_flags=%s",
-                planner_plan.retrieval_mode,
-                planner_plan.top_k,
-                planner_plan.rerank_top_k,
-                planner_plan.use_vlm,
-                planner_plan.model_size,
-                planner_plan.feature_flags,
-            )
-            mode = planner_plan.mode or mode
-            kwargs.setdefault("top_k", planner_plan.top_k)
-            ann = getattr(QueryParam, "__annotations__", {})
-            if planner_plan.rerank_top_k:
-                if "rerank_top_k" in ann:
-                    kwargs.setdefault(
-                        "rerank_top_k",
-                        planner_plan.rerank_top_k
-                        or self.config.default_rerank_top_k,
-                    )
-                elif "chunk_top_k" in ann:
-                    kwargs.setdefault(
-                        "chunk_top_k",
-                        planner_plan.rerank_top_k
-                        or self.config.default_rerank_top_k,
-                    )
-            vlm_enhanced = planner_plan.use_vlm
-            if hasattr(self, "update_processor_availability"):
-                self.update_processor_availability()
-        else:
-            original_query = query
-            vlm_enhanced = kwargs.pop("vlm_enhanced", None)
-
-        # === BEGIN PATCH: dual-channel scheduler ===
-        channels = ["text"]
-        if planner_plan:
-            # allow the plan to set channels (we'll add this field below)
-            if getattr(planner_plan, "retrieval_channels", None):
-                channels = list(dict.fromkeys(["text", *planner_plan.retrieval_channels]))
-            else:
-                # heuristic default from intent/tags
-                tags = (intent_result.tags if intent_result else []) or []
-                if (intent_result and intent_result.intent in ("visual","multimodal")) or any(t in tags for t in ["visual","figure","chart","graph","image"]):
-                    channels.append("figure")
-                if (intent_result and intent_result.intent in ("table","multimodal")) or any(t in tags for t in ["table","tabular","grid"]):
-                    channels.append("table")
-                channels = list(dict.fromkeys(channels))
-
-        # If we have more than just text (or we're using VLM), run per-channel steps explicitly
-        if planner_plan and (len(channels) > 1 or (planner_plan.use_vlm and self.config.enable_image_processing)):
-            mode_to_use = planner_plan.mode or (mode or "mix")
-
-            if planner_plan.use_vlm and hasattr(self, "vision_model_func") and self.vision_model_func:
-                # 1) collect prompts rather than full answers, so we can pass images to VLM
-                prompt_texts = await self._collect_channel_prompts(query, channels, mode_to_use, **kwargs)
-                # combine prompts (LightRAG prompts contain image placeholders; we keep them)
-                combined_prompt = "\n\n".join([f"### {ch.upper()} PROMPT\n{prompt_texts[ch]}" for ch in channels if prompt_texts.get(ch)])
-                # reuse existing VLM helpers to find & embed images from the combined prompt
-                enhanced_prompt, images_found = await self._process_image_paths_for_vlm(combined_prompt)
-                if not images_found:
-                    self.logger.info("Dual-channel VLM: no images found in prompts; falling back to text generation.")
-                    # fall through to text LLM on merged context
-                    ch2ctx = await self._collect_channel_contexts(query, channels, mode_to_use, **kwargs)
-                    merged_context = self._merge_contexts_in_order(channels, ch2ctx)
-                    _safe_llm_keys = {"temperature", "max_tokens", "presence_penalty", "frequency_penalty", "stop"}
-                    _llm_kwargs = {k: v for k, v in kwargs.items() if k in _safe_llm_keys}
-
-                    result = await self.llm_model_func(
-                        prompt=query,
-                        system_prompt=merged_context,
-                        history_messages=[],
-                        **_llm_kwargs
-                    )
-                else:
-                    messages = self._build_vlm_messages_with_images(enhanced_prompt, query)
-                    result = await self._call_vlm_with_multimodal_content(messages)
-            else:
-                # Plain text LLM path: collect contexts per channel and merge
-                ch2ctx = await self._collect_channel_contexts(query, channels, mode_to_use, **kwargs)
-                merged_context = self._merge_contexts_in_order(channels, ch2ctx)
-                _safe_llm_keys = {"temperature", "max_tokens", "presence_penalty", "frequency_penalty", "stop"}
-                _llm_kwargs = {k: v for k, v in kwargs.items() if k in _safe_llm_keys}
-
-                result = await self.llm_model_func(
-                    prompt=query,
-                    system_prompt=merged_context,
-                    history_messages=[],
-                    **_llm_kwargs
-                )
-
-            # (we’ll persist plan.json later in this function)
-            # short-circuit return handled after persistence
-            dual_channel_result = result
-        else:
-            dual_channel_result = None
-        # === END PATCH ===
-
-
-        if dual_channel_result is not None:
-            result = dual_channel_result
-        else:
-            if vlm_enhanced is None:
-                vlm_enhanced = (hasattr(self, "vision_model_func") and self.vision_model_func is not None)
-
-            if vlm_enhanced and getattr(self, "vision_model_func", None):
-                result = await self.aquery_vlm_enhanced(query, mode=mode, **kwargs)
-            else:
-                if vlm_enhanced and not getattr(self, "vision_model_func", None):
-                    self.logger.warning("VLM enhanced query requested but vision_model_func is not available, falling back to normal query")
-                if getattr(self.lightrag, "rerank_model_func", None) is None:
-                    kwargs.setdefault("enable_rerank", False)
-                    if not kwargs.get("enable_rerank"):
-                        kwargs.setdefault("rerank_top_k", 0)
-
-                ann = getattr(QueryParam, "__annotations__", {})
-                if "chunk_top_k" in ann and "chunk_top_k" not in kwargs:
-                    kwargs["chunk_top_k"] = kwargs.get("rerank_top_k", 0)
-
-                query_param = QueryParam(mode=mode, **kwargs)
-                self.logger.info(f"Executing text query: {query[:100]}...")
-                self.logger.info(f"Query mode: {mode}")
-                result = await self.lightrag.aquery(query, param=query_param)
-                self.logger.info("Text query completed")
-
-        # Evaluate + persist for BOTH branches
-        if planner_plan and intent_result:
+        detected_intent = kwargs.get("intent")
+        if not detected_intent and enable_intent_presets:
             try:
-                eval_res = self.micro_planner.evaluate(original_query, result, {})
-                score = eval_res.get("score")
-                reason = eval_res.get("degrade_reason")
-                if score is not None:
-                    planner_plan.eval_score = score
-                if reason:
-                    planner_plan.eval_reason = reason
-                    if reason not in planner_plan.degrade_reasons:
-                        planner_plan.degrade_reasons.append(reason)
+                detected_intent = self._classify_intent_simple(query)
+            except Exception:
+                detected_intent = None
 
-                output_dir = getattr(self.config, "working_dir", ".")
-                self.micro_planner.save_plan(
-                    planner_plan,
-                    query=original_query,
-                    normalized_query=query,
-                    intent=(intent_result.intent if intent_result else "unknown"),
-                    tags=(intent_result.tags if intent_result else []),
-                    output_dir=Path(output_dir) / "plans",
-                )
+        # M2: estimate confidence and optionally reclassify
+        intent_confidence = None
+        reclassified = False
+        final_intent = detected_intent
+        if enable_intent_calibration and detected_intent:
+            try:
+                intent_confidence = self._estimate_intent_confidence(query, detected_intent)
+                if intent_confidence < intent_conf_threshold:
+                    for fb in fallback_intents:
+                        if fb != detected_intent:
+                            final_intent = fb
+                            reclassified = True
+                            break
+            except Exception:
+                pass
+        else:
+            final_intent = detected_intent
+
+        # Merge presets without overriding explicit kwargs
+        effective_kwargs = dict(kwargs)
+        if enable_intent_presets and final_intent:
+            preset = self._get_presets_for_intent(final_intent)
+            for k, v in preset.items():
+                if k not in effective_kwargs:
+                    effective_kwargs[k] = v
+
+        # Lightweight text query cache (leveraging lightrag.llm_response_cache when present)
+        enable_query_cache = effective_kwargs.pop("enable_query_cache", True)
+        cache_key = None
+        if enable_query_cache and (
+            hasattr(self, "lightrag")
+            and self.lightrag
+            and hasattr(self.lightrag, "llm_response_cache")
+            and self.lightrag.llm_response_cache
+        ):
+            if self.lightrag.llm_response_cache.global_config.get("enable_llm_cache", True):
+                try:
+                    cache_key = self._generate_text_cache_key(query, mode, **effective_kwargs)
+                    cached = await self.lightrag.llm_response_cache.get_by_id(cache_key)
+                    if cached and isinstance(cached, dict):
+                        result_content = cached.get("return")
+                        if result_content:
+                            self.logger.info(f"Text query cache hit: {cache_key[:16]}...")
+                            return result_content
+                except Exception as e:
+                    self.logger.debug(f"Error accessing text query cache: {e}")
+
+        # Create query parameters
+        query_param = QueryParam(mode=mode, **effective_kwargs)
+
+        self.logger.info(f"Executing text query: {query[:100]}...")
+        self.logger.info(f"Query mode: {mode}")
+
+        # Call LightRAG's query method
+        result = await self.lightrag.aquery(query, param=query_param)
+
+        # Store in cache if enabled and available
+        if enable_query_cache and cache_key and (
+            hasattr(self, "lightrag")
+            and self.lightrag
+            and hasattr(self.lightrag, "llm_response_cache")
+            and self.lightrag.llm_response_cache
+        ):
+            try:
+                cache_entry = {
+                    "return": result,
+                    "cache_type": "text_query",
+                    "original_query": query,
+                    "mode": mode,
+                    "intent": final_intent,
+                }
+                # Attach structured metrics when enabled (Milestone 1)
+                if enable_metrics_logging:
+                    cache_entry.update(
+                        {
+                            "metrics_namespace": metrics_namespace,
+                            "final_intent": final_intent,
+                            "intent_conf": intent_confidence,
+                            "reclassified": reclassified,
+                            "strategy_used": {
+                                "mode": mode,
+                                "intent_presets": bool(final_intent),
+                            },
+                            "top_k": effective_kwargs.get("top_k"),
+                            "chunk_top_k": effective_kwargs.get("chunk_top_k"),
+                            "kg_hops": effective_kwargs.get("kg_hops"),
+                            "mmr_lambda": effective_kwargs.get("mmr_lambda"),
+                            "min_rerank_score": effective_kwargs.get("min_rerank_score"),
+                            "answer_length": len(str(result)) if result is not None else 0,
+                            "ensemble_votes": None,
+                            "agreement_ratio": None,
+                            "correction_applied": False,
+                            "citation_guard_triggered": False,
+                        }
+                    )
+                await self.lightrag.llm_response_cache.upsert({cache_key: cache_entry})
+                self.logger.info(f"Saved text query result to cache: {cache_key[:16]}...")
+                # Ensure persistence
+                try:
+                    await self.lightrag.llm_response_cache.index_done_callback()
+                except Exception as e:
+                    self.logger.debug(f"Error persisting text query cache: {e}")
             except Exception as e:
-                self.logger.warning(f"Failed to persist plan.json: {e}")
+                self.logger.debug(f"Error saving text query to cache: {e}")
 
+        self.logger.info("Text query completed")
         return result
-
-        
 
     async def aquery_reflect(
         self,
@@ -488,6 +566,10 @@ class QueryMixin:
                 }]
             )
         """
+        # Metrics logging flags (Milestone 1) for multimodal path
+        enable_metrics_logging = kwargs.pop("enable_metrics_logging", False)
+        metrics_namespace = kwargs.pop("metrics_namespace", None)
+
         # Ensure LightRAG is initialized
         await self._ensure_lightrag_initialized()
 
@@ -560,6 +642,26 @@ class QueryMixin:
                         "multimodal_content_count": len(multimodal_content),
                         "mode": mode,
                     }
+                    # Attach structured metrics when enabled (Milestone 1)
+                    if enable_metrics_logging:
+                        cache_entry.update(
+                            {
+                                "metrics_namespace": metrics_namespace,
+                                "final_intent": None,
+                                "intent_conf": None,
+                                "strategy_used": {"mode": mode, "vlm_enhanced": False},
+                                "top_k": kwargs.get("top_k"),
+                                "chunk_top_k": kwargs.get("chunk_top_k"),
+                                "kg_hops": kwargs.get("kg_hops"),
+                                "mmr_lambda": kwargs.get("mmr_lambda"),
+                                "min_rerank_score": kwargs.get("min_rerank_score"),
+                                "answer_length": len(str(result)) if result is not None else 0,
+                                "ensemble_votes": None,
+                                "agreement_ratio": None,
+                                "correction_applied": False,
+                                "citation_guard_triggered": False,
+                            }
+                        )
 
                     await self.lightrag.llm_response_cache.upsert(
                         {cache_key: cache_entry}
@@ -993,24 +1095,6 @@ class QueryMixin:
             raise
 
     # Synchronous versions of query methods
-    def query(self, query: str, mode: str = "mix", **kwargs) -> str:
-        """
-        Synchronous version of pure text query
-
-        Args:
-            query: Query text
-            mode: Query mode ("local", "global", "hybrid", "naive", "mix", "bypass")
-            **kwargs: Other query parameters, will be passed to QueryParam
-                - vlm_enhanced: bool, default True when vision_model_func is available.
-                  If True, will parse image paths in retrieved context and replace them
-                  with base64 encoded images for VLM processing.
-
-        Returns:
-            str: Query result
-        """
-        loop = always_get_an_event_loop()
-        return loop.run_until_complete(self.aquery(query, mode=mode, **kwargs))
-
     def query_reflect(
         self,
         query: str,
@@ -1046,6 +1130,24 @@ class QueryMixin:
             )
         )
 
+    def query(self, query: str, mode: str = "mix", **kwargs) -> str:
+        """
+        Synchronous version of pure text query
+
+        Args:
+            query: Query text
+            mode: Query mode ("local", "global", "hybrid", "naive", "mix", "bypass")
+            **kwargs: Other query parameters, will be passed to QueryParam
+                - vlm_enhanced: bool, default True when vision_model_func is available.
+                  If True, will parse image paths in retrieved context and replace them
+                  with base64 encoded images for VLM processing.
+
+        Returns:
+            str: Query result
+        """
+        loop = always_get_an_event_loop()
+        return loop.run_until_complete(self.aquery(query, mode=mode, **kwargs))
+
     def query_with_multimodal(
         self,
         query: str,
@@ -1072,87 +1174,6 @@ class QueryMixin:
             self.aquery_with_multimodal(query, multimodal_content, mode=mode, **kwargs)
         )
 
-    async def answer_with_reflection(
-        self,
-        question: str,
-        mode: str = "hybrid",
-        **kwargs
-    ) -> Dict[str, Any]:
-        """
-        Generate answer with reflection layer verification
-
-        Args:
-            question: User question
-            mode: Query mode for initial answer and reflection
-            **kwargs: Additional query parameters
-
-        Returns:
-            Dict containing:
-                - question: Original question
-                - draft: Initial draft answer
-                - final: Final answer with citations
-                - reflection_report: Detailed reflection analysis
-        """
-        from raganything.reflection import ReflectionLayer
-
-        # Ensure LightRAG is initialized
-        await self._ensure_lightrag_initialized()
-
-        self.logger.info(f"Starting answer with reflection for: {question[:100]}...")
-
-        # Step 1: Get initial draft answer using standard query
-        self.logger.info("Generating initial draft answer")
-        draft_answer = await self.aquery(question, mode=mode, **kwargs)
-
-        # Step 2: Initialize reflection layer
-        reflection_config = getattr(self.config, 'reflection', None)
-        if not reflection_config:
-            # Create default reflection config if not provided
-            from raganything.config import ReflectionConfig
-            reflection_config = ReflectionConfig()
-
-        reflection_layer = ReflectionLayer(
-            lightrag=self.lightrag,
-            llm_model_func=self.llm_model_func,
-            config=reflection_config,
-        )
-
-        # Step 3: Run reflection process
-        self.logger.info("Running reflection analysis")
-        final_answer, reflection_report = await reflection_layer.run(
-            question=question,
-            draft_answer=draft_answer,
-            query_mode=getattr(reflection_config, 'reflection_query_mode', mode),
-        )
-
-        # Step 4: Construct result
-        result = {
-            "question": question,
-            "draft": draft_answer,
-            "final": final_answer,
-            "reflection_report": reflection_report.__dict__,  # Convert to dict for JSON serialization
-        }
-
-        self.logger.info("Answer with reflection completed")
-        return result
-
-    def answer_with_reflection_sync(
-        self,
-        question: str,
-        mode: str = "hybrid",
-        **kwargs
-    ) -> Dict[str, Any]:
-        """
-        Synchronous version of answer_with_reflection
-
-        Args:
-            question: User question
-            mode: Query mode for initial answer and reflection
-            **kwargs: Additional query parameters
-
-        Returns:
-            Dict containing question, draft, final answer and reflection report
-        """
         loop = always_get_an_event_loop()
         return loop.run_until_complete(
             self.answer_with_reflection(question, mode=mode, **kwargs)
