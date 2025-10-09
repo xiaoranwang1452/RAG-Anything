@@ -13,18 +13,18 @@
 <div align="center">
   <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 25px; text-align: center;">
     <p>
-      <a href='https://github.com/HKUDS/RAG-Anything'><img src='https://img.shields.io/badge/🔥Project-Page-00d9ff?style=for-the-badge&logo=github&logoColor=white&labelColor=1a1a2e'></a>
+      <img src='https://img.shields.io/badge/🔥Project-Overview-00d9ff?style=for-the-badge&logo=github&logoColor=white&labelColor=1a1a2e'>
       <a href='https://arxiv.org/abs/2410.05779'><img src='https://img.shields.io/badge/📄arXiv-2410.05779-ff6b6b?style=for-the-badge&logo=arxiv&logoColor=white&labelColor=1a1a2e'></a>
-      <a href='https://github.com/HKUDS/LightRAG'><img src='https://img.shields.io/badge/⚡Based%20on-LightRAG-4ecdc4?style=for-the-badge&logo=lightning&logoColor=white&labelColor=1a1a2e'></a>
+      <img src='https://img.shields.io/badge/⚡Evidence%20Fusion-Multimodal%20RAG-4ecdc4?style=for-the-badge&logo=lightning&logoColor=white&labelColor=1a1a2e'>
     </p>
     <p>
-      <a href="https://github.com/HKUDS/RAG-Anything/stargazers"><img src='https://img.shields.io/github/stars/HKUDS/RAG-Anything?color=00d9ff&style=for-the-badge&logo=star&logoColor=white&labelColor=1a1a2e' /></a>
+      <img src='https://img.shields.io/badge/⭐Stars-Community-00d9ff?style=for-the-badge&logo=star&logoColor=white&labelColor=1a1a2e' />
       <img src="https://img.shields.io/badge/🐍Python-3.10-4ecdc4?style=for-the-badge&logo=python&logoColor=white&labelColor=1a1a2e">
       <a href="https://pypi.org/project/raganything/"><img src="https://img.shields.io/pypi/v/raganything.svg?style=for-the-badge&logo=pypi&logoColor=white&labelColor=1a1a2e&color=ff6b6b"></a>
     </p>
     <p>
       <a href="https://discord.gg/yF2MmDJyGJ"><img src="https://img.shields.io/badge/💬Discord-Community-7289da?style=for-the-badge&logo=discord&logoColor=white&labelColor=1a1a2e"></a>
-      <a href="https://github.com/HKUDS/RAG-Anything/issues/7"><img src="https://img.shields.io/badge/💬WeChat-Group-07c160?style=for-the-badge&logo=wechat&logoColor=white&labelColor=1a1a2e"></a>
+      <img src="https://img.shields.io/badge/💬Community-Discussion-7289da?style=for-the-badge&logo=discord&logoColor=white&labelColor=1a1a2e">
     </p>
     <p>
       <a href="README_zh.md"><img src="https://img.shields.io/badge/🇨🇳中文版-1a1a2e?style=for-the-badge"></a>
@@ -56,19 +56,48 @@
 
 ---
 
+## 📌 Project Scope & Workload Overview
+
+This project merges the original RAG-Anything capabilities with our agentic, multimodal, evidence-grounded QA for scientific documents. We unify text, figures, and tables to produce attributable answers that cite their sources.
+
+What’s implemented or actively maintained:
+- Multimodal parsing & processing: document parsing, content routing, concurrent pipelines, hierarchical structure preservation
+- Specialized processors: image, table, and equation analyzers with an extensible modality plugin framework
+- Hybrid retrieval & indexing: vector search + knowledge graph traversal, modality-aware ranking, relation consistency
+- Reflection & trustworthiness: sentence-level support, coverage analysis, contradiction detection, and attributable rewriting
+- Faithfulness decoding: constraint-aware decoding via `FaithfulDecodingEngine` and `FaithfulDecodingConfig`
+- Lightweight micro planner: intent recognition and adaptive retrieval strategy for better retrieval–generation alignment
+- Multimodal queries: `aquery_with_multimodal` and VLM-enhanced queries for images/tables/equations
+- Examples & tooling: reflection demos, ScienceQA evaluators, Ollama/OpenAI bindings, environment auto-detection
+- Docs & reproducibility: installation, quick start, end-to-end examples, evaluation commands and guidance
+
+For detailed design and iteration roadmap:
+- https://u32ejsf6d9.feishu.cn/wiki/UJdwwhMi3iVn8hkbX9rc14CHned
+
+---
+
 ## 🌟 System Overview
 
 *Next-Generation Multimodal Intelligence*
 
 <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); border-radius: 15px; padding: 25px; margin: 20px 0; border: 2px solid #00d9ff; box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);">
 
-Modern documents increasingly contain diverse multimodal content—text, images, tables, equations, charts, and multimedia—that traditional text-focused RAG systems cannot effectively process. **RAG-Anything** addresses this challenge as a comprehensive **All-in-One Multimodal Document Processing RAG system** built on [LightRAG](https://github.com/HKUDS/LightRAG).
+Modern documents increasingly contain diverse multimodal content—text, images, tables, equations, charts, and multimedia—that traditional text-focused RAG systems cannot effectively process. **RAG-Anything** addresses this challenge as a comprehensive **All-in-One Multimodal Document Processing RAG system** inspired by multimodal RAG practices.
 
 As a unified solution, RAG-Anything **eliminates the need for multiple specialized tools**. It provides **seamless processing and querying across all content modalities** within a single integrated framework. Unlike conventional RAG approaches that struggle with non-textual elements, our all-in-one system delivers **comprehensive multimodal retrieval capabilities**.
 
 Users can query documents containing **interleaved text**, **visual diagrams**, **structured tables**, and **mathematical formulations** through **one cohesive interface**. This consolidated approach makes RAG-Anything particularly valuable for academic research, technical documentation, financial reports, and enterprise knowledge management where rich, mixed-content documents demand a **unified processing framework**.
 
 <img src="assets/rag_anything_framework.png" alt="RAG-Anything" />
+
+### 🖼 Architecture Overview (Evidence Fusion)
+
+- End-to-end flow: Query → parsing & routing → graph indexing + hybrid retrieval → evidence fusion → reflection & verification → response
+- Unified fusion of text, images, tables, and equations during retrieval and generation
+- Reflection layer performs support/coverage/contradiction analyses and attributable rewriting to ensure answers “cite what they say”
+
+More diagrams and process details:
+- https://u32ejsf6d9.feishu.cn/wiki/UJdwwhMi3iVn8hkbX9rc14CHned
 
 </div>
 
@@ -250,6 +279,50 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 ```
+
+---
+
+## 📊 Evaluation & Reproducibility (ScienceQA / SPIQA)
+
+Evaluate multimodal QA and evidence fusion quality using provided testers and datasets:
+
+- Pure model (text/image) evaluation:
+
+```bash
+python test/scienceQA_tester.py \
+  --data_root dataset/scienceqa \
+  --image_root dataset/scienceqa/images \
+  --output_root ./output \
+  --label scienceqa \
+  --test_split test \
+  --save_every 50
+```
+
+- RAG-augmented evaluation (adds retrieved context before answering):
+
+```bash
+python test/scienceqa_rag_tester.py \
+  --data_root dataset/scienceqa \
+  --output_root ./output \
+  --label sqa_rag \
+  --test_split test \
+  --use_rag --kb_root ./kb --rag_top_k 3
+```
+
+- SPIQA samples (A/B/C):
+  - Place `dataset/test-A/SPIQA_testA.json`, `dataset/test-B/SPIQA_testB.json`, `dataset/test-C/SPIQA_testC.json` accordingly
+  - Adapt the tester or write a thin wrapper to feed SPIQA-style JSON into the same prompt/evidence pipeline
+
+Notes:
+- Bind inference backend via `.env`; the testers auto-select text/vision interfaces (Ollama or OpenAI bindings)
+- `dataset/scienceqa/` is provided for convenience; if using your own paths, pass `--problems_json / --split_json / --image_root`
+- With `--use_rag`, documents under `--kb_root` are processed and searched to append top-k evidence to prompts
+- Outputs include predicted label, raw answer, image-attached flag, and metadata for downstream analysis
+
+Suggested metrics:
+- Accuracy (MC choice correctness), Support/Coverage/Contradiction (reflection analysis), Attribution (citations quality)
+
+---
 
 #### 2. Direct Multimodal Content Processing
 
@@ -984,31 +1057,31 @@ If you find RAG-Anything useful in your research, please cite our paper:
   <table>
     <tr>
       <td align="center">
-        <a href="https://github.com/HKUDS/LightRAG">
+        <span>
           <div style="width: 100px; height: 100px; background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(0, 217, 255, 0.05) 100%); border-radius: 15px; border: 1px solid rgba(0, 217, 255, 0.2); display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
             <span style="font-size: 32px;">⚡</span>
           </div>
           <b>LightRAG</b><br>
           <sub>Simple and Fast RAG</sub>
-        </a>
+        </span>
       </td>
       <td align="center">
-        <a href="https://github.com/HKUDS/VideoRAG">
+        <span>
           <div style="width: 100px; height: 100px; background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(0, 217, 255, 0.05) 100%); border-radius: 15px; border: 1px solid rgba(0, 217, 255, 0.2); display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
             <span style="font-size: 32px;">🎥</span>
           </div>
           <b>VideoRAG</b><br>
           <sub>Extreme Long-Context Video RAG</sub>
-        </a>
+        </span>
       </td>
       <td align="center">
-        <a href="https://github.com/HKUDS/MiniRAG">
+        <span>
           <div style="width: 100px; height: 100px; background: linear-gradient(135deg, rgba(0, 217, 255, 0.1) 0%, rgba(0, 217, 255, 0.05) 100%); border-radius: 15px; border: 1px solid rgba(0, 217, 255, 0.2); display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
             <span style="font-size: 32px;">✨</span>
           </div>
           <b>MiniRAG</b><br>
           <sub>Extremely Simple RAG</sub>
-        </a>
+        </span>
       </td>
     </tr>
   </table>
@@ -1016,18 +1089,12 @@ If you find RAG-Anything useful in your research, please cite our paper:
 
 ---
 
-## ⭐ Star History
+## ⭐ Project Activity
 
 *Community Growth Trajectory*
 
 <div align="center">
-  <a href="https://star-history.com/#HKUDS/RAG-Anything&Date">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HKUDS/RAG-Anything&type=Date&theme=dark" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HKUDS/RAG-Anything&type=Date" />
-      <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=HKUDS/RAG-Anything&type=Date" style="border-radius: 15px; box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);" />
-    </picture>
-  </a>
+  <div style="color:#00d9ff">Community activity and adoption over time.</div>
 </div>
 
 ---
@@ -1041,9 +1108,7 @@ If you find RAG-Anything useful in your research, please cite our paper:
 </div>
 
 <div align="center">
-  <a href="https://github.com/HKUDS/RAG-Anything/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=HKUDS/RAG-Anything" style="border-radius: 15px; box-shadow: 0 0 20px rgba(0, 217, 255, 0.3);" />
-  </a>
+  <div style="color:#00d9ff">Thanks to all contributors!</div>
 </div>
 
 ---
@@ -1053,15 +1118,9 @@ If you find RAG-Anything useful in your research, please cite our paper:
     <img src="https://user-images.githubusercontent.com/74038190/212284100-561aa473-3905-4a80-b561-0d28506553ee.gif" width="500">
   </div>
   <div style="margin-top: 20px;">
-    <a href="https://github.com/HKUDS/RAG-Anything" style="text-decoration: none;">
-      <img src="https://img.shields.io/badge/⭐%20Star%20us%20on%20GitHub-1a1a2e?style=for-the-badge&logo=github&logoColor=white">
-    </a>
-    <a href="https://github.com/HKUDS/RAG-Anything/issues" style="text-decoration: none;">
-      <img src="https://img.shields.io/badge/🐛%20Report%20Issues-ff6b6b?style=for-the-badge&logo=github&logoColor=white">
-    </a>
-    <a href="https://github.com/HKUDS/RAG-Anything/discussions" style="text-decoration: none;">
-      <img src="https://img.shields.io/badge/💬%20Discussions-4ecdc4?style=for-the-badge&logo=github&logoColor=white">
-    </a>
+    <img src="https://img.shields.io/badge/⭐%20Support%20the%20Project-1a1a2e?style=for-the-badge&logo=github&logoColor=white">
+    <img src="https://img.shields.io/badge/🐛%20Report%20Issues-ff6b6b?style=for-the-badge&logo=github&logoColor=white">
+    <img src="https://img.shields.io/badge/💬%20Discussions-4ecdc4?style=for-the-badge&logo=github&logoColor=white">
   </div>
 </div>
 
