@@ -85,7 +85,7 @@ efr_test_results/
 # Test files
 test_*.py
 *_test.py
-test/
+# test/
 test_*/
 *_test_results/
 
