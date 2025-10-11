@@ -22,6 +22,16 @@ from lightrag.utils import logger
 
 
 @dataclass
+class ReflectionConfig:
+    """Configuration for ReflectionLayer"""
+    enable_reflection: bool = True
+    max_sentences: int = 10
+    support_threshold: float = 0.7
+    coverage_threshold: float = 0.8
+    contradiction_threshold: float = 0.6
+
+
+@dataclass
 class ReflectionReport:
     """Report structure for reflection analysis"""
     support: Dict[str, Any] = None
