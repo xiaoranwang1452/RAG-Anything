@@ -17,7 +17,8 @@ from raganything.utils import (
     encode_image_to_base64,
     validate_image_file,
 )
-from raganything.reflection_fixed import ReflectionLayer as ReflectionEngine, ReflectionConfig
+# from raganything.reflection_fixed import ReflectionLayer as ReflectionEngine, ReflectionConfig
+from raganything.reflection_fixed import ReflectionReport, ReflectionLayer, ReflectionConfig
 from raganything.micro_planner import MicroPlanner, IntentResult, QueryPlan
 import asyncio, inspect
 from typing import List, Dict, Any
