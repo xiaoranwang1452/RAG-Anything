@@ -523,8 +523,9 @@ async def _ingest_problem_metadata(
     rag: Optional[RAGAnything],
     problems: Dict[str, Any],
     qids: List[str],
+    image_root: Optional[Path],
 ) -> None:
-    """Insert all hint/lecture/solution into LightRAG as a single document."""
+    """Insert question metadata (text + optional image) into LightRAG as structured content."""
     if not rag:
         return
 
@@ -539,29 +540,79 @@ async def _ingest_problem_metadata(
 
     for qid in qids:
         problem = problems[qid]
+
+        content_list: List[Dict[str, Any]] = []
+        page_idx = 0
+
+        def _add_text_block(label: str, text: str) -> None:
+            nonlocal page_idx
+            text = text.strip()
+            if not text:
+                return
+            prefix = f"{label}: " if label else ""
+            content_list.append(
+                {
+                    "type": "text",
+                    "text": f"{prefix}{text}",
+                    "page_idx": page_idx,
+                }
+            )
+            page_idx += 1
+
+        question = (problem.get("question") or "").strip()
+        if question:
+            _add_text_block("Question", f"[{qid}] {question}")
+
+        choices = problem.get("choices") or []
+        if choices:
+            formatted_choices = "\n".join(f"{CHOICE_LETTERS[idx]}. {choice}" for idx, choice in enumerate(choices))
+            _add_text_block("Choices", formatted_choices)
+
         hint = (problem.get("hint") or "").strip()
-        lecture = (problem.get("lecture") or "").strip()
-        solution = (problem.get("solution") or "").strip()
-
-        parts: List[str] = []
         if hint:
-            parts.append(f"Hint: {hint}")
-        if lecture:
-            parts.append(f"Lecture: {lecture}")
-        if solution:
-            parts.append(f"Solution: {solution}")
+            _add_text_block("Hint", hint)
 
-        if parts:
-            metadata_text = f"Question {qid}\n" + "\n".join(parts)
-            doc_id = f"sqa_meta_{qid}"
-            try:
-                await lightrag.ainsert_custom_chunks(
-                    full_text=metadata_text,
-                    text_chunks=[metadata_text],
-                    doc_id=doc_id,
-                )
-            except Exception as exc:
-                logger.warning(f"Failed to insert metadata doc {doc_id}: {exc}")
+        lecture = (problem.get("lecture") or "").strip()
+        if lecture:
+            _add_text_block("Lecture", lecture)
+
+        solution = (problem.get("solution") or "").strip()
+        if solution:
+            _add_text_block("Solution", solution)
+
+        caption = (problem.get("caption") or "").strip()
+        image_path: Optional[Path] = None
+        try:
+            image_path = _resolve_image_path(problem, image_root, qid)
+        except Exception as exc:
+            logger.warning(f"Failed to resolve image for question {qid}: {exc}")
+            image_path = None
+
+        if image_path and image_path.exists():
+            content_list.append(
+                {
+                    "type": "image",
+                    "img_path": str(image_path.resolve()),
+                    "img_caption": [caption] if caption else [],
+                    "img_footnote": [],
+                    "page_idx": page_idx,
+                }
+            )
+            page_idx += 1
+
+        if not content_list:
+            continue
+
+        doc_id = f"sqa_meta_{qid}"
+        try:
+            await rag.insert_content_list(
+                content_list=content_list,
+                file_path=f"scienceqa_question_{qid}",
+                doc_id=doc_id,
+                display_stats=False,
+            )
+        except Exception as exc:
+            logger.warning(f"Failed to insert metadata doc {doc_id}: {exc}")
 
 
 def _is_rate_limit_error(exc: Exception) -> bool:
@@ -758,7 +809,7 @@ async def run_scienceqa(
     else:
         image_root = None
 
-    await _ingest_problem_metadata(rag, problems, qids)
+    await _ingest_problem_metadata(rag, problems, qids, image_root)
 
     shot_context = _build_shot_section(problems, shot_qids, args.use_caption)
 
